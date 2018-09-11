@@ -1,4 +1,3 @@
-CURRENT_DIR=$(dirname $(readlink -f $0))
 HOSTNAME=$(uname -n)
 
 ### COLORS ###
@@ -33,8 +32,8 @@ if ! neofetch 2> /dev/null; then
 fi
 
 # Source outside files for further configuration
-source ${CURRENT_DIR}/.alias
-source ${CURRENT_DIR}/.export
+source ${HOME}/.alias
+source ${HOME}/.export
 # source common script if on ShagBox
 if [[ ${HOSTNAME} = "ShagBox" ]]; then
   if ! source /media/shagbag913/Roms/scripts/common 2> /dev/null; then
