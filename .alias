@@ -1,0 +1,26 @@
+# only use these on ShagBox;
+if [[ ${HOSTNAME} = "ShagBox" ]]; then
+  alias tm='tmux -u'
+  alias tma='tmux -u attach'
+  alias kcc='export CCACHE_DIR=/media/shagbag913/Roms/.ccachekernel'
+fi
+# only use these if wg-quick is found
+if command -v wg-quick 2> /dev/null; then
+  alias wgu='wg-quick up azirevpn-us1'
+  alias wgd='wg-quick down azirevpn-us1'
+fi
+
+alias brc='source ~/.bashrc'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+alias pgrep='find . -type f -print0  | xargs -0 -P 4 grep'
+alias free="free -mt"
+alias la='ls -a'
+alias ll='ls -la'
+alias l='ls'
+alias l.="ls -A | egrep '^\.'"
+alias ls='ls --color=auto'
+alias mirror="sudo reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist"
+alias wget="wget -c"
+alias ngrok="ssh $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf)" 
