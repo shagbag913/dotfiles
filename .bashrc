@@ -34,6 +34,7 @@ fi
 # Source outside files for further configuration
 source ${HOME}/.alias
 source ${HOME}/.export
+source ${HOME}/git-completion.bash
 # source common script if on ShagBox
 if [[ ${HOSTNAME} = "ShagBox" ]]; then
   if ! source /media/shagbag913/Roms/scripts/common 2> /dev/null; then
