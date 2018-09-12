@@ -4,3 +4,4 @@
 !.alias
 !git-completion.bash
 !.gitignore
+!.vimrc
