@@ -21,7 +21,7 @@ PS1="${DARKGREY}${CYAN}~ \u ${REST}"
 # user
 PS1+="${LIGHTGREY}${RED} \h ~${DEF}${REST}"
 # directory
-PS1+="${CYAN} |\w| ${REST}"
+PS1+="${CYAN} |\W| ${REST}"
 # newline
 PS1+="\n"
 # Squigely wiggely
