@@ -15,36 +15,36 @@
 # limitations under the License.
 #
 # Script to control brightness and show a notification for xfce
-if [[ $(ps -ef | grep $(basename $0) | grep -v grep | wc -l) -ge 3 ]]; then
-  exit
+# MUST HAVE 'notify-send.sh'(from aur) AND 'xbacklight' installed!
+#
+# Temp file to test whether the script is running or not
+SCRIPT_TEMP="/tmp/brightness_script_running"
+if [[ -f ${SCRIPT_TEMP} ]]; then
+  exit 0
 fi
-
-for dep in notify-send.sh xbacklight; do
-  if ! command -v ${dep} 2&>/dev/null; then
-    echo "ERROR: Dependency ${dep} not available!"
-    exit 1
-  fi
-done
+touch /tmp/brightness_script_running
 
 if [[ ${1} = "-inc" ]]; then
-  xbacklight -inc 10
+  xbacklight -inc 15
 elif [[ ${1} = "-dec" ]]; then
-  xbacklight -dec 10
+  xbacklight -dec 15
 fi
 
-CURRENT_BRIGHTNESS=$( xbacklight -get )
-CURRENT_BRIGHTNESS=${CURRENT_BRIGHTNESS%.*}
+NEW_BRIGHTNESS=$( xbacklight )
+NEW_BRIGHTNESS=${NEW_BRIGHTNESS%.*}
 
 # determine which icon to use based on the brightness
-if [[ ${CURRENT_BRIGHTNESS} -gt 80 ]]; then
+if [[ ${NEW_BRIGHTNESS} -ge 80 ]]; then
   ICON=notification-display-brightness-full
-elif [[ ${CURRENT_BRIGHTNESS} -gt 40 ]]; then
+elif [[ ${NEW_BRIGHTNESS} -ge 50 ]]; then
   ICON=notification-display-brightness-medium
-elif [[ ${CURRENT_BRIGHTNESS} -gt 20 ]]; then
+elif [[ ${NEW_BRIGHTNESS} -ge 20 ]]; then
   ICON=notification-display-brightness-low
-elif [[ ${CURRENT_BRIGHTNESS} -lt 20 ]]; then
+elif [[ ${NEW_BRIGHTNESS} -le 20 ]]; then
   ICON=notification-display-brightness-off
 fi
 
-CURRENT_BRIGHTNESS_NOTIF_ID=$( notify-send.sh --icon=${ICON} -t 10 -R \
-                            ${HOME}/.brightness-tmp "Brightness: ${CURRENT_BRIGHTNESS} %" )
+notify-send.sh --icon=${ICON} -t 10 -R /tmp/brightness_notifyd_id \
+    "Brightness: ${NEW_BRIGHTNESS} %"
+
+rm ${SCRIPT_TEMP}
