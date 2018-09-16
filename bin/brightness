@@ -15,8 +15,9 @@
 # limitations under the License.
 #
 # Script to control brightness and show a notification for xfce
-
-TEMP_SCRIPT_FILE="/tmp/brightness_script_running"
+if [[ $(ps -ef | grep $(basename $0) | grep -v grep | wc -l) -ge 3 ]]; then
+  exit
+fi
 
 for dep in notify-send.sh xbacklight; do
   if ! command -v ${dep} 2&>/dev/null; then
@@ -24,11 +25,6 @@ for dep in notify-send.sh xbacklight; do
     exit 1
   fi
 done
-
-if [[ -f ${TEMP_SCRIPT_FILE} ]]; then
-  exit 0
-fi
-touch ${TEMP_SCRIPT_FILE}
 
 if [[ ${1} = "-inc" ]]; then
   xbacklight -inc 10
@@ -52,5 +48,3 @@ fi
 
 CURRENT_BRIGHTNESS_NOTIF_ID=$( notify-send.sh --icon=${ICON} -t 10 -R \
                             ${HOME}/.brightness-tmp "Brightness: ${CURRENT_BRIGHTNESS} %" )
-
-rm ${TEMP_SCRIPT_FILE}
