@@ -24,27 +24,40 @@ if [[ -f ${SCRIPT_TEMP} ]]; then
 fi
 touch /tmp/brightness_script_running
 
+CURRENT_BRIGHTNESS=$( xbacklight )
+CURRENT_BRIGHTNESS=${CURRENT_BRIGHTNESS%.*}
+
 if [[ ${1} = "-inc" ]]; then
-  xbacklight -inc 15
-elif [[ ${1} = "-dec" ]]; then
-  xbacklight -dec 15
+  xbacklight -inc 10
+elif [[ ${1} = "-dec" ]] && [[ ${CURRENT_BRIGHTNESS} -ge "15" ]]; then
+  xbacklight -dec 10
+else
+  xbacklight -set 5
 fi
 
 NEW_BRIGHTNESS=$( xbacklight )
 NEW_BRIGHTNESS=${NEW_BRIGHTNESS%.*}
 
+if [[ ${NEW_BRIGHTNESS} = "100" ]]; then
+  NEW_BRIGHTNESS="Max"
+elif [[ ${NEW_BRIGHTNESS} = "4" ]]; then
+  NEW_BRIGHTNESS="Min"
+else
+  PERCENT="%"
+fi
+
 # determine which icon to use based on the brightness
-if [[ ${NEW_BRIGHTNESS} -ge 80 ]]; then
+if [[ ${NEW_BRIGHTNESS} -ge 80 ]] || [[ ${NEW_BRIGHTNESS} = "Max" ]]; then
   ICON=notification-display-brightness-full
 elif [[ ${NEW_BRIGHTNESS} -ge 50 ]]; then
   ICON=notification-display-brightness-medium
-elif [[ ${NEW_BRIGHTNESS} -ge 20 ]]; then
+elif [[ ${NEW_BRIGHTNESS} -gt 20 ]]; then
   ICON=notification-display-brightness-low
-elif [[ ${NEW_BRIGHTNESS} -le 20 ]]; then
+else
   ICON=notification-display-brightness-off
 fi
 
 notify-send.sh --icon=${ICON} -t 10 -R /tmp/brightness_notifyd_id \
-    "Brightness: ${NEW_BRIGHTNESS} %"
+    "Brightness: ${NEW_BRIGHTNESS}${PERCENT}"
 
 rm ${SCRIPT_TEMP}
