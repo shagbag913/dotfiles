@@ -15,28 +15,27 @@
 # limitations under the License.
 #
 # Script to control brightness and show a notification
-# MUST HAVE 'notify-send.sh'(from aur) AND 'xbacklight' installed!
-# This script also only works on INTEL graphics!
+# MUST HAVE 'notify-send.sh' AND 'light' available!
 #
 # Temp file to test whether the script is running or not
-SCRIPT_TEMP="/tmp/brightness_script_running"
+SCRIPT_TEMP="/tmp/brightness_lock"
 if [[ -f ${SCRIPT_TEMP} ]]; then
   exit 0
 fi
-touch /tmp/brightness_script_running
+touch ${SCRIPT_TEMP}
 
-CURRENT_BRIGHTNESS=$( xbacklight )
+CURRENT_BRIGHTNESS=$( light )
 CURRENT_BRIGHTNESS=${CURRENT_BRIGHTNESS%.*}
 
 if [[ ${1} = "-inc" ]]; then
-  xbacklight -inc 10
+  light -A 10
 elif [[ ${1} = "-dec" ]] && [[ ${CURRENT_BRIGHTNESS} -ge "15" ]]; then
-  xbacklight -dec 10
+  light -U 10
 else
-  xbacklight -set 5
+  light -S 5
 fi
 
-NEW_BRIGHTNESS=$( xbacklight )
+NEW_BRIGHTNESS=$( light )
 NEW_BRIGHTNESS=${NEW_BRIGHTNESS%.*}
 
 if [[ ${NEW_BRIGHTNESS} = "100" ]]; then
