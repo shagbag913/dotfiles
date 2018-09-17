@@ -25,10 +25,14 @@ fi
 touch ${SCRIPT_TEMP}
 
 CURRENT_BRIGHTNESS=$( light )
-CURRENT_BRIGHTNESS=${CURRENT_BRIGHTNESS%.*}
+CURRENT_BRIGHTNESS=$(printf "%.0f\n" ${CURRENT_BRIGHTNESS})
 
 if [[ ${1} = "-inc" ]]; then
-  light -A 10
+  if [[ ${CURRENT_BRIGHTNESS} = 5 ]]; then
+    light -S 10
+  else
+    light -A 10
+  fi
 elif [[ ${1} = "-dec" ]] && [[ ${CURRENT_BRIGHTNESS} -ge "15" ]]; then
   light -U 10
 else
@@ -36,11 +40,11 @@ else
 fi
 
 NEW_BRIGHTNESS=$( light )
-NEW_BRIGHTNESS=${NEW_BRIGHTNESS%.*}
+NEW_BRIGHTNESS=$(printf "%.0f\n" ${NEW_BRIGHTNESS})
 
 if [[ ${NEW_BRIGHTNESS} = "100" ]]; then
   NEW_BRIGHTNESS="Max"
-elif [[ ${NEW_BRIGHTNESS} = "4" ]]; then
+elif [[ ${NEW_BRIGHTNESS} = "5" ]]; then
   NEW_BRIGHTNESS="Min"
 else
   PERCENT="%"
