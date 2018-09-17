@@ -14,8 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Script to control brightness and show a notification for xfce
+# Script to control brightness and show a notification
 # MUST HAVE 'notify-send.sh'(from aur) AND 'xbacklight' installed!
+# This script also only works on INTEL graphics!
 #
 # Temp file to test whether the script is running or not
 SCRIPT_TEMP="/tmp/brightness_script_running"
