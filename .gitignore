@@ -1,6 +1,7 @@
 *
 !.alias
 !.bashrc
+!.compton.conf
 !.export
 !.gitconfig
 !.gitignore
