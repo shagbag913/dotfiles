@@ -24,44 +24,71 @@ if [[ -f ${SCRIPT_TEMP} ]]; then
 fi
 touch ${SCRIPT_TEMP}
 
+FADE=true
+BRIGHTNESS_STEPS="10"
+MINIMUM_BRIGHTNESS="5"
+
 CURRENT_BRIGHTNESS=$( light )
-CURRENT_BRIGHTNESS=$(printf "%.0f\n" ${CURRENT_BRIGHTNESS})
+CURRENT_BRIGHTNESS=$( printf "%.0f\n" ${CURRENT_BRIGHTNESS} )
+
+set_brightness() {
+  if [[ ${2} = "+" ]]; then
+    LIGHT_CMD="-A"
+  elif [[ ${2} = "-" ]]; then
+    LIGHT_CMD="-U"
+  fi
+  if [[ ${FADE} = true ]]; then
+    for steps in $(seq ${1}); do
+      light -S $(( CURRENT_BRIGHTNESS ${2} 1 ))
+      sleep .001
+      CURRENT_BRIGHTNESS=$( light )
+      CURRENT_BRIGHTNESS=$(printf "%.0f\n" ${CURRENT_BRIGHTNESS})
+    done
+  else
+    light ${LIGHT_CMD} ${1}
+  fi
+}
 
 if [[ ${1} = "-inc" ]]; then
-  if [[ ${CURRENT_BRIGHTNESS} = 5 ]]; then
-    light -S 10
-  else
-    light -A 10
+  set_brightness ${BRIGHTNESS_STEPS} +
+elif [[ ${1} = "-dec" ]] && [[ ${CURRENT_BRIGHTNESS} -gt $(( MINIMUM_BRIGHTNESS + BRIGHTNESS_STEPS )) ]]; then
+  set_brightness ${BRIGHTNESS_STEPS} -
+elif [[ -n ${1} ]]; then
+  if [[ ${CURRENT_BRIGHTNESS} -gt ${MINIMUM_BRIGHTNESS} ]]; then
+    set_brightness $(( CURRENT_BRIGHTNESS - MINIMUM_BRIGHTNESS )) -
   fi
-elif [[ ${1} = "-dec" ]] && [[ ${CURRENT_BRIGHTNESS} -ge "15" ]]; then
-  light -U 10
-else
-  light -S 5
 fi
 
+
 NEW_BRIGHTNESS=$( light )
-NEW_BRIGHTNESS=$(printf "%.0f\n" ${NEW_BRIGHTNESS})
+NEW_BRIGHTNESS=$( printf "%.0f\n" ${NEW_BRIGHTNESS} )
 
 if [[ ${NEW_BRIGHTNESS} = "100" ]]; then
   NEW_BRIGHTNESS="Max"
-elif [[ ${NEW_BRIGHTNESS} = "5" ]]; then
+elif [[ ${NEW_BRIGHTNESS} = ${MINIMUM_BRIGHTNESS} ]]; then
   NEW_BRIGHTNESS="Min"
 else
   PERCENT="%"
 fi
 
 # determine which icon to use based on the brightness
-if [[ ${NEW_BRIGHTNESS} -ge 80 ]] || [[ ${NEW_BRIGHTNESS} = "Max" ]]; then
+BRIGHTNESS_RANGE=$(( 100 - MINIMUM_BRIGHTNESS ))
+BRIGHTNESS_RANGE=$(( 100 - BRIGHTNESS_RANGE + 100 ))
+
+brightness_range_icon() {
+  printf "%.0f\n" $( echo "$BRIGHTNESS_RANGE * ${1}" | bc -l )
+}
+if [[ ${NEW_BRIGHTNESS} = "Max" ]]; then
   ICON=notification-display-brightness-full
-elif [[ ${NEW_BRIGHTNESS} -ge 50 ]]; then
-  ICON=notification-display-brightness-medium
-elif [[ ${NEW_BRIGHTNESS} -gt 20 ]]; then
-  ICON=notification-display-brightness-low
-else
+elif [[ ${NEW_BRIGHTNESS} = "Min" ]]; then
   ICON=notification-display-brightness-off
+elif [[ ${NEW_BRIGHTNESS} -gt $( brightness_range_icon .4 ) ]]; then
+  ICON=notification-display-brightness-medium
+elif [[ ${NEW_BRIGHTNESS} -lt $( brightness_range_icon .4 ) ]]; then
+  ICON=notification-display-brightness-low
 fi
 
-notify-send.sh --icon=${ICON} -t 10 -R /tmp/brightness_notifyd_id \
+notify-send.sh --icon=${ICON} -t 5000 -R /tmp/brightness_notifyd_id \
     "Brightness: ${NEW_BRIGHTNESS}${PERCENT}"
 
 rm ${SCRIPT_TEMP}
