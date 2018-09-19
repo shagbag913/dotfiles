@@ -1,0 +1,29 @@
+[user]
+	email = sh4gbag913@gmail.com
+	name = shagbag913
+[credential]
+	helper = cache --timeout=9999999
+[gpg]
+	program = gpg2
+[push]
+	gpgSign = if-asked
+[commit]
+	gpgsign = true
+[color]
+	ui = auto
+[alias]
+	aa = add --all
+	c = commit --gpg-sign --signoff
+	ca = commit --gpg-sign --amend --signoff
+	cl = clean -fxd
+	cp = cherry-pick --gpg-sign --signoff
+	cpa = cherry-pick --abort
+	cpc = cherry-pick --continue
+	cpe = cherry-pick --edit --signoff
+	f = fetch
+	ma = merge --abort
+	mc = merge --continue
+	s = status
+[review "review.carbonrom.org"]
+	username = shagbag913
+	email = sh4gbag913@gmail.com

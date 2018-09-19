@@ -1,8 +1,11 @@
 *
-!.export
-!.bashrc
 !.alias
-!git-completion.bash
+!.bashrc
+!.export
+!.gitconfig
 !.gitignore
 !.vimrc
+
+!git-completion.bash
+
 !bin/
