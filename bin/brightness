@@ -25,7 +25,7 @@ fi
 touch ${SCRIPT_TEMP}
 
 FADE=true
-BRIGHTNESS_STEPS="10"
+BRIGHTNESS_STEPS="15"
 MINIMUM_BRIGHTNESS="5"
 
 CURRENT_BRIGHTNESS=$( light )
@@ -40,7 +40,7 @@ set_brightness() {
   if [[ ${FADE} = true ]]; then
     for steps in $(seq ${1}); do
       light -S $(( CURRENT_BRIGHTNESS ${2} 1 ))
-      sleep .001
+      sleep .004
       CURRENT_BRIGHTNESS=$( light )
       CURRENT_BRIGHTNESS=$(printf "%.0f\n" ${CURRENT_BRIGHTNESS})
     done
@@ -82,9 +82,9 @@ if [[ ${NEW_BRIGHTNESS} = "Max" ]]; then
   ICON=notification-display-brightness-full
 elif [[ ${NEW_BRIGHTNESS} = "Min" ]]; then
   ICON=notification-display-brightness-off
-elif [[ ${NEW_BRIGHTNESS} -gt $( brightness_range_icon .4 ) ]]; then
+elif [[ ${NEW_BRIGHTNESS} -ge $( brightness_range_icon .5 ) ]]; then
   ICON=notification-display-brightness-medium
-elif [[ ${NEW_BRIGHTNESS} -lt $( brightness_range_icon .4 ) ]]; then
+elif [[ ${NEW_BRIGHTNESS} -lt $( brightness_range_icon .5 ) ]]; then
   ICON=notification-display-brightness-low
 fi
 
