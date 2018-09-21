@@ -17,15 +17,13 @@ DEF='\e[49m'
 
 ### PS1 ###
 # hostname
-PS1="${DARKGREY}${CYAN}~ \u ${REST}"
+PS1="${DARKGREY}${CYAN} \u ${REST}"
 # user
-PS1+="${LIGHTGREY}${RED} \h ~${DEF}${REST}"
+PS1+="${LIGHTGREY}${RED} \h ${DEF}${REST}"
 # directory
-PS1+="${CYAN} |\W| ${REST}"
-# newline
-PS1+="\n"
+PS1+="${CYAN} \W ${REST}"
 # Squigely wiggely
-PS1+="~ ${GREEN}$ ${REST}"
+PS1+="${GREEN}$ ${REST}"
 
 if ! neofetch 2> /dev/null; then
   echo "Install neofetch you nub!"
