@@ -10,3 +10,4 @@
 !git-completion.bash
 
 !bin/
+!.config/
