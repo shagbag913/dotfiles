@@ -4,8 +4,8 @@ if [[ ${HOSTNAME} = "ShagBox" ]]; then
   alias tma='tmux -u attach'
   alias kcc='export CCACHE_DIR=/media/shagbag913/Roms/.ccachekernel'
 fi
-# only use these on ShagBook;
-if [[ ${HOSTNAME} = "ShagBook" ]]; then
+# only use these on ShagBook & .sshconf is found;
+if [[ ${HOSTNAME} = "ShagBook" ]] && [[ -f ${HOME}/.sshconf ]]; then
   alias ngrok="ssh $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf)"
 fi
 # only use these if wg-quick is found
