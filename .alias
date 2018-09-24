@@ -1,17 +1,24 @@
-# only use these on ShagBox;
-if [[ ${HOSTNAME} = "ShagBox" ]]; then
+# only alias these if tmux is installed;
+if command -v tmux &>/dev/null; then
   alias tm='tmux -u'
   alias tma='tmux -u attach'
-  alias kcc='export CCACHE_DIR=/media/shagbag913/Roms/.ccachekernel'
 fi
-# only use these on ShagBook & .sshconf is found;
-if [[ ${HOSTNAME} = "ShagBook" ]] && [[ -f ${HOME}/.sshconf ]]; then
-  alias ngrok="ssh $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf)"
-fi
-# only use these if wg-quick is found
-if command -v wg-quick 2> /dev/null; then
+
+# only alias these if wg-quick is installed;
+if command -v wg-quick 2>/dev/null; then
   alias wgu='wg-quick up azirevpn-us1'
   alias wgd='wg-quick down azirevpn-us1'
+fi
+
+# only alias these if .sshconf is found;
+if [[ -f ${HOME}/.sshconf ]]; then
+  alias sshbox="ssh $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf)"
+  alias sftpbox="sftp -oPort=$(sed -n 2p ${HOME}/.sshconf) $(sed -n 1p ${HOME}/.sshconf)"
+fi
+
+# only alias this on shagbox
+if [[ ${HOSTNAME} = "ShagBox" ]]; then
+  alias kcc='export CCACHE_DIR=/media/shagbag913/Roms/.ccachekernel'
 fi
 
 alias brc='source ~/.bashrc'
