@@ -26,4 +26,5 @@ alias l='ls'
 alias l.="ls -A | egrep '^\.'"
 alias ls='ls --color=auto'
 alias mirror="sudo reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist"
+alias update-grub="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 alias wget="wget -c"
