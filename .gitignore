@@ -11,6 +11,7 @@
 
 !bin/
 !bin/brightness
+!bin/volume
 
 !.config/
 !.config/neofetch/
