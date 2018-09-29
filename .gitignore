@@ -11,5 +11,12 @@
 !git-completion.bash
 
 !bin/
+!bin/brightness
+
 !.config/
+!.config/neofetch/
+!.config/neofetch/config.conf
+
 !.vim/
+!.vim/**/*
+.vim/.netrwhist
