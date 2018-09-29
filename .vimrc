@@ -4,7 +4,6 @@ set softtabstop=0
 set expandtab
 set shiftwidth=2
 set smarttab
-set pastetoggle=<F2>
 set autoindent
 set smartindent
 set encoding=utf-8
