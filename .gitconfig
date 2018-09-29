@@ -27,3 +27,5 @@
 [review "review.carbonrom.org"]
 	username = shagbag913
 	email = sh4gbag913@gmail.com
+[submodule]
+	recurse = true
