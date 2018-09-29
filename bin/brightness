@@ -79,16 +79,16 @@ brightness_range_icon() {
   printf "%.0f\n" $( echo "$BRIGHTNESS_RANGE * ${1}" | bc -l )
 }
 if [[ ${NEW_BRIGHTNESS} = "Max" ]]; then
-  ICON=notification-display-brightness-full
+  ICON=full
 elif [[ ${NEW_BRIGHTNESS} = "Min" ]]; then
-  ICON=notification-display-brightness-off
+  ICON=off
 elif [[ ${NEW_BRIGHTNESS} -ge $( brightness_range_icon .5 ) ]]; then
-  ICON=notification-display-brightness-medium
+  ICON=medium
 elif [[ ${NEW_BRIGHTNESS} -lt $( brightness_range_icon .5 ) ]]; then
-  ICON=notification-display-brightness-low
+  ICON=low
 fi
 
-notify-send.sh --icon=${ICON} -t 5000 -R /tmp/brightness_notifyd_id \
-    "Brightness: ${NEW_BRIGHTNESS}${PERCENT}"
+notify-send.sh --app-name="Brightness Script" --icon=/usr/share/icons/Numix/48/notifications/notification-display-brightness-${ICON}.svg \
+    -t 5000 -R /tmp/brightness_notifyd_id "Brightness: ${NEW_BRIGHTNESS}${PERCENT}"
 
 rm ${SCRIPT_TEMP}
