@@ -4,11 +4,10 @@
 !.compton.conf
 !.export
 !.functions
+!.git-completion.bash
 !.gitconfig
 !.gitignore
 !.vimrc
-
-!git-completion.bash
 
 !bin/
 !bin/brightness
