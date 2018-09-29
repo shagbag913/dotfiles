@@ -18,6 +18,8 @@
 !.config/neofetch/config.conf
 !.config/i3
 !.config/i3/*
+!.config/dunst
+!.config/dunst/*
 
 !.vim/
 !.vim/**/*
