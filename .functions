@@ -1,0 +1,3 @@
+pacman_search() {
+  pacman -Q | grep ${1} | sed -n 's/ .*//p'
+}
