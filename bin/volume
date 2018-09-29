@@ -55,7 +55,7 @@ if [[ ${NEW_VOLUME} != "Muted" ]]; then
   NEW_VOLUME+=%
 fi
 
-if [[ ${MUTED} = true ]]; then
+if [[ ${MUTED} = true ]] && [[ ${NEW_VOLUME} != "Muted" ]]; then
   NEW_VOLUME+=" (muted)"
 fi
 
