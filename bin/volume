@@ -8,7 +8,7 @@ touch /tmp/volume_notif
 CURRENT_VOLUME=$(amixer -D pulse get Master|awk -F[][] '{print $2}' \
         |tr -d "\n"|sed -n 's/%.*//p')
 
-if [[ ${CURRENT_VOLUME} -ge 80 ]]; then
+if [[ ${CURRENT_VOLUME} -ge 80 ]] && [[ ${1} = -inc ]]; then
   VOLUME_STEPS="1"
 else
   VOLUME_STEPS="5"
