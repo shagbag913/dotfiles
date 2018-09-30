@@ -1,3 +1,5 @@
+cat ~/.cache/wal/sequences
+
 HOSTNAME=$(uname -n)
 
 ### COLORS ###
