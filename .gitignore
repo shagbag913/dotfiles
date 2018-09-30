@@ -20,6 +20,8 @@
 !.config/i3/*
 !.config/dunst
 !.config/dunst/*
+!.config/polybar
+!.config/polybar/*
 
 !.vim/
 !.vim/**/*
