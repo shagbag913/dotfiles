@@ -9,6 +9,17 @@
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
+set_from_resource $fg i3wm.color7
+set_from_resource $bg i3wm.color2
+
+client.focused $fg $fg $fg
+
+# Restore wal color scheme
+exec --no-startup-id wal -R
+
+# Start compton
+exec --no-startup-id compton
+
 set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
@@ -36,7 +47,7 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -fn Sans -nb black -nf green -sb grey -sf red"
+bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -fn Sans -nb "$bg" -nf "$fg" -sb "$fg" -sf "$bg""
 
 # change focus
 bindsym $mod+Left focus left
@@ -149,15 +160,12 @@ bindsym $mod+r mode "resize"
 # polybar
 exec_always --no-startup-id $HOME/.config/polybar/launch
 
-# Start compton when i3 config is loaded
-exec --no-startup-id compton
-
 # Disable window titlebars entirely
 for_window [class="^.*"] border pixel 2
 
 # Set inner/outer gaps
 gaps inner 15
-gaps outer 15
+gaps outer 2
 
 # Additionally, you can issue commands with the following syntax. This is useful to bind keys to changing the gap size.
 # gaps inner|outer current|all set|plus|minus <px>
