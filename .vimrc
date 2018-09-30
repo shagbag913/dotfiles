@@ -11,4 +11,12 @@ set fileencoding=utf-8
 set incsearch
 set hlsearch
 set lazyredraw
+
 execute pathogen#infect()
+
+call plug#begin()
+Plug 'dylanaraps/wal.vim'
+call plug#end()
+
+colorscheme wal
+
