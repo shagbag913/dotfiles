@@ -165,7 +165,7 @@ exec_always --no-startup-id xinput set-prop 9 286 1
 exec_always --no-startup-id xinput set-prop 9 296 1
 
 # start compton
-exec --no-startup-id compton
+exec_always --no-startup-id compton
 
 # start polybar
 exec_always --no-startup-id $HOME/.config/polybar/launch
