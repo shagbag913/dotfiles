@@ -9,7 +9,7 @@ black = ${xrdb:color0}
 [bar/top]
 monitor = "eDP-1"
 width = 100%
-height = 4%
+height = 3.5%
 fixed-center = true
 background = #3065269F
 foreground = ${colors.foreground}
@@ -19,10 +19,10 @@ separator = |
 module-margin-left = 2
 module-margin-right = 2
 
-font-0 = Sans:pixelsize=12;1
+font-0 = Sans:pixelsize=12;2
 font-1 = unifont:fontformat=truetype:size=10:antialias=false;0
-font-2 = "Wuncon Siji:pixelsize=10;1"
-font-3 = "Font Awesome 5 Free:style=Solid:pixelsize=10;1"
+font-2 = "Wuncon Siji:pixelsize=10;2"
+font-3 = "Font Awesome 5 Free:style=Solid:pixelsize=10;2"
 
 modules-left = i3
 modules-center = pulseaudio date backlight-acpi
@@ -50,18 +50,14 @@ label-indicator-background = ${colors.secondary}
 [module/i3]
 type = internal/i3
 index-sort = true
-strip-wsnumbers = true
-fuzzy-match = true
-wrapping-scroll = false
 label-mode-padding = 2
 label-mode-foreground = ${colors.foreground}
 label-mode-background = ${colors.background}
-format = <label-state> <label-mode>
+format =  <label-state> <label-mode>
 
 ; focused = Active workspace on focused monitor
 label-focused = %index%
 label-focused-background = ${colors.background}
-label-focused-underline = ${colors.foreground}
 label-focused-padding = "3"
 
 ; unfocused = Inactive workspace on any monitor
@@ -71,7 +67,6 @@ label-unfocused-padding = "3"
 ; visible = Active workspace on unfocused monitor
 label-visible = %index%
 label-visible-background = ${self.label-focused-background}
-label-visible-underline = ${self.label-focused-underline}
 label-visible-padding = ${self.label-focused-padding}
 
 ; urgent = Workspace with urgency hint set
