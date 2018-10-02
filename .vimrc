@@ -6,8 +6,6 @@ set shiftwidth=2
 set smarttab
 set autoindent
 set smartindent
-set encoding=utf-8
-set fileencoding=utf-8
 set incsearch
 set hlsearch
 set lazyredraw

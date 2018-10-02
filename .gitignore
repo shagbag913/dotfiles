@@ -7,11 +7,13 @@
 !.git-completion.bash
 !.gitconfig
 !.gitignore
+!.Xresources
 !.vimrc
 
 !bin/
 !bin/brightness
 !bin/volume
+!bin/colors
 
 !.config/
 !.config/neofetch/

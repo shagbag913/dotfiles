@@ -1,4 +1,4 @@
-cat ~/.cache/wal/sequences
+cat ${HOME}/.colors
 
 HOSTNAME=$(uname -n)
 

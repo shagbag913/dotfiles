@@ -1,18 +1,6 @@
-# Reload wal color schemes
-exec --no-startup-id wal -R
-
-# Import colors from Xsession
-set_from_resource $fg i3wm.color7
-set_from_resource $bg i3wm.color0
-set_from_resource $bg2 i3wm.color2
-
-# class                 border  backgr. text indicator child_border
-client.focused          $bg     $bg     $fg  $bg       $bg
-client.focused_inactive $bg     $bg     $fg  $bg       $bg
-client.unfocused        $bg     $bg     $fg  $bg       $bg
-client.urgent           $bg     $bg     $fg  $bg       $bg
-client.placeholder      $bg     $bg     $fg  $bg       $bg
-client.background       $bg
+set_from_resource $fg i3wm.foreground
+set_from_resource $bg i3wm.background
+set_from_resource $bg2 i3wm.background-transparent
 
 set $mod Mod4
 
@@ -169,3 +157,6 @@ exec_always --no-startup-id compton
 
 # start polybar
 exec_always --no-startup-id $HOME/.config/polybar/launch
+
+# reload Xresources
+exec_always --no-startup-id xrdb ${HOME}/.Xresources

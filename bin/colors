@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# generate terminal colors from .Xresources
+
+# 0 through 15
+for i in {0..15}; do
+  COLORS=$(sed -n "s/*color${i}:  //p" ${HOME}/.Xresources)
+  ASCII+=$(echo -e "\033]4;${i};${COLORS}\033\\")
+done
+
+# background
+BACKGROUND=$(sed -n 's/*background:              //p' ${HOME}/.Xresources)
+ASCII+=$(echo -e "\033]11;${BACKGROUND}\033\\")
+echo ${ASCII} > ${HOME}/.colors

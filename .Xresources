@@ -1,0 +1,68 @@
+*foreground:              #ff5b3d
+*background:              #220115
+*.foreground:             #ff5b3d
+*.background:             #220115
+*foreground-alt:          #be7b9a
+background-transparent:   #25220115
+emacs*foreground:         #ff5b3d
+emacs*background:         #220115
+URxvt*foreground:         #ff5b3d
+XTerm*foreground:         #ff5b3d
+UXTerm*foreground:        #ff5b3d
+URxvt*background:         [100]#220115
+XTerm*background:         #220115
+UXTerm*background:        #220115
+URxvt*cursorColor:        #ff5b3d
+XTerm*cursorColor:        #ff5b3d
+UXTerm*cursorColor:       #ff5b3d
+URxvt*borderColor:        [100]#220115
+
+! Colors 0-15.
+*.color0: #220115
+*color0:  #220115
+*.color1: #490466
+*color1:  #490466
+*.color2: #6C0970
+*color2:  #6C0970
+*.color3: #92093A
+*color3:  #92093A
+*.color4: #AF093B
+*color4:  #AF093B
+*.color5: #CF0E37
+*color5:  #CF0E37
+*.color6: #FF653D
+*color6:  #FF653D
+*.color7: #ff5b3d
+*color7:  #ff5b3d
+*.color8: #85566b
+*color8:  #85566b
+*.color9: #490466
+*color9:  #490466
+*.color10: #6C0970
+*color10:  #6C0970
+*.color11: #92093A
+*color11:  #92093A
+*.color12: #AF093B
+*color12:  #AF093B
+*.color13: #CF0E37
+*color13:  #CF0E37
+*.color14: #FF653D
+*color14:  #FF653D
+*.color15: #ff5b3d
+*color15:  #ff5b3d
+
+! Black color that will not be affected by bold highlighting.
+*.color66: #220115
+*color66:  #220115
+
+! Xclock colors.
+XClock*foreground: #ff5b3d
+XClock*background: #220115
+XClock*majorColor:  rgba:be/7b/9a/ff
+XClock*minorColor:  rgba:be/7b/9a/ff
+XClock*hourColor:   rgba:be/7b/9a/ff
+XClock*minuteColor: rgba:be/7b/9a/ff
+XClock*secondColor: rgba:be/7b/9a/ff
+
+! Set depth to make transparency work.
+URxvt*depth: 32
