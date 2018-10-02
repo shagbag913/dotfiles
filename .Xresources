@@ -1,20 +1,20 @@
-*foreground:              #ff5b3d
+*foreground:              #be7b9a
 *background:              #220115
-*.foreground:             #ff5b3d
+*.foreground:             #be7b9a
 *.background:             #220115
 *foreground-alt:          #be7b9a
 background-transparent:   #25220115
-emacs*foreground:         #ff5b3d
+emacs*foreground:         #be7b9a
 emacs*background:         #220115
-URxvt*foreground:         #ff5b3d
-XTerm*foreground:         #ff5b3d
-UXTerm*foreground:        #ff5b3d
+URxvt*foreground:         #be7b9a
+XTerm*foreground:         #be7b9a
+UXTerm*foreground:        #be7b9a
 URxvt*background:         [100]#220115
 XTerm*background:         #220115
 UXTerm*background:        #220115
-URxvt*cursorColor:        #ff5b3d
-XTerm*cursorColor:        #ff5b3d
-UXTerm*cursorColor:       #ff5b3d
+URxvt*cursorColor:        #be7b9a
+XTerm*cursorColor:        #be7b9a
+UXTerm*cursorColor:       #be7b9a
 URxvt*borderColor:        [100]#220115
 
 ! Colors 0-15.
@@ -32,8 +32,8 @@ URxvt*borderColor:        [100]#220115
 *color5:  #CF0E37
 *.color6: #FF653D
 *color6:  #FF653D
-*.color7: #ff5b3d
-*color7:  #ff5b3d
+*.color7: #be7b9a
+*color7:  #be7b9a
 *.color8: #85566b
 *color8:  #85566b
 *.color9: #490466
@@ -48,15 +48,15 @@ URxvt*borderColor:        [100]#220115
 *color13:  #CF0E37
 *.color14: #FF653D
 *color14:  #FF653D
-*.color15: #ff5b3d
-*color15:  #ff5b3d
+*.color15: #be7b9a
+*color15:  #be7b9a
 
 ! Black color that will not be affected by bold highlighting.
 *.color66: #220115
 *color66:  #220115
 
 ! Xclock colors.
-XClock*foreground: #ff5b3d
+XClock*foreground: #be7b9a
 XClock*background: #220115
 XClock*majorColor:  rgba:be/7b/9a/ff
 XClock*minorColor:  rgba:be/7b/9a/ff

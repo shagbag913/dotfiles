@@ -8,7 +8,15 @@ for i in {0..15}; do
   ASCII+=$(echo -e "\033]4;${i};${COLORS}\033\\")
 done
 
+# foreground
+FOREGROUND=$(sed -n 's/*foreground:              //p' ${HOME}/.Xresources)
+ASCII+=$(echo -e "\033]10;${FOREGROUND}\033\\")
+
 # background
 BACKGROUND=$(sed -n 's/*background:              //p' ${HOME}/.Xresources)
 ASCII+=$(echo -e "\033]11;${BACKGROUND}\033\\")
+
+CURSOR_FOREGROUNF=$(sed -n 's/*foreground-alt:          //p' ${HOME}/.Xresources)
+ASCII+=$(echo -e "\033]13;${CURSOR_BACKGROUND}\033\\")
+
 echo ${ASCII} > ${HOME}/.colors
