@@ -4,23 +4,40 @@
 
 # 0 through 15
 for i in {0..15}; do
-  COLORS=$(sed -n "s/*color${i}://p" ${HOME}/.Xresources | tr -d ' ')
+  if ! cat .Xresources | grep terminal-color${i}; then
+    COLOR=*color${i}:
+  else
+    COLOR=terminal-color${i}:
+  fi
+  COLORS=$(sed -n "s/${COLOR}//p" ${HOME}/.Xresources | tr -d ' ')
   if [[ -n ${COLORS} ]]; then
     ASCII+=$(echo -e "\033]4;${i};${COLORS}\033\\")
   fi
 done
 
 # foreground
-FOREGROUND=$(sed -n 's/*foreground://p' ${HOME}/.Xresources | tr -d ' ')
+
+if ! cat .Xresources | grep terminal-foreground &>/dev/null; then
+  COLOR=*foreground:
+else
+  COLOR=terminal-foreground:
+fi
+FOREGROUND=$(sed -n "s/${COLOR}//p" ${HOME}/.Xresources | tr -d ' ')
 if [[ -n ${FOREGROUND} ]]; then
   ASCII+=$(echo -e "\033]10;${FOREGROUND}\033\\")
 fi
 
 # background
-BACKGROUND=$(sed -n 's/*background://p' ${HOME}/.Xresources | tr -d ' ')
+if ! cat .Xresources | grep terminal-background &>/dev/null; then
+  COLOR=*background:
+else
+  COLOR=terminal-background:
+fi
+BACKGROUND=$(sed -n "s/${COLOR}//p" ${HOME}/.Xresources | tr -d ' ')
 if [[ -n ${BACKGROUND} ]]; then
   ASCII+=$(echo -e "\033]11;${BACKGROUND}\033\\")
 fi
+
 
 CURSOR_BACKGROUND=$(sed -n 's/*foreground-alt://p' ${HOME}/.Xresources | tr -d ' ')
 if [[ -n ${CURSOR_BACKGROUND} ]]; then
