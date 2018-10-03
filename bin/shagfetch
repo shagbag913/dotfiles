@@ -65,6 +65,7 @@ echo -e "╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═
 echo
 print_info OS "${OS}"
 print_info Kernel "${KERNEL}"
+print_info CPU "${CPU}"
 print_info Packages "${PACKAGES}"
 print_info Disk "Used ${DISK_USED} / ${DISK_SIZE}, Available ${DISK_AVAIL}"
 if [[ -d /sys/class/power_supply/BAT0 ]]; then
