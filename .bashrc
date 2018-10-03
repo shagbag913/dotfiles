@@ -27,10 +27,6 @@ PS1+="\[${CYAN}\] \W \[${REST}\]"
 # Dollah sign bcuz why not
 PS1+="\[${GREEN}\]$ \[${REST}\]"
 
-if ! neofetch 2> /dev/null; then
-  echo "Install neofetch you nub!"
-fi
-
 # Source outside files for further configuration
 source ${HOME}/.alias
 source ${HOME}/.export
@@ -42,3 +38,6 @@ if [[ ${HOSTNAME} = "ShagBox" ]]; then
     echo "  Please clone scripts from https://github.com/shagbag913/scripts!"
   fi
 fi
+
+# shagfetch
+${HOME}/bin/shagfetch

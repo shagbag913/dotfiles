@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# colors
+RED='\e[31m'
+LIGHT_RED='\e[91m'
+BLUE='\e[34m'
+LIGHT_BLUE='\e[94m'
+LIGHT_GREY='\e[37m'
+DEFAULT='\e[39m'
+
+UPTIME=$( cat /proc/uptime | sed -n 's/ .*//;s/\..*//p' )
+UPTIME_SEC=$(( UPTIME % 60 ))
+UPTIME_MIN=$(( UPTIME / 60 % 60 ))
+UPTIME_HOUR=$(( UPTIME / 60 / 60 % 24 ))
+UPTIME_DAY=$(( UPTIME / 60 / 60 / 24 ))
+
+if [[ ${UPTIME_DAY} != 0 ]]; then
+  UPTIME_TOTAL="${UPTIME_DAY}d "
+fi
+if [[ ${UPTIME_HOUR} != 0 ]]; then
+  UPTIME_TOTAL+="${UPTIME_HOUR}h "
+fi
+if [[ ${UPTIME_MIN} != 0 ]]; then
+  UPTIME_TOTAL+="${UPTIME_MIN}m "
+fi
+if [[ ${UPTIME_SEC} != 0 ]]; then
+  UPTIME_TOTAL+="${UPTIME_SEC}s "
+fi
+
+OS=$( cat /etc/os-release | sed -n 's/NAME=//;s/"//gp' | head -n 1 )
+
+BATTERY=$( cat /sys/class/power_supply/BAT0/capacity 2>/dev/null )
+
+DISK=$( df / | tail -n 1 | sed -n 's/ .*//p' )
+DISK_USED=$( df -h --output=used / | sed -n '1!p' | tr -d ' ' )
+DISK_SIZE=$( df -h --output=size / | sed -n '1!p' | tr -d ' ' )
+DISK_AVAIL=$( df -h --output=avail / | sed -n '1!p' | tr -d ' ' )
+DISK_MOUNT_PNT=$( df --output=target ${DISK} | tail -n 1 )
+
+KERNEL=$( uname -r )
+
+CPU=$( cat /proc/cpuinfo | grep "model name" | sed -n 's/.*: //p' | tail -n 1 )
+
+TOTAL_MEMORY=$(( $( cat /proc/meminfo | sed -n 's/MemTotal://p' | tr -d 'kB ' ) / 1024 ))
+AVAILABLE_MEMORY=$(( $( cat /proc/meminfo | sed -n 's/MemAvailable://p' | tr -d 'kB ' ) / 1024 ))
+USED_MEMORY=$(( TOTAL_MEMORY - AVAILABLE_MEMORY ))
+
+PACKAGES="$( pacman -Qq | wc -l ) (pacman)"
+
+print_info() {
+  INFO=${1}
+  OUTPUT=${2}
+  SPACES=$(( 30 - ${#INFO} ))
+  SPACES=$( printf ' %.0s' $( seq ${SPACES} ) )
+  echo -e "${LIGHT_RED}${INFO}:${SPACES}${LIGHT_GREY}${OUTPUT}${DEFAULT}"
+}
+
+echo
+echo -e "${LIGHT_RED}███████╗██╗  ██╗ █████╗  ██████╗ ██████╗  █████╗  ██████╗  █████╗  ██╗██████╗"
+echo "██╔════╝██║  ██║██╔══██╗██╔════╝ ██╔══██╗██╔══██╗██╔════╝ ██╔══██╗███║╚════██╗"
+echo "███████╗███████║███████║██║  ███╗██████╔╝███████║██║  ███╗╚██████║╚██║ █████╔╝"
+echo "╚════██║██╔══██║██╔══██║██║   ██║██╔══██╗██╔══██║██║   ██║ ╚═══██║ ██║ ╚═══██╗"
+echo "███████║██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║╚██████╔╝ █████╔╝ ██║██████╔╝"
+echo -e "╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚════╝  ╚═╝╚═════╝${DEFAULT}"
+echo
+print_info OS "${OS}"
+print_info Kernel "${KERNEL}"
+print_info Packages "${PACKAGES}"
+print_info Disk "Used ${DISK_USED} / ${DISK_SIZE}, Available ${DISK_AVAIL}"
+print_info Battery "${BATTERY}% remaining"
+print_info Uptime "${UPTIME_TOTAL}"
+print_info Memory "${USED_MEMORY}MiB / ${TOTAL_MEMORY}MiB"
+echo
