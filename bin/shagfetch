@@ -8,6 +8,8 @@ LIGHT_BLUE='\e[94m'
 LIGHT_GREY='\e[37m'
 DEFAULT='\e[39m'
 
+TIME=$( date +%l:%M%p | tr -d ' ' )
+
 UPTIME=$( cat /proc/uptime | sed -n 's/ .*//;s/\..*//p' )
 UPTIME_SEC=$(( UPTIME % 60 ))
 UPTIME_MIN=$(( UPTIME / 60 % 60 ))
@@ -41,6 +43,11 @@ KERNEL=$( uname -r )
 
 CPU=$( cat /proc/cpuinfo | grep "model name" | sed -n 's/.*: //p' | tail -n 1 )
 
+GPU=$( lspci | sed -ne '/VGA/s/.*: //p' | sed -n 's/ (.*//p' )
+if echo "${GPU}" | grep "Integrated Graphics Controller" &>/dev/null; then
+  GPU=$( echo "${GPU}" | sed -n 's/ Integrated Graphics Controller//p' )
+fi
+
 TOTAL_MEMORY=$(( $( cat /proc/meminfo | sed -n 's/MemTotal://p' | tr -d 'kB ' ) / 1024 ))
 AVAILABLE_MEMORY=$(( $( cat /proc/meminfo | sed -n 's/MemAvailable://p' | tr -d 'kB ' ) / 1024 ))
 USED_MEMORY=$(( TOTAL_MEMORY - AVAILABLE_MEMORY ))
@@ -63,9 +70,11 @@ echo "╚════██║██╔══██║██╔══██║�
 echo "███████║██║  ██║██║  ██║╚██████╔╝██████╔╝██║  ██║╚██████╔╝ █████╔╝ ██║██████╔╝"
 echo -e "╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚════╝  ╚═╝╚═════╝${DEFAULT}"
 echo
+print_info Time "${TIME}"
 print_info OS "${OS}"
 print_info Kernel "${KERNEL}"
 print_info CPU "${CPU}"
+print_info GPU "${GPU}"
 print_info Packages "${PACKAGES}"
 print_info Disk "Used ${DISK_USED} / ${DISK_SIZE}, Available ${DISK_AVAIL}"
 if [[ -d /sys/class/power_supply/BAT0 ]]; then
