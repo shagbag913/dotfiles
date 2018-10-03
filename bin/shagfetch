@@ -67,7 +67,9 @@ print_info OS "${OS}"
 print_info Kernel "${KERNEL}"
 print_info Packages "${PACKAGES}"
 print_info Disk "Used ${DISK_USED} / ${DISK_SIZE}, Available ${DISK_AVAIL}"
-print_info Battery "${BATTERY}% remaining"
+if [[ -d /sys/class/power_supply/BAT0 ]]; then
+  print_info Battery "${BATTERY}% remaining"
+fi
 print_info Uptime "${UPTIME_TOTAL}"
 print_info Memory "${USED_MEMORY}MiB / ${TOTAL_MEMORY}MiB"
 echo
