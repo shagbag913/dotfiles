@@ -1,6 +1,17 @@
+# start compton
+exec_always --no-startup-id compton
+
+# reload Xresources
+exec_always --no-startup-id xrdb ${HOME}/.Xresources
+
+# start polybar
+exec_always --no-startup-id $HOME/.config/polybar/launch
+
+# restore wallpaper
+exec --no-startup-id nitrogen --restore
+
 set_from_resource $fg i3wm.foreground
 set_from_resource $bg i3wm.background
-set_from_resource $bg2 i3wm.background-transparent
 
 set $mod Mod4
 
@@ -151,12 +162,3 @@ bindsym XF86AudioMute exec --no-startup-id /home/shagbag913/bin/volume -mute
 exec_always --no-startup-id xinput set-prop 9 278 1
 exec_always --no-startup-id xinput set-prop 9 286 1
 exec_always --no-startup-id xinput set-prop 9 296 1
-
-# start compton
-exec_always --no-startup-id compton
-
-# start polybar
-exec_always --no-startup-id $HOME/.config/polybar/launch
-
-# reload Xresources
-exec_always --no-startup-id xrdb ${HOME}/.Xresources
