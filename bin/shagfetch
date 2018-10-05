@@ -36,6 +36,7 @@ OS=$( cat /etc/os-release | sed -n 's/NAME=//;s/"//gp' | head -n 1 )
 
 # Battery capacity
 BATTERY=$( cat /sys/class/power_supply/BAT0/capacity 2>/dev/null )
+BATTERY_STATUS=$( cat /sys/class/power_supply/BAT0/status )
 
 # Disk info
 DISK_MNT_PNT="/" #TODO: support multiple drives
@@ -85,7 +86,7 @@ print_info GPU "${GPU}"
 print_info Packages "${PACKAGES}"
 print_info "Disk(${DISK_MNT_PNT})" "Used ${DISK_USED} / ${DISK_SIZE}, Available ${DISK_AVAIL}"
 if [[ -d /sys/class/power_supply/BAT0 ]]; then
-  print_info Battery "${BATTERY}% remaining"
+  print_info Battery "${BATTERY}% (${BATTERY_STATUS})"
 fi
 print_info Uptime "${UPTIME_TOTAL}"
 print_info Memory "${USED_MEMORY}MiB / ${TOTAL_MEMORY}MiB"
