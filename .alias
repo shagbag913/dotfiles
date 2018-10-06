@@ -1,7 +1,10 @@
-# only alias these if tmux is installed;
-if command -v tmux &>/dev/null; then
+# if HOSTNAME != ShagBox, then ssh THEN tmux
+if [[ ${HOSTNAME} = "ShagBox" ]]; then
   alias tm='tmux -u'
   alias tma='tmux -u attach'
+else
+  alias tm='ssh -t $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf) "tmux -u"'
+  alias tma='ssh -t $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf) "tmux -u attach"'
 fi
 
 # only alias these if wg-quick is installed;
@@ -12,7 +15,6 @@ fi
 
 # only alias these if .sshconf is found;
 if [[ -f ${HOME}/.sshconf ]]; then
-  alias sshbox="ssh $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf)"
   alias sftpbox="sftp -oPort=$(sed -n 2p ${HOME}/.sshconf) $(sed -n 1p ${HOME}/.sshconf)"
 fi
 
