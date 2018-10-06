@@ -8,8 +8,8 @@ fi
 touch ${SCRIPT_TEMP}
 
 FADE=true
-BRIGHTNESS_STEPS="15"
-MINIMUM_BRIGHTNESS="5"
+BRIGHTNESS_STEPS="10"
+MINIMUM_BRIGHTNESS="3"
 
 CURRENT_BRIGHTNESS=$( light )
 CURRENT_BRIGHTNESS=$( printf "%.0f\n" ${CURRENT_BRIGHTNESS} )
@@ -49,7 +49,7 @@ NEW_BRIGHTNESS=$( printf "%.0f\n" ${NEW_BRIGHTNESS} )
 if [[ ${NEW_BRIGHTNESS} = "100" ]]; then
   NEW_BRIGHTNESS="Max"
 elif [[ ${NEW_BRIGHTNESS} = ${MINIMUM_BRIGHTNESS} ]]; then
-  NEW_BRIGHTNESS="Min"
+  NEW_BRIGHTNESS="Min (${MINIMUM_BRIGHTNESS})"
 else
   PERCENT="%"
 fi
@@ -63,7 +63,7 @@ brightness_range_icon() {
 }
 if [[ ${NEW_BRIGHTNESS} = "Max" ]]; then
   ICON=full
-elif [[ ${NEW_BRIGHTNESS} = "Min" ]]; then
+elif [[ ${NEW_BRIGHTNESS} =~ "Min" ]]; then
   ICON=off
 elif [[ ${NEW_BRIGHTNESS} -ge $( brightness_range_icon .5 ) ]]; then
   ICON=medium
