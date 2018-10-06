@@ -35,8 +35,10 @@ fi
 OS=$( cat /etc/os-release | sed -n 's/NAME=//;s/"//gp' | head -n 1 )
 
 # Battery capacity
-BATTERY=$( cat /sys/class/power_supply/BAT0/capacity 2>/dev/null )
-BATTERY_STATUS=$( cat /sys/class/power_supply/BAT0/status )
+if [[ -d /sys/class/power_supply/BAT0 ]]; then
+  BATTERY=$( cat /sys/class/power_supply/BAT0/capacity )
+  BATTERY_STATUS=$( cat /sys/class/power_supply/BAT0/status )
+fi
 
 # Disk info
 DISK_MNT_PNT="/" #TODO: support multiple drives
