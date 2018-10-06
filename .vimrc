@@ -14,6 +14,8 @@ set incsearch
 set hlsearch
 set lazyredraw
 
+set pastetoggle=<F5>
+
 execute pathogen#infect()
 
 call plug#begin()
