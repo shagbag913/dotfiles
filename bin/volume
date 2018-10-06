@@ -1,18 +1,13 @@
 #!/usr/bin/env bash
-set -x
-if [[ -f /tmp/volume_notif ]]; then
+
+LOCK="/tmp/volume_notify.lock"
+
+if [[ -f ${LOCK} ]]; then
     exit
 fi
-touch /tmp/volume_notif
+touch ${LOCK}
 
-CURRENT_VOLUME=$(amixer -D pulse get Master|awk -F[][] '{print $2}' \
-                |tr -d "\n"|sed -n 's/%.*//p')
-
-if [[ ${CURRENT_VOLUME} -ge 80 ]] && [[ ${1} = -inc ]]; then
-    VOLUME_STEPS="1"
-else
-    VOLUME_STEPS="5"
-fi
+VOLUME_STEPS="5"
 
 set_volume() {
     if [[ ${1} = -mute ]]; then
@@ -37,11 +32,7 @@ elif [[ ${1} = -dec ]]; then
     set_volume -
 fi
 
-if amixer -D pulse get Master | grep '\[off\]'; then
-    MUTED=true
-fi
-
-if [[ -n ${MUTED} ]] || [[ ${NEW_VOLUME} = 0 ]]; then
+if [[ ${NEW_VOLUME} = "Muted" ]] || [[ ${NEW_VOLUME} = 0 ]]; then
     ICON=notification-audio-volume-muted.svg
 elif [[ ${NEW_VOLUME} -le 33 ]]; then
     ICON=notification-audio-volume-low.svg
@@ -60,6 +51,6 @@ if [[ ${MUTED} = true ]] && [[ ${NEW_VOLUME} != "Muted" ]]; then
 fi
 
 notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/${ICON} \
-                --app-name="Volume Script" -R /tmp/volume_libnotify "Volume: ${NEW_VOLUME}"
+                --app-name="Volume Script" -R /tmp/volume_notify "Volume: ${NEW_VOLUME}"
 
-rm /tmp/volume_notif
+rm ${LOCK}
