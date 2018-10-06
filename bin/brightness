@@ -3,7 +3,7 @@
 # Temp file to test whether the script is running or not
 SCRIPT_TEMP="/tmp/brightness_lock"
 if [[ -f ${SCRIPT_TEMP} ]]; then
-  exit 0
+    exit 0
 fi
 touch ${SCRIPT_TEMP}
 
@@ -15,31 +15,31 @@ CURRENT_BRIGHTNESS=$( light )
 CURRENT_BRIGHTNESS=$( printf "%.0f\n" ${CURRENT_BRIGHTNESS} )
 
 set_brightness() {
-  if [[ ${2} = "+" ]]; then
-    LIGHT_CMD="-A"
-  elif [[ ${2} = "-" ]]; then
-    LIGHT_CMD="-U"
-  fi
-  if [[ ${FADE} = true ]]; then
-    for steps in $(seq ${1}); do
-      light -S $(( CURRENT_BRIGHTNESS ${2} 1 ))
-      sleep .004
-      CURRENT_BRIGHTNESS=$( light )
-      CURRENT_BRIGHTNESS=$(printf "%.0f\n" ${CURRENT_BRIGHTNESS})
-    done
-  else
-    light ${LIGHT_CMD} ${1}
-  fi
+    if [[ ${2} = "+" ]]; then
+        LIGHT_CMD="-A"
+    elif [[ ${2} = "-" ]]; then
+        LIGHT_CMD="-U"
+    fi
+    if [[ ${FADE} = true ]]; then
+        for steps in $(seq ${1}); do
+            light -S $(( CURRENT_BRIGHTNESS ${2} 1 ))
+            sleep .004
+            CURRENT_BRIGHTNESS=$( light )
+            CURRENT_BRIGHTNESS=$(printf "%.0f\n" ${CURRENT_BRIGHTNESS})
+        done
+    else
+        light ${LIGHT_CMD} ${1}
+    fi
 }
 
 if [[ ${1} = "-inc" ]]; then
-  set_brightness ${BRIGHTNESS_STEPS} +
+    set_brightness ${BRIGHTNESS_STEPS} +
 elif [[ ${1} = "-dec" ]] && [[ ${CURRENT_BRIGHTNESS} -gt $(( MINIMUM_BRIGHTNESS + BRIGHTNESS_STEPS )) ]]; then
-  set_brightness ${BRIGHTNESS_STEPS} -
+    set_brightness ${BRIGHTNESS_STEPS} -
 elif [[ -n ${1} ]]; then
-  if [[ ${CURRENT_BRIGHTNESS} -gt ${MINIMUM_BRIGHTNESS} ]]; then
-    set_brightness $(( CURRENT_BRIGHTNESS - MINIMUM_BRIGHTNESS )) -
-  fi
+    if [[ ${CURRENT_BRIGHTNESS} -gt ${MINIMUM_BRIGHTNESS} ]]; then
+        set_brightness $(( CURRENT_BRIGHTNESS - MINIMUM_BRIGHTNESS )) -
+    fi
 fi
 
 
@@ -47,11 +47,11 @@ NEW_BRIGHTNESS=$( light )
 NEW_BRIGHTNESS=$( printf "%.0f\n" ${NEW_BRIGHTNESS} )
 
 if [[ ${NEW_BRIGHTNESS} = "100" ]]; then
-  NEW_BRIGHTNESS="Max"
+    NEW_BRIGHTNESS="Max"
 elif [[ ${NEW_BRIGHTNESS} = ${MINIMUM_BRIGHTNESS} ]]; then
-  NEW_BRIGHTNESS="Min (${MINIMUM_BRIGHTNESS})"
+    NEW_BRIGHTNESS="Min (${MINIMUM_BRIGHTNESS})"
 else
-  PERCENT="%"
+    PERCENT="%"
 fi
 
 # determine which icon to use based on the brightness
@@ -59,19 +59,19 @@ BRIGHTNESS_RANGE=$(( 100 - MINIMUM_BRIGHTNESS ))
 BRIGHTNESS_RANGE=$(( 100 - BRIGHTNESS_RANGE + 100 ))
 
 brightness_range_icon() {
-  printf "%.0f\n" $( echo "$BRIGHTNESS_RANGE * ${1}" | bc -l )
+    printf "%.0f\n" $( echo "$BRIGHTNESS_RANGE * ${1}" | bc -l )
 }
 if [[ ${NEW_BRIGHTNESS} = "Max" ]]; then
-  ICON=full
+    ICON=full
 elif [[ ${NEW_BRIGHTNESS} =~ "Min" ]]; then
-  ICON=off
+    ICON=off
 elif [[ ${NEW_BRIGHTNESS} -ge $( brightness_range_icon .5 ) ]]; then
-  ICON=medium
+    ICON=medium
 elif [[ ${NEW_BRIGHTNESS} -lt $( brightness_range_icon .5 ) ]]; then
-  ICON=low
+    ICON=low
 fi
 
 notify-send.sh --app-name="Brightness Script" --icon=/usr/share/icons/Numix/48/notifications/notification-display-brightness-${ICON}.svg \
-    -R /tmp/brightness_notifyd_id "Brightness: ${NEW_BRIGHTNESS}${PERCENT}"
+        -R /tmp/brightness_notifyd_id "Brightness: ${NEW_BRIGHTNESS}${PERCENT}"
 
 rm ${SCRIPT_TEMP}
