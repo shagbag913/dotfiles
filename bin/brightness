@@ -23,7 +23,7 @@ set_brightness() {
     if [[ ${FADE} = true ]]; then
         for steps in $(seq ${1}); do
             light -S $(( CURRENT_BRIGHTNESS ${2} 1 ))
-            sleep .004
+            sleep .002
             CURRENT_BRIGHTNESS=$( light )
             CURRENT_BRIGHTNESS=$(printf "%.0f\n" ${CURRENT_BRIGHTNESS})
         done
