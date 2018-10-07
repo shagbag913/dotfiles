@@ -5,28 +5,34 @@ background-transparent = ${xrdb:background-transparent}
 foreground-alt = ${xrdb:foreground-alt}
 
 [bar/top]
-monitor = "eDP-1"
 width = 100%
-height = 3.5%
+height = 3%
+
+border-top-size = 15
+border-right-size = 25
+border-left-size = 25
+
 fixed-center = true
+
 background = ${colors.background-transparent}
 foreground = ${colors.foreground}
+
 padding-right = 2
+padding-left = 2
+
 separator = |
+
 module-margin-left = 2
 module-margin-right = 2
 
 font-0 = Sans:pixelsize=12;2
-font-1 = unifont:fontformat=truetype:size=10:antialias=false;0
-font-2 = "Wuncon Siji:pixelsize=10;2"
-font-3 = "Font Awesome 5 Free:style=Solid:pixelsize=10;2"
+font-1 = Wuncon Siji:pixelsize=12;2
+font-2 = Font Awesome 5 Free:style=Solid:pixelsize=12;2
+font-3 = Font Awesome 5 Brands:pixelsize=12;2
 
 modules-left = i3
 modules-center = pulseaudio date backlight-acpi
-modules-right = cpu temperature memory wlan eth battery
-
-tray-position = right
-tray-padding = 2
+modules-right = cpu memory wlan eth battery
 
 [module/xwindow]
 type = internal/xwindow
@@ -34,45 +40,41 @@ label = %title:0:30:...%
 
 [module/i3]
 type = internal/i3
-index-sort = true
 label-mode-padding = 2
-label-mode-foreground = ${colors.foreground}
-label-mode-background = ${colors.background}
+index-sort = true
 format =  <label-state> <label-mode>
 
-; focused = Active workspace on focused monitor
-label-focused = %index%
+ws-icon-0 = 1: term;
+ws-icon-1 = 2: www;
+
+label-focused = %index%: %icon%
 label-focused-background = ${colors.background}
-label-focused-padding = "3"
+label-focused-padding = 3
 
-; unfocused = Inactive workspace on any monitor
-label-unfocused = %index%
-label-unfocused-padding = "3"
+label-unfocused = %index%: %icon%
+label-unfocused-padding = 3
 
-; visible = Active workspace on unfocused monitor
-label-visible = %index%
-label-visible-background = ${self.label-focused-background}
-label-visible-padding = ${self.label-focused-padding}
+label-visible = %index%: %icon%
+label-visible-padding = 3
 
-; urgent = Workspace with urgency hint set
-label-urgent = %index%
+label-urgent = %index%: %icon%
+label-urgent-padding = 3
 
-[module/xbacklight]
-type = internal/xbacklight
-format = <label>
-label =  %percentage%%
+label-separator = |
+label-separator-padding = 0
 
 [module/backlight-acpi]
-inherit = module/xbacklight
 type = internal/backlight
 card = intel_backlight
+format = <label>
+label =  %percentage%%
 
 [module/cpu]
 type = internal/cpu
 interval = 2
-format-prefix = " "
+format-prefix = " "
 format-prefix-foreground = ${colors.foreground}
-label = %percentage:2%%
+label = %percentage%%
 
 [module/memory]
 type = internal/memory
@@ -86,7 +88,6 @@ interval = 3.0
 
 format-connected = <label-connected>
 label-connected =  %essid%
-
 format-disconnected = <label-disconnected>
 label-disconnected =   Disconnected
 
@@ -95,7 +96,6 @@ ramp-signal-1 = 
 ramp-signal-2 = 
 ramp-signal-3 = 
 ramp-signal-4 = 
-ramp-signal-foreground = ${colors.foreground}
 
 [module/eth]
 type = internal/network
@@ -112,7 +112,6 @@ format-disconnected =
 type = internal/date
 interval = 5
 time = "%l:%M %p"
-format-prefix-foreground = ${colors.foreground}
 label = "%time%"
 
 [module/pulseaudio]
@@ -120,8 +119,6 @@ type = internal/pulseaudio
 format-volume = <ramp-volume> <label-volume>
 
 label-volume = %percentage%%
-label-volume-foreground = ${colors.foreground}
-
 label-muted =  %percentage%%
 label-muted-foreground = ${colors.foreground-alt}
 
@@ -137,42 +134,34 @@ full-at = 98
 
 format-charging = <animation-charging> <label-charging>
 format-discharging = <ramp-capacity> <label-discharging>
-
 format-full = "Full "
-format-full-prefix-foreground = ${colors.foreground}
 
 ramp-capacity-0 = 
 ramp-capacity-1 = 
 ramp-capacity-2 = 
 ramp-capacity-3 = 
 ramp-capacity-4 = 
-ramp-capacity-foreground = ${colors.foreground}
 
 animation-charging-0 = ${self.ramp-capacity-0}
 animation-charging-1 = ${self.ramp-capacity-1}
 animation-charging-2 = ${self.ramp-capacity-2}
 animation-charging-3 = ${self.ramp-capacity-3}
 animation-charging-4 = ${self.ramp-capacity-4}
-animation-charging-foreground = ${colors.foreground}
 animation-charging-framerate = 500
 
 [module/temperature]
 type = internal/temperature
 thermal-zone = 0
-warn-temperature = 60
+warn-temperature = 70
 hwmon-path = /sys/devices/platform/coretemp.0/hwmon/hwmon2/temp2_input
 
 format = <ramp> <label>
-format-warn = <ramp> <label-warn>
 
-label = %temperature-c%
-label-warn = %temperature-c%
-label-warn-foreground = ${colors.foreground}
+label-warn-foreground = ${colors.foreground-alt}
 
 ramp-0 = 
 ramp-1 = 
 ramp-2 = 
-ramp-foreground = ${colors.foreground}
 
 [global/wm]
 margin-top = 5
