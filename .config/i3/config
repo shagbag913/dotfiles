@@ -118,7 +118,7 @@ set $ws10 "10"
 
 assign [class="Xfce"] $ws1
 assign [class="Chromium"] $ws2
-assign [class="gimp"] $ws3
+assign [class="(?i)gimp"] $ws3
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
