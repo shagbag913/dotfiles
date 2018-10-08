@@ -2,6 +2,22 @@
 font pango:Sans 12
 
 ########################
+##     Xresources     ##
+########################
+set_from_resource $fg i3wm.foreground
+set_from_resource $bg i3wm.background
+
+
+###########################
+##     BORDER COLORS     ##
+###########################
+# class                 border  backgr. text    indicator
+client.focused          $bg     $fg     $bg     $bg
+client.focused_inactive $bg     $fg     $bg     $bg
+client.unfocused        $bg     $bg     $bg     $bg
+client.urgent           $bg     $bg     $bg     $bg
+
+########################
 ##      AUTOSTART     ##
 ########################
 exec_always --no-startup-id compton
@@ -11,12 +27,6 @@ exec_always --no-startup-id xinput set-prop 9 278 1
 exec_always --no-startup-id xinput set-prop 9 286 1
 exec_always --no-startup-id xinput set-prop 9 296 1
 exec_always --no-startup-id xrdb ${HOME}/.Xresources
-
-########################
-##     Xresources     ##
-########################
-set_from_resource $fg i3wm.foreground
-set_from_resource $bg i3wm.background
 
 ################################
 ##     KEYBOARD SHORTCUTS     ##
@@ -95,8 +105,8 @@ bindsym XF86AudioMute exec --no-startup-id /home/shagbag913/bin/volume -mute
 ########################
 ##     WORKSPACES     ##
 ########################
-set $ws1 "1: term"
-set $ws2 "2: www"
+set $ws1 "1"
+set $ws2 "2"
 set $ws3 "3"
 set $ws4 "4"
 set $ws5 "5"
@@ -108,6 +118,7 @@ set $ws10 "10"
 
 assign [class="Xfce"] $ws1
 assign [class="Chromium"] $ws2
+assign [class="gimp"] $ws3
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -139,8 +150,8 @@ bindsym $mod+Shift+0 move container to workspace $ws10
 # Disable window titlebars entirely
 for_window [class="^.*"] border pixel 2
 
-gaps inner 20
-gaps outer 5
+gaps inner 30
+gaps outer 10
 
 # Smart borders (draw borders around container only if it is not the only container on this workspace) 
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)

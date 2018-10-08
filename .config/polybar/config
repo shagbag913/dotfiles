@@ -44,8 +44,9 @@ label-mode-padding = 2
 index-sort = true
 format =  <label-state> <label-mode>
 
-ws-icon-0 = 1: term;
-ws-icon-1 = 2: www;
+ws-icon-0 = 1;
+ws-icon-1 = 2;
+ws-icon-2 = 3;
 
 label-focused = %index%: %icon%
 label-focused-background = ${colors.background}
@@ -72,7 +73,7 @@ label =  %percentage%%
 [module/cpu]
 type = internal/cpu
 interval = 2
-format-prefix = " "
+format-prefix = " "
 format-prefix-foreground = ${colors.foreground}
 label = %percentage%%
 
@@ -159,9 +160,10 @@ format = <ramp> <label>
 
 label-warn-foreground = ${colors.foreground-alt}
 
-ramp-0 = 
-ramp-1 = 
-ramp-2 = 
+ramp-0 = 
+ramp-1 = 
+ramp-2 = 
+ramp-3 = 
 
 [global/wm]
 margin-top = 5
