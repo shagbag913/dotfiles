@@ -4,25 +4,25 @@
 
 # 0 through 15
 for i in {0..15}; do
-    COLORS=$(sed -n "s/*color${i}://p" ${HOME}/.Xresources|tr -d ' ')
+    COLORS=$(sed -n "s/*color${i}:[[:space:]]//p" ${HOME}/.Xresources)
     if [[ -n ${COLORS} ]]; then
         ASCII+=$(echo -e "\033]4;${i};${COLORS}\033\\")
     fi
 done
 
 # foreground
-FOREGROUND=$(sed -n 's/*foreground://p' ${HOME}/.Xresources|tr -d ' ')
+FOREGROUND=$(sed -n 's/*foreground:[[:space:]]//p' ${HOME}/.Xresources)
 if [[ -n ${FOREGROUND} ]]; then
     ASCII+=$(echo -e "\033]10;${FOREGROUND}\033\\")
 fi
 
 # background
-BACKGROUND=$(sed -n 's/*background://p' ${HOME}/.Xresources|tr -d ' ')
+BACKGROUND=$(sed -n 's/*background:[[:space:]]//p' ${HOME}/.Xresources)
 if [[ -n ${BACKGROUND} ]]; then
     ASCII+=$(echo -e "\033]11;${BACKGROUND}\033\\")
 fi
 
-CURSOR_BACKGROUND=$(sed -n 's/*foreground-alt://p' ${HOME}/.Xresources|tr -d ' ')
+CURSOR_BACKGROUND=$(sed -n 's/*foreground-alt:[[:space:]]//p' ${HOME}/.Xresources)
 if [[ -n ${CURSOR_BACKGROUND} ]]; then
     ASCII+=$(echo -e "\033]13;${CURSOR_BACKGROUND}\033\\")
 fi
@@ -31,10 +31,14 @@ echo ${ASCII}|tee ${HOME}/.colors
 
 DUNSTRC=${HOME}/.config/dunst/dunstrc
 
-[[ ! -f ${DUNSTRC} ]] && exit 0
+NEW_DUNSTRC=$(cat ${DUNSTRC}|sed 's/background =.*/background = "'"${BACKGROUND}"'"/g')
+NEW_DUNSTRC=$(echo "${NEW_DUNSTRC}"|sed 's/foreground =.*/foreground = "'"${FOREGROUND}"'"/g')
+NEW_DUNSTRC=$(echo "${NEW_DUNSTRC}"|sed 's/frame_color =.*/frame_color = "'"${FOREGROUND}"'"/g')
 
-NEW_DUNSTRC=$( cat ${DUNSTRC}|sed 's/background =.*/background = "'"${BACKGROUND}"'"/g' )
-NEW_DUNSTRC=$( echo "${NEW_DUNSTRC}"|sed 's/foreground =.*/foreground = "'"${FOREGROUND}"'"/g' )
-NEW_DUNSTRC=$( echo "${NEW_DUNSTRC}"|sed 's/frame_color =.*/frame_color = "'"${FOREGROUND}"'"/g' )
-printf '%s\n' "${NEW_DUNSTRC}" > ${DUNSTRC}
-killall dunst
+if [[ -n "${NEW_DUNSTRC}" ]]; then
+    printf '%s\n' "${NEW_DUNSTRC}" > ${DUNSTRC}
+    killall dunst &>/dev/null
+else
+    echo "Couldn't generate dunstrc.. exiting"
+    exit 1
+fi
