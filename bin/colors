@@ -28,3 +28,13 @@ if [[ -n ${CURSOR_BACKGROUND} ]]; then
 fi
 
 echo ${ASCII}|tee ${HOME}/.colors
+
+DUNSTRC=${HOME}/.config/dunst/dunstrc
+
+[[ ! -f ${DUNSTRC} ]] && exit 0
+
+NEW_DUNSTRC=$( cat ${DUNSTRC}|sed 's/background =.*/background = "'"${BACKGROUND}"'"/g' )
+NEW_DUNSTRC=$( echo "${NEW_DUNSTRC}"|sed 's/foreground =.*/foreground = "'"${FOREGROUND}"'"/g' )
+NEW_DUNSTRC=$( echo "${NEW_DUNSTRC}"|sed 's/frame_color =.*/frame_color = "'"${FOREGROUND}"'"/g' )
+printf '%s\n' "${NEW_DUNSTRC}" > ${DUNSTRC}
+killall dunst

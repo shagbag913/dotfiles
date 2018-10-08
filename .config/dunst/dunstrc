@@ -7,8 +7,8 @@
     separator_height = 2
     padding = 8
     horizontal_padding = 8
-    frame_width = 0
-    frame_color = "#000000"
+    frame_width = 3
+    frame_color = "#a0c4d3"
     separator_color = frame
     sort = yes
     idle_threshold = 120
@@ -75,19 +75,19 @@
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#000000"
-    foreground = "#888888"
+    background = "#04122c"
+    foreground = "#a0c4d3"
     timeout = 10
 
 [urgency_normal]
-    background = "#000000"
-    foreground = "#ffffff"
+    background = "#04122c"
+    foreground = "#a0c4d3"
     timeout = 10
 
 [urgency_critical]
-    background = "#900000"
-    foreground = "#ffffff"
-    frame_color = "#ff0000"
+    background = "#04122c"
+    foreground = "#a0c4d3"
+    frame_color = "#a0c4d3"
     timeout = 0
 
 # Every section that isn't one of the above is interpreted as a rules to
