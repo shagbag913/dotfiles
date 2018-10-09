@@ -1,4 +1,21 @@
-*background: #04122c
-*background-transparent: #4404122c
-*foreground: #a0c4d3
+*background: #04142D
+*background-alt: #024067
+*foreground: #a5d1da
 *foreground-alt: #e5d9bf
+
+*color9: #ff666c
+*color6: #3ebcca
+*color1: #db5e62
+
+
+#   Normal      Bright
+#   --------    -------
+#   0 Black      8 Black
+#   1 Red        9 Red
+#   2 Yellow    10 Yellow
+#   3 Green     11 Green
+#   4 Blue      12 Blue
+#   5 Magenta   13 Magenta
+#   6 Cyan      14 Cyan
+#   7 White     15 White
+# https://stackoverflow.com/a/29448562
