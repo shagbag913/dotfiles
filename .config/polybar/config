@@ -25,10 +25,9 @@ separator = |
 module-margin-left = 2
 module-margin-right = 2
 
-font-0 = Gohu GohuFont:style=Bold:pixelsize=18;2
-font-1 = Wuncon Siji:pixelsize=12;2
-font-2 = Font Awesome 5 Free:style=Solid:pixelsize=12;2
-font-3 = Font Awesome 5 Brands:pixelsize=12;2
+font-0 = Noto Sans Mono:style=Bold:pixelsize=12;2
+font-1 = Font Awesome 5 Free:style=Solid:pixelsize=12;2
+font-2 = Font Awesome 5 Brands:pixelsize=12;2
 
 modules-left = i3
 modules-center = pulseaudio date backlight-acpi
@@ -50,16 +49,16 @@ ws-icon-2 = 3;
 
 label-focused = %index%: %icon%
 label-focused-background = ${colors.background-alt}
-label-focused-padding = 3
+label-focused-padding = 2
 
 label-unfocused = %index%: %icon%
-label-unfocused-padding = 3
+label-unfocused-padding = 2
 
 label-visible = %index%: %icon%
-label-visible-padding = 3
+label-visible-padding = 2
 
 label-urgent = %index%: %icon%
-label-urgent-padding = 3
+label-urgent-padding = 2
 
 label-separator = |
 label-separator-padding = 0
