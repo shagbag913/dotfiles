@@ -9,27 +9,15 @@ touch ${LOCK}
 
 VOLUME_STEPS="5"
 
-set_volume() {
-    if [[ ${1} = -mute ]]; then
-        amixer -D pulse sset Master toggle
-        if amixer -D pulse get Master | grep off; then
-            NEW_VOLUME="Muted"
-        else
-            NEW_VOLUME=$(amixer -D pulse get Master|awk -F[][] '{print $2}'\
-                            |tr -d "\n"|sed -n 's/%.*//p')
-        fi
-    else
-        NEW_VOLUME=$(amixer -D pulse sset Master ${VOLUME_STEPS}%${1} \
-                        |awk -F[][] '{print $2}'|tr -d "\n"|sed -n 's/%.*//p')
-    fi
-}
-
 if [[ ${1} = -mute ]]; then
-    set_volume -mute
-elif [[ ${1} = -inc ]]; then
-    set_volume +
-elif [[ ${1} = -dec ]]; then
-    set_volume -
+    if amixer -D pulse sset Master toggle|grep off; then
+        NEW_VOLUME="Muted"
+    else
+        NEW_VOLUME=$(amixer -D pulse get Master|awk -F[][%] '{print $2}'|tail -n 1)
+    fi
+else
+    NEW_VOLUME=$(amixer -D pulse sset Master ${VOLUME_STEPS}%${1} \
+        |awk -F[][%] '{print $2}'|tail -n 1)
 fi
 
 if [[ ${NEW_VOLUME} = "Muted" ]] || [[ ${NEW_VOLUME} = 0 ]]; then
@@ -44,10 +32,6 @@ fi
 
 if [[ ${NEW_VOLUME} != "Muted" ]]; then
     NEW_VOLUME+=%
-fi
-
-if [[ ${MUTED} = true ]] && [[ ${NEW_VOLUME} != "Muted" ]]; then
-    NEW_VOLUME+=" (muted)"
 fi
 
 notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/${ICON} \
