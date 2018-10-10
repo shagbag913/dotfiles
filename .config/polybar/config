@@ -31,7 +31,7 @@ font-2 = Font Awesome 5 Brands:pixelsize=12;2
 
 modules-left = i3
 modules-center = pulseaudio date backlight-acpi
-modules-right = cpu memory wlan eth battery
+modules-right = update-check memory wlan eth battery
 
 [module/xwindow]
 type = internal/xwindow
@@ -167,5 +167,12 @@ ramp-3 = 
 [global/wm]
 margin-top = 5
 margin-bottom = 5
+
+[module/update-check]
+type = custom/script
+exec = ${HOME}/.config/polybar/update-check
+interval = 1000
+format = <label>
+label =  %output%
 
 ; vim:ft=dosini

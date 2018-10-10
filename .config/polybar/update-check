@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# checkupdates depends on pacman-contrib
+ARCH=$(checkupdates | wc -l)
+AUR=$(pakku -Qum | wc -l)
+
+UPDATES=$((ARCH + AUR))
+echo ${UPDATES}
