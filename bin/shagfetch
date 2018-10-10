@@ -9,14 +9,14 @@ LIGHT_RED='\e[91m'
 LIGHT_GREY='\e[37m'
 DEFAULT='\e[39m'
 
-TIME=$( date +%l:%M%p | tr -d ' ' )
+TIME=$(date +%l:%M%p | tr -d ' ')
 
 # Calculate system uptime
-UPTIME=$( cat /proc/uptime | sed -n 's/ .*//;s/\..*//p' )
-UPTIME_SEC=$(( UPTIME % 60 ))
-UPTIME_MIN=$(( UPTIME / 60 % 60 ))
-UPTIME_HOUR=$(( UPTIME / 60 / 60 % 24 ))
-UPTIME_DAY=$(( UPTIME / 60 / 60 / 24 ))
+UPTIME=$(cat /proc/uptime | sed -n 's/ .*//;s/\..*//p')
+UPTIME_SEC=$((UPTIME % 60))
+UPTIME_MIN=$((UPTIME / 60 % 60))
+UPTIME_HOUR=$((UPTIME / 60 / 60 % 24))
+UPTIME_DAY=$((UPTIME / 60 / 60 / 24))
 
 if [[ ${UPTIME_DAY} != 0 ]]; then
     UPTIME_TOTAL="${UPTIME_DAY}d "
@@ -32,43 +32,43 @@ if [[ ${UPTIME_SEC} != 0 ]]; then
 fi
 
 # Distro name
-OS=$( cat /etc/os-release | sed -n 's/NAME=//;s/"//gp' | head -n 1 )
+OS=$(cat /etc/os-release | sed -n 's/NAME=//;s/"//gp' | head -n 1)
 
 # Battery capacity
 if [[ -d /sys/class/power_supply/BAT0 ]]; then
-    BATTERY=$( cat /sys/class/power_supply/BAT0/capacity )
-    BATTERY_STATUS=$( cat /sys/class/power_supply/BAT0/status )
+    BATTERY=$(cat /sys/class/power_supply/BAT0/capacity)
+    BATTERY_STATUS=$(cat /sys/class/power_supply/BAT0/status)
 fi
 
 # Disk info
 DISK_MNT_PNT="/" #TODO: support multiple drives
-DISK_USED=$( df -h --output=used ${DISK_MNT_PNT} | tail -n 1 | tr -d ' ' )
-DISK_SIZE=$( df -h --output=size ${DISK_MNT_PNT} | tail -n 1 | tr -d ' ' )
-DISK_AVAIL=$( df -h --output=avail ${DISK_MNT_PNT} | tail -n 1 | tr -d ' ' )
+DISK_USED=$(df -h --output=used ${DISK_MNT_PNT} | tail -n 1 | tr -d ' ')
+DISK_SIZE=$(df -h --output=size ${DISK_MNT_PNT} | tail -n 1 | tr -d ' ')
+DISK_AVAIL=$(df -h --output=avail ${DISK_MNT_PNT} | tail -n 1 | tr -d ' ')
 
 # Kernel name
-KERNEL=$( uname -r )
+KERNEL=$(uname -r)
 
 # CPU
-CPU=$( cat /proc/cpuinfo | grep "model name" | sed -n 's/.*: //p' | tail -n 1 )
+CPU=$(cat /proc/cpuinfo | grep "model name" | sed -n 's/.*: //p' | tail -n 1)
 
 # GPU ~ Experimental
-GPU=$( lspci | sed -ne '/VGA/s/.*: //p' | sed -n 's/ (.*//p' )
+GPU=$(lspci | sed -ne '/VGA/s/.*: //p' | sed -n 's/ (.*//p')
 if echo "${GPU}" | grep "Integrated Graphics Controller" &>/dev/null; then
-    GPU=$( echo "${GPU}" | sed -n 's/ Integrated Graphics Controller//p' )
+    GPU=$(echo "${GPU}" | sed -n 's/ Integrated Graphics Controller//p')
 fi
 
 # Memory
-TOTAL_MEMORY=$(( $( cat /proc/meminfo | sed -n 's/MemTotal://p' | tr -d 'kB ' ) / 1024 ))
-AVAILABLE_MEMORY=$(( $( cat /proc/meminfo | sed -n 's/MemAvailable://p' | tr -d 'kB ' ) / 1024 ))
-USED_MEMORY=$(( TOTAL_MEMORY - AVAILABLE_MEMORY ))
+TOTAL_MEMORY=$(($(cat /proc/meminfo | sed -n 's/MemTotal://p' | tr -d 'kB ') / 1024))
+AVAILABLE_MEMORY=$(($(cat /proc/meminfo | sed -n 's/MemAvailable://p' | tr -d 'kB ') / 1024))
+USED_MEMORY=$((TOTAL_MEMORY - AVAILABLE_MEMORY))
 
-PACKAGES="$( pacman -Qq | wc -l ) (pacman)"
+PACKAGES="$(pacman -Qq | wc -l) (pacman)"
 
 print_info() {
     INFO=${1}
     OUTPUT=${2}
-    SPACES=$( printf ' %.0s' $( seq $(( 30 - ${#INFO} )) ) )
+    SPACES=$(printf ' %.0s' $(seq $((30 - ${#INFO}))))
     echo -e "${LIGHT_RED}${INFO}:${SPACES}${LIGHT_GREY}${OUTPUT}${DEFAULT}"
 }
 
