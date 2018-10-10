@@ -3,10 +3,9 @@
 *foreground: #a5d1da
 *foreground-alt: #e5d9bf
 
-*color9: #ff666c
+*color1: #cc6171
 *color6: #3ebcca
-*color1: #db5e62
-
+*color9: #ce7c88
 
 #   Normal      Bright
 #   --------    -------
