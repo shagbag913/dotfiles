@@ -170,9 +170,7 @@ margin-bottom = 5
 
 [module/update-check]
 type = custom/script
-exec = ${HOME}/.config/polybar/update-check
-interval = 1000
-format = <label>
-label =  %output%
-
+exec = ~/.config/polybar/update-check -n
+click-left = ~/.config/polybar/update-check -u
+interval = 300
 ; vim:ft=dosini

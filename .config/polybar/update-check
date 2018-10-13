@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
-# checkupdates depends on pacman-contrib
-ARCH=$(checkupdates | wc -l 2>/dev/null) || exit 1
-AUR=$(pakku -Qum | wc -l 2>/dev/null) || exit 1
-UPDATES=$((ARCH + AUR))
-echo ${UPDATES}
+# Dependencies: pacman-contrib
+
+UPDATES=$(checkupdates)
+
+UPDATES_NUM=$(echo -n ${UPDATES[@]} | wc -l)
+
+if [[ ${UPDATES_NUM} != 0 ]]; then
+    if [[ ${1} = "-n" ]]; then
+        echo " ${UPDATES_NUM}"
+    elif [[ ${1} = "-u" ]]; then
+        notify-send.sh --app-name="Pacman updates" "${UPDATES[@]}"
+    fi
+fi
