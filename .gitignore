@@ -17,8 +17,6 @@
 !bin/shagfetch
 
 !.config/
-!.config/neofetch/
-!.config/neofetch/config.conf
 !.config/i3
 !.config/i3/*
 !.config/dunst
