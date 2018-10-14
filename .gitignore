@@ -7,6 +7,7 @@
 !.git-completion.bash
 !.gitconfig
 !.gitignore
+!.tmux.conf
 !.Xresources
 !.vimrc
 
