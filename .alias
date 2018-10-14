@@ -3,8 +3,8 @@ if [[ ${HOSTNAME} = "ShagBox" ]]; then
   alias tm='tmux -u'
   alias tma='tmux -u attach'
 else
-  alias tm='ssh -t $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf) "tmux -u"'
-  alias tma='ssh -t $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf) "tmux -u attach"'
+  alias tm='ssh -t $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf) \
+            "if ! tmux -u attach; then tmux -u; echo "Made new tmux session"; fi"'
 fi
 
 # only alias these if wg-quick is installed;
