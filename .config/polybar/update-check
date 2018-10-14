@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
 # Dependencies: pacman-contrib
+#               notify-send.sh
+#               numix-circle-icon-theme-git
 
-UPDATES=$(checkupdates)
+UPDATES=$(checkupdates 2>/dev/null | sed -n 's/ .*//p')
 
-UPDATES_NUM=$(echo -n ${UPDATES[@]} | wc -l)
+[[ -n ${UPDATES} ]] && UPDATES_NUM=$(echo ${UPDATES[@]} | wc -l)
 
-if [[ ${UPDATES_NUM} != 0 ]]; then
+if [[ -n ${UPDATES_NUM} ]]; then
     if [[ ${1} = "-n" ]]; then
         echo " ${UPDATES_NUM}"
     elif [[ ${1} = "-u" ]]; then
-        notify-send.sh --app-name="Pacman updates" "${UPDATES[@]}"
+        notify-send.sh --icon=/usr/share/icons/Numix-Circle/48/apps/update-manager.svg \
+            --app-name="Pacman updates" "${UPDATES[@]}"
     fi
 fi
