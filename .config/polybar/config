@@ -9,8 +9,8 @@ width = 100%
 height = 3%
 
 border-top-size = 15
-border-right-size = 25
-border-left-size = 25
+border-right-size = 30
+border-left-size = 30
 
 fixed-center = true
 
