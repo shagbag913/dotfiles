@@ -1,3 +1,14 @@
+if [[ ${HOSTNAME} = ShagBox && -n "${SSH_CLIENT}" || -n "${SSH_TTY}" ]]; then
+    exit () {
+        echo -n "You're connected via ssh. Are you sure you want to exit? [y/N]: "
+        read -n 1 yorn
+        case ${yorn} in
+            y|Y) command exit;;
+            n|N) echo "Not exiting."
+        esac
+    }
+fi
+
 pacman_search() {
   pacman -Qq | grep ${1}
 }
