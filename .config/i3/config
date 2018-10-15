@@ -13,9 +13,9 @@ set_from_resource $bg i3wm.background
 exec_always --no-startup-id compton
 exec_always --no-startup-id $HOME/.config/polybar/launch
 exec --no-startup-id nitrogen --restore
-exec_always --no-startup-id xinput set-prop 9 278 1
-exec_always --no-startup-id xinput set-prop 9 286 1
-exec_always --no-startup-id xinput set-prop 9 296 1
+exec_always --no-startup-id xinput set-prop "Elan Touchpad" "libinput Middle Emulation Enabled" 1
+exec_always --no-startup-id xinput set-prop "Elan Touchpad" "libinput Natural Scrolling Enabled" 1
+exec_always --no-startup-id xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1
 exec_always --no-startup-id xrdb ${HOME}/.Xresources
 
 ################################
