@@ -6,7 +6,7 @@
 
 UPDATES=$(checkupdates 2>/dev/null | sed -n 's/ .*//p')
 
-[[ -n ${UPDATES} ]] && UPDATES_NUM=$(echo ${UPDATES[@]} | wc -l)
+[[ -n ${UPDATES} ]] && UPDATES_NUM=$(echo "${UPDATES[@]}" | wc -l)
 
 if [[ -n ${UPDATES_NUM} ]]; then
     if [[ ${1} = "-n" ]]; then
