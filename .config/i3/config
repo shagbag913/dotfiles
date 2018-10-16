@@ -18,7 +18,7 @@ exec_always --no-startup-id xinput set-prop "Elan Touchpad" "libinput Natural Sc
 exec_always --no-startup-id xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1
 exec_always --no-startup-id xrdb ${HOME}/.Xresources
 # get rid of chromium crash dialog
-exec sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
+exec --no-startup-id sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
 
 ################################
 ##     KEYBOARD SHORTCUTS     ##
