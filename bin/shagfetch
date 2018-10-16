@@ -1,13 +1,35 @@
 #!/usr/bin/env bash
 
-# Don't use unicode ~ taken from neofetch (makes script faster)
-LC_ALL=C
-LANG=C
-
-# Colors
 LIGHT_RED='\e[91m'
 LIGHT_GREY='\e[37m'
 DEFAULT='\e[39m'
+
+LC_ALL=C
+LANG=C
+
+parse_params() {
+    while [[ ${#} -ge 1 ]]; do
+        case ${1} in
+            -h|--help) help;;
+            -s|--screenshot) DO_SCREENSHOT=true
+        esac
+        shift
+    done
+}
+
+help() {
+cat << EOF
+ I literally made shagfetch out of boredom, and because
+ neofetch was running slow on my slow chromebook lol
+
+ OPTIONS                DESCRIPTION
+ ==============================================
+ -h | --help            show help dialog
+ -s | --screenshot      take a screenshot
+
+EOF
+exit
+}
 
 TIME=$(date +%l:%M%p | tr -d ' ')
 
@@ -72,6 +94,8 @@ print_info() {
     echo -e "${LIGHT_RED}${INFO}:${SPACES}${LIGHT_GREY}${OUTPUT}${DEFAULT}"
 }
 
+parse_params "${@}"
+
 echo
 echo -e "${LIGHT_RED}███████╗██╗  ██╗ █████╗  ██████╗ ██████╗  █████╗  ██████╗  █████╗  ██╗██████╗"
 echo "██╔════╝██║  ██║██╔══██╗██╔════╝ ██╔══██╗██╔══██╗██╔════╝ ██╔══██╗███║╚════██╗"
@@ -87,9 +111,24 @@ print_info CPU "${CPU}"
 print_info GPU "${GPU}"
 print_info Packages "${PACKAGES}"
 print_info "Disk(${DISK_MNT_PNT})" "Used ${DISK_USED} / ${DISK_SIZE}, Available ${DISK_AVAIL}"
-if [[ -d /sys/class/power_supply/BAT0 ]]; then
+if [[ -n ${BATTERY} ]]; then
     print_info Battery "${BATTERY}% (${BATTERY_STATUS})"
 fi
 print_info Uptime "${UPTIME_TOTAL}"
 print_info Memory "${USED_MEMORY}MiB / ${TOTAL_MEMORY}MiB"
 echo
+
+if [[ -n ${DO_SCREENSHOT} ]]; then
+    SS_MSG="Taking screenshot in"
+    for i in {1..3}; do
+        SS_MSG="${SS_MSG} ${i}.."
+        printf "${SS_MSG}\r"
+        if [[ ${i} = 3 ]]; then
+            scrot ~/%m-%d-%y-%H%M_shagfetch.png
+            printf "${SS_MSG} Snap!\n"
+            echo "Screenshot saved to $(ls -t ~/ | head -n 1)"
+        else
+            sleep 1
+        fi
+    done
+fi
