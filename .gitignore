@@ -16,6 +16,8 @@
 !bin/volume
 !bin/colors
 !bin/shagfetch
+!bin/apktool
+!bin/apktool.jar
 
 !.config/
 !.config/i3
