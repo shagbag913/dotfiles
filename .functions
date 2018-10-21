@@ -1,4 +1,4 @@
-if [[ ${HOSTNAME} = ShagBox && ${TMUX_PANE} = '%0' && -n "${SSH_CLIENT}" ]]; then
+if [[ ${HOSTNAME} = ShagBox && -n "${SSH_CLIENT}" || -n "${SSH_TTY}" ]]; then
     exit() {
         echo -n "You're connected via ssh. Are you sure you want to exit? [y/N]: "
         read -n 1 yorn
