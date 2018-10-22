@@ -33,8 +33,9 @@ shakku() {
                 echo "Install log:"
                 cat ~/install_log
                 return;;
+            *) pakku "$@"
         esac
         shift
     done
-    pakku "$@"
+    echo "$@"
 }
