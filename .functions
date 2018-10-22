@@ -12,3 +12,29 @@ fi
 pacman_search() {
   pacman -Qq | grep ${1}
 }
+
+shakku() {
+    for i in "$@"; do
+        if [[ ! $i =~ ^- ]]; then
+            if [[ $1 =~ -R ]]; then
+                echo $i > ~/uninstall_log
+            elif [[ $1 = -S ]]; then
+                echo $i > ~/install_log
+            fi
+        fi
+    done
+    while [[ $# -ge 1 ]]; do
+        case $1 in
+            -Rlog)
+                echo "Uninstall log:"
+                cat ~/uninstall_log
+                return;;
+            -Slog)
+                echo "Install log:"
+                cat ~/install_log
+                return;;
+        esac
+        shift
+    done
+    pakku "$@"
+}
