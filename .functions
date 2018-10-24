@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+set +e
 if [[ ${HOSTNAME} = ShagBox && -n "${SSH_CLIENT}" || -n "${SSH_TTY}" ]]; then
     exit() {
         echo -n "You're connected via ssh. Are you sure you want to exit? [y/N]: "
@@ -38,4 +40,18 @@ shakku() {
         shift
     done
     echo "$@"
+}
+
+reposync() {
+    time schedtool -B -n 1 -e ionice -n 1 repo sync -j$(($(nproc --all)*2-1)) --no-clone-bundle --prune --no-tags -q "$@"
+}
+
+grive() {
+    if [[ $# = 0 ]]; then
+        command grive -p /media/shagbag913/Roms/gdrive
+        return
+    else
+        command grive "$@"
+        return
+    fi
 }
