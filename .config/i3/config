@@ -90,13 +90,13 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # Brightness
-bindsym XF86MonBrightnessUp exec --no-startup-id /home/shagbag913/bin/brightness -inc
-bindsym XF86MonBrightnessDown exec --no-startup-id /home/shagbag913/bin/brightness -dec
+bindsym XF86MonBrightnessUp exec --no-startup-id ~/.bin/brightness -inc
+bindsym XF86MonBrightnessDown exec --no-startup-id ~/.bin/brightness -dec
 
 # Volume
-bindsym XF86AudioRaiseVolume exec --no-startup-id /home/shagbag913/bin/volume +
-bindsym XF86AudioLowerVolume exec --no-startup-id /home/shagbag913/bin/volume -
-bindsym XF86AudioMute exec --no-startup-id /home/shagbag913/bin/volume -mute
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.bin/volume +
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/.bin/volume -
+bindsym XF86AudioMute exec --no-startup-id ~/.bin/volume -mute
 
 ########################
 ##     WORKSPACES     ##
