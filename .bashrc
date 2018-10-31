@@ -34,7 +34,7 @@ source ${HOME}/.functions
 source ${HOME}/.git-completion.bash
 # source common script if on ShagBox
 if [[ ${HOSTNAME} = "ShagBox" ]]; then
-  if ! source /media/shagbag913/Roms/scripts/common 2> /dev/null; then
+  if ! source /android/scripts/common 2> /dev/null; then
     echo "  Please clone scripts from https://github.com/shagbag913/scripts!"
   fi
 fi

@@ -1,11 +1,12 @@
 # only export these on ShagBox.
 if [[ ${HOSTNAME} = "ShagBox" ]]; then
-  export USE_CCACHE=1
-  export CCACHE_DIR=/media/shagbag913/Roms/.ccache
-  export LC_ALL=C
-  export roms="/media/shagbag913/Roms"
-  export PATH="/media/shagbag913/Roms/scripts:${PATH}"
-  export PATH="/opt/android-sdk/build-tools/28.0.0/:${PATH}"
+    export USE_CCACHE=1
+    export CCACHE_DIR=/android/.ccache
+    export LC_ALL=C
+    export PATH="/android/scripts:${PATH}"
+    export PATH="/opt/android-sdk/build-tools/28.0.0/:${PATH}"
+
+    export and=/android
 fi
 
 # show color with GCC
