@@ -7,17 +7,18 @@
 !.git-completion.bash
 !.gitconfig
 !.gitignore
+!.setscreenres
 !.tmux.conf
 !.Xresources
 !.vimrc
 
-!bin/
-!bin/brightness
-!bin/volume
-!bin/colors
-!bin/shagfetch
-!bin/apktool
-!bin/apktool.jar
+!.bin/
+!.bin/brightness
+!.bin/volume
+!.bin/colors
+!.bin/shagfetch
+!.bin/apktool
+!.bin/apktool.jar
 
 !.config/
 !.config/i3

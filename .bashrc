@@ -40,4 +40,4 @@ if [[ ${HOSTNAME} = "ShagBox" ]]; then
 fi
 
 # shagfetch
-${HOME}/bin/shagfetch
+shagfetch
