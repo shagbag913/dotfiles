@@ -21,7 +21,7 @@ reposync() {
 
 grive() {
     if [[ $# = 0 ]]; then
-        command grive -p /media/shagbag913/Roms/gdrive
+        command grive -p /android/gdrive
         return
     else
         command grive "$@"
