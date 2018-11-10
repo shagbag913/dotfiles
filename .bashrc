@@ -7,12 +7,8 @@ HOSTNAME=$(uname -n)
 RED='\e[31m'
 CYAN='\e[36m'
 GREEN='\e[32m'
+YELLOW='\e[33m'
 REST='\e[39m'
-# Background
-LIGHTGREY='\e[47m'
-DARKGREY='\e[100m'
-YELL='\e[103m'
-DEF='\e[49m'
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return

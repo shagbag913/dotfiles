@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
-set +e
+
+error() {
+    NUM=$((${#1}+7))
+    printf '=%.0s' $(seq $NUM)
+    printf "\n${RED}ERROR:${REST} $1\n"
+    printf '=%.0s' $(seq $NUM)
+    printf '\n'
+}
+
+warn() {
+    NUM=$((${#1}+9))
+    printf '=%.0s' $(seq $NUM)
+    printf "\n${YELLOW}WARNING:${REST} $1\n"
+    printf '=%.0s' $(seq $NUM)
+    printf '\n'
+}
+
 if [[ ${HOSTNAME} = ShagBox && -n "${SSH_CLIENT}" || -n "${SSH_TTY}" ]]; then
     exit() {
         echo -n "You're connected via ssh. Are you sure you want to exit? [y/N]: "
@@ -10,10 +26,6 @@ if [[ ${HOSTNAME} = ShagBox && -n "${SSH_CLIENT}" || -n "${SSH_TTY}" ]]; then
         esac
     }
 fi
-
-pacman_search() {
-  pacman -Qq | grep ${1}
-}
 
 reposync() {
     time schedtool -B -n 1 -e ionice -n 1 repo sync -j$(($(nproc --all)*2-1)) --no-clone-bundle --prune --no-tags -q "$@"
@@ -33,7 +45,7 @@ build_carbon() {
     . build/envsetup.sh
     for i in sailfish marlin; do
         lunch carbon_$i-userdebug
-        make carbon -j6 || { echo "$i Build failed, aborting all builds."; exit 1; }
+        make carbon -j6 || { error "$i Build failed, aborting all builds."; return 1; }
         cp out/target/product/$i/$(ls CARBON-CR-7.0-TBA*.zip | sort | tail -n 1) /android/gdrive/Roms/Carbon/TestBuilds/
     done
 }
