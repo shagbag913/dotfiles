@@ -28,3 +28,12 @@ grive() {
         return
     fi
 }
+
+build_carbon() {
+    . build/envsetup.sh
+    for i in sailfish marlin; do
+        lunch carbon_$i-userdebug
+        make carbon -j6 || { echo "$i Build failed, aborting all builds."; exit 1; }
+        cp out/target/product/$i/$(ls CARBON-CR-7.0-TBA*.zip | sort | tail -n 1) /android/gdrive/Roms/Carbon/TestBuilds/
+    done
+}
