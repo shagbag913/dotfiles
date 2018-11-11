@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-error() {
+err() {
     NUM=$((${#1}+7))
     printf '=%.0s' $(seq $NUM)
     printf "\n${RED}ERROR:${REST} $1\n"
@@ -45,7 +45,10 @@ build_carbon() {
     . build/envsetup.sh
     for i in sailfish marlin; do
         lunch carbon_$i-userdebug
-        make carbon -j6 || { error "$i Build failed, aborting all builds."; return 1; }
-        cp out/target/product/$i/$(ls CARBON-CR-7.0-TBA*.zip | sort | tail -n 1) /android/gdrive/Roms/Carbon/TestBuilds/
+        make carbon -j6 || { err "$i Build failed, aborting all builds."; return 1; }
+        (
+            cd out/target/product/$i
+            cp $(ls CARBON-CR-7.0-TBA*.zip | sort | tail -n 1) /android/gdrive/Roms/Carbon/TestBuilds/
+        )
     done
 }
