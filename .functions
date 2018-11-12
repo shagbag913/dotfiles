@@ -42,10 +42,9 @@ grive() {
 }
 
 build_carbon() {
-    [[ -z BUILDTYPE ]] && BUILDTYPE=userdebug
     . build/envsetup.sh
     for i in sailfish marlin; do
-        lunch carbon_$i-$BUILDTYPE
+        lunch carbon_$i-userdebug
         make carbon -j6 || { err "$i Build failed, aborting all builds."; return 1; }
         (
             cd out/target/product/$i
