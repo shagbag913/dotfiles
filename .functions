@@ -45,7 +45,13 @@ build_carbon() {
     . build/envsetup.sh
     for i in sailfish marlin; do
         lunch carbon_$i-userdebug
-        make carbon -j6 || { err "$i Build failed, aborting all builds."; return 1; }
+        if ! make carbon -j6; then
+            err "$i Build failed, aborting all builds."
+            tg_bot "Carbon build for $i failed, so all builds were stopped."
+            return 1
+        else
+            tg_bot "Carbon build for $i successful!"
+        fi
         (
             cd out/target/product/$i
             cp $(ls CARBON-CR-7.0-TBA*.zip | sort | tail -n 1) /android/gdrive/Roms/Carbon/TestBuilds/
