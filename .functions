@@ -60,3 +60,8 @@ build_carbon() {
         grive -p /android/gdrive
     done
 }
+
+reinit_mouse() {
+    sudo modprobe -r elan_i2c
+    sudo modprobe elan_i2c
+}
