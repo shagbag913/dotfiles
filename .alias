@@ -13,11 +13,6 @@ if command -v wg-quick 2>/dev/null; then
   alias wgd='wg-quick down azirevpn-us1'
 fi
 
-# only alias these if .sshconf is found;
-if [[ -f ${HOME}/.sshconf ]]; then
-  alias sftpbox="sftp -oPort=$(sed -n 2p ${HOME}/.sshconf) $(sed -n 1p ${HOME}/.sshconf)"
-fi
-
 # only alias this on shagbox
 if [[ ${HOSTNAME} = "ShagBox" ]]; then
   alias kcc='export CCACHE_DIR=/media/shagbag913/Roms/.ccachekernel'
