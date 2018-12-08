@@ -28,7 +28,7 @@ if [[ ${HOSTNAME} = ShagBox && -n "${SSH_CLIENT}" || -n "${SSH_TTY}" ]]; then
 fi
 
 reposync() {
-    time schedtool -B -n 1 -e ionice -n 1 repo sync -j$(($(nproc --all)*2-1)) --no-clone-bundle --prune --no-tags -q "$@"
+    time schedtool -B -n 1 -e ionice -n 1 repo sync -j$(($(nproc --all)*2-1)) --no-clone-bundle --prune --no-tags --quiet "$@"
 }
 
 grive() {
@@ -41,24 +41,27 @@ grive() {
     fi
 }
 
-build_carbon() {
+build_bl() {
     . build/envsetup.sh
-    for i in sailfish marlin; do
-        lunch carbon_$i-userdebug
-        tg_bot "Starting Carbon build for $i"
-        if ! make carbon -j6; then
-            err "$i Build failed, aborting all builds."
-            tg_bot "Carbon build for $i failed, so all builds were stopped."
-            return 1
-        else
-            tg_bot "Carbon build for $i successful!"
-        fi
-        (
-            cd out/target/product/$i
-            cp $(ls CARBON-CR-7.0-TBA*.zip | sort | tail -n 1) /android/gdrive/Public/CarbonTEST
-        )
-        grive -p /android/gdrive
-    done
+    tg_bot "Starting BootleggersROM build for sailfish $1"
+    if ! brunch sailfish; then
+        err "Bootleggers build failed!"
+        tg_bot "BootleggersROM build for sailfish failed, @shagbag913"
+        return 1
+    fi
+    (
+        cd out/target/product/sailfish
+        cp $(ls BootleggersROM*.zip | sort | tail -n 1) /android/gdrive/Public/Bootleggers
+    )
+    if grive -p /android/gdrive; then
+        tg_bot "BootleggersROM build for sailfish successful! Build has been uploaded."
+    fi
+}
+
+temp_repo() {
+    export TEMPREPO=https://github.com/shagbag913/temp-repo
+    [[ -z $1 ]] && { echo "You must provide a branch name!"; return 1; }
+    git push -f $TEMPREPO HEAD:$1
 }
 
 reinit_mouse() {
