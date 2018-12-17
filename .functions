@@ -73,6 +73,10 @@ reinit_mouse() {
     sudo xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1
 }
 
-sftpdl() {
-    sftp -oPort=$(sed -n 2p ${HOME}/.sshconf) $(sed -n 1p ${HOME}/.sshconf):"$1" "$(basename $1)"
+rmul() {
+    rsync -re "ssh -p$(sed -n 2p ${HOME}/.sshconf)" "$1" $(sed -n 1p ${HOME}/.sshconf):"$2"
+}
+
+rmdl() {
+    rsync -re "ssh -p$(sed -n 2p ${HOME}/.sshconf)" $(sed -n 1p ${HOME}/.sshconf):"$1" "$2"
 }
