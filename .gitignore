@@ -19,7 +19,6 @@
 !.bin/build_bl
 !.bin/colors
 !.bin/elapsed
-!.bin/grive
 !.bin/reinit_mouse
 !.bin/rmdl
 !.bin/rmul

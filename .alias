@@ -16,6 +16,7 @@ fi
 # only alias this on shagbox
 if [[ ${HOSTNAME} = "ShagBox" ]]; then
   alias kcc='export CCACHE_DIR=/media/shagbag913/Roms/.ccachekernel'
+  alias grive='grive -p /android/gdrive'
 fi
 
 alias brc='source ~/.bashrc'

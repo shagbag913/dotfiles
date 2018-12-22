@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
-[[ -z $OLDTIME ]] && OLDTIME=$(cat /proc/uptime | sed -n 's/ .*//;s/\..*//p')
-NEWTIME=$(cat /proc/uptime | sed -n 's/ .*//;s/\..*//p')
-DIFFTIME=$((NEWTIME-OLDTIME))
-if [[ $DIFFTIME != 0 ]]; then
+OLDTIME="$1"
+
+if [[ -z $OLDTIME ]]; then
+    OLDTIME=$(cat /proc/uptime | sed -n 's/ .*//;s/\..*//p')
+    echo $OLDTIME
+else
+    NEWTIME=$(cat /proc/uptime | sed -n 's/ .*//;s/\..*//p')
+    DIFFTIME=$((NEWTIME-OLDTIME))
     unset DIFFTIME_TOTAL
     DIFFTIME_SEC=$((DIFFTIME % 60))
     DIFFTIME_MIN=$((DIFFTIME / 60 % 60))
@@ -17,6 +21,7 @@ if [[ $DIFFTIME != 0 ]]; then
     if [[ ${DIFFTIME_SEC} != 0 ]]; then
         DIFFTIME_TOTAL+="${DIFFTIME_SEC}s "
     fi
+    DIFFTIME_TOTAL="${DIFFTIME_TOTAL// /}"
     echo "$DIFFTIME_TOTAL"
     unset OLDTIME NEWTIME
 fi

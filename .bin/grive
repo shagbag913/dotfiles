@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-if [[ $# = 0 ]]; then
-    command grive -p /android/gdrive
-    return
-else
-    command grive "$@"
-    return
-fi
