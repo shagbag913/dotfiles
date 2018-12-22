@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+rsync -re "ssh -p$(sed -n 2p ${HOME}/.sshconf)" "$1" $(sed -n 1p ${HOME}/.sshconf):"$2"

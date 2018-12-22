@@ -13,12 +13,19 @@
 !.vimrc
 
 !.bin/
-!.bin/brightness
-!.bin/volume
-!.bin/colors
-!.bin/shagfetch
 !.bin/apktool
 !.bin/apktool.jar
+!.bin/brightness
+!.bin/build_bl
+!.bin/colors
+!.bin/elapsed
+!.bin/grive
+!.bin/reinit_mouse
+!.bin/rmdl
+!.bin/rmul
+!.bin/shagfetch
+!.bin/temp_repo
+!.bin/volume
 
 !.config/
 !.config/i3

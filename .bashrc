@@ -26,7 +26,6 @@ PS1+="\[${GREEN}\]$ \[${REST}\]"
 # Source outside files for further configuration
 source ${HOME}/.alias
 source ${HOME}/.export
-source ${HOME}/.functions
 source ${HOME}/.git-completion.bash
 
 # shagfetch
