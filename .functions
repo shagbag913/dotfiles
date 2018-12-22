@@ -1,31 +1,27 @@
 #!/usr/bin/env bash
 
-err() {
-    NUM=$((${#1}+7))
-    printf '=%.0s' $(seq $NUM)
-    printf "\n${RED}ERROR:${REST} $1\n"
-    printf '=%.0s' $(seq $NUM)
-    printf '\n'
+elapsed() {
+    [[ -z $OLDTIME ]] && OLDTIME=$(cat /proc/uptime | sed -n 's/ .*//;s/\..*//p')
+    NEWTIME=$(cat /proc/uptime | sed -n 's/ .*//;s/\..*//p')
+    DIFFTIME=$((NEWTIME-OLDTIME))
+    if [[ $DIFFTIME != 0 ]]; then
+        unset DIFFTIME_TOTAL
+        DIFFTIME_SEC=$((DIFFTIME % 60))
+        DIFFTIME_MIN=$((DIFFTIME / 60 % 60))
+        DIFFTIME_HOUR=$((DIFFTIME / 60 / 60 % 24))
+	    if [[ $DIFFTIME_HOUR != 0 ]]; then
+            DIFFTIME_TOTAL="${DIFFTIME_HOUR}h "
+        fi
+        if [[ $DIFFTIME_MIN != 0 ]]; then
+            DIFFTIME_TOTAL+="${DIFFTIME_MIN}m "
+        fi
+        if [[ ${DIFFTIME_SEC} != 0 ]]; then
+            DIFFTIME_TOTAL+="${DIFFTIME_SEC}s "
+        fi
+        echo "$DIFFTIME_TOTAL"
+        unset OLDTIME NEWTIME
+    fi
 }
-
-warn() {
-    NUM=$((${#1}+9))
-    printf '=%.0s' $(seq $NUM)
-    printf "\n${YELLOW}WARNING:${REST} $1\n"
-    printf '=%.0s' $(seq $NUM)
-    printf '\n'
-}
-
-if [[ ${HOSTNAME} = ShagBox && -n "${SSH_CLIENT}" || -n "${SSH_TTY}" ]]; then
-    exit() {
-        echo -n "You're connected via ssh. Are you sure you want to exit? [y/N]: "
-        read -n 1 yorn
-        case ${yorn} in
-            y|Y) command exit;;
-            n|N) echo -e "\nNot exiting."
-        esac
-    }
-fi
 
 reposync() {
     time schedtool -B -n 1 -e ionice -n 1 repo sync -j$(($(nproc --all)*2-1)) --no-clone-bundle --prune --no-tags --quiet "$@"
@@ -44,6 +40,7 @@ grive() {
 build_bl() {
     . build/envsetup.sh
     tg_bot "Starting BootleggersROM build for sailfish $1"
+    elapsed
     if ! brunch sailfish; then
         err "Bootleggers build failed!"
         tg_bot "BootleggersROM build for sailfish failed, @shagbag913"
@@ -54,7 +51,8 @@ build_bl() {
         cp $(ls BootleggersROM*.zip | sort | tail -n 1) /android/gdrive/Public/Bootleggers
     )
     if grive -p /android/gdrive; then
-        tg_bot "BootleggersROM build for sailfish successful! Build has been uploaded."
+        ELAPSED_TIME=$(elapsed)
+        tg_bot "BootleggersROM build for sailfish successful! Built and uploaded in $ELAPSED_TIME."
     fi
 }
 
