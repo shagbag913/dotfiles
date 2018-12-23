@@ -21,7 +21,7 @@ else
     if [[ ${DIFFTIME_SEC} != 0 ]]; then
         DIFFTIME_TOTAL+="${DIFFTIME_SEC}s "
     fi
-    DIFFTIME_TOTAL="${DIFFTIME_TOTAL// /}"
+    DIFFTIME_TOTAL="$(echo ${DIFFTIME_TOTAL} | sed -e 's/ *$//')"
     echo "$DIFFTIME_TOTAL"
     unset OLDTIME NEWTIME
 fi
