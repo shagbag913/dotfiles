@@ -18,6 +18,7 @@
 !.bin/brightness
 !.bin/build_bl
 !.bin/colors
+!.bin/deldog
 !.bin/elapsed
 !.bin/reinit_mouse
 !.bin/rmdl
