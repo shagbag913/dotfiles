@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+time schedtool -B -n 1 -e ionice -n 1 repo sync -j32 --no-clone-bundle --prune --no-tags "$@"

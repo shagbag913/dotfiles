@@ -22,6 +22,7 @@
 !.bin/deldog
 !.bin/elapsed
 !.bin/reinit_mouse
+!.bin/reposync
 !.bin/rmdl
 !.bin/rmul
 !.bin/shagfetch
