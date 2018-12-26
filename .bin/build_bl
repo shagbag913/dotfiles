@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 
-. build/envsetup.sh
 tg_bot "Starting BootleggersROM build for sailfish $1"
 OLDTIME=$(elapsed)
-if ! brunch sailfish; then
+. build/envsetup.sh
+lunch bootleg_sailfish-userdebug
+if ! make bacon -j30; then
     tg_bot "BootleggersROM build for sailfish failed, @shagbag913"
     exit 1
 else
     (
         cd out/target/product/sailfish
-        cp $(ls BootleggersROM*.zip | sort | tail -n 1) /android/gdrive/Public/Bootleggers
+        cp $(ls BootleggersROM*.zip | sort | tail -n 1) $HOME/gdrive/Public/Bootleggers
     )
-    if grive -p /android/gdrive; then
+    if grive -p $HOME/gdrive; then
         ELAPSED_TIME=$(elapsed $OLDTIME)
         tg_bot "BootleggersROM build for sailfish successful! Built and uploaded in $ELAPSED_TIME."
     fi
