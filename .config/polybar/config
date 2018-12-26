@@ -99,12 +99,11 @@ ramp-signal-4 = 
 
 [module/eth]
 type = internal/network
-interface = net0
+interface = enp3s0
 interval = 3.0
 
-format-connected-prefix = " "
 format-connected-prefix-foreground = ${colors.foreground}
-label-connected = %local_ip%
+label-connected = 
 
 format-disconnected =
 
