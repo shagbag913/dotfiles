@@ -13,10 +13,9 @@ if command -v wg-quick 2>/dev/null; then
   alias wgd='wg-quick down azirevpn-us1'
 fi
 
-# only alias this on shagbox
+# only alias these on shagbox
 if [[ ${HOSTNAME} = "ShagBox" ]]; then
-  alias kcc='export CCACHE_DIR=/media/shagbag913/Roms/.ccachekernel'
-  alias grive='grive -p /android/gdrive'
+  alias grive='grive -p $HOME/gdrive'
 fi
 
 alias brc='source ~/.bashrc'

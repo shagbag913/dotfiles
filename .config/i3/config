@@ -10,6 +10,7 @@ set_from_resource $bg i3wm.background
 ########################
 ##      AUTOSTART     ##
 ########################
+exec --no-startup-id ngrok tcp 22
 exec --no-startup-id ~/.setscreenres
 exec_always --no-startup-id compton
 exec_always --no-startup-id $HOME/.config/polybar/launch

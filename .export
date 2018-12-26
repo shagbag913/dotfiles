@@ -1,13 +1,7 @@
 # only export these on ShagBox.
 if [[ ${HOSTNAME} = "ShagBox" ]]; then
     export USE_CCACHE=1
-    export CCACHE_DIR=/android/.ccache
     export LC_ALL=C
-    export PATH="/android/scripts:${PATH}"
-    export PATH="/opt/android-sdk/build-tools/28.0.0/:${PATH}"
-
-    # Common directories I use
-    export GD_DIR=/android/gdrive
 fi
 
 # show color with GCC

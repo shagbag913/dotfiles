@@ -1,6 +1,7 @@
 *
 !.alias
 !.bashrc
+!.bash_profile
 !.compton.conf
 !.export
 !.functions
