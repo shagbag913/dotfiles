@@ -4,7 +4,7 @@ tg_bot "Starting BootleggersROM build for sailfish $1"
 OLDTIME=$(elapsed)
 . build/envsetup.sh
 lunch bootleg_sailfish-userdebug
-if ! make bacon -j30; then
+if ! make bacon -j31; then
     tg_bot "BootleggersROM build for sailfish failed, @shagbag913"
     exit 1
 else

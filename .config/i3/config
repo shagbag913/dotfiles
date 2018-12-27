@@ -10,7 +10,6 @@ set_from_resource $bg i3wm.background
 ########################
 ##      AUTOSTART     ##
 ########################
-exec --no-startup-id ngrok tcp 22
 exec --no-startup-id ~/.setscreenres
 exec_always --no-startup-id compton
 exec_always --no-startup-id $HOME/.config/polybar/launch
@@ -19,6 +18,7 @@ exec_always --no-startup-id xinput set-prop "Elan Touchpad" "libinput Middle Emu
 exec_always --no-startup-id xinput set-prop "Elan Touchpad" "libinput Natural Scrolling Enabled" 1
 exec_always --no-startup-id xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1
 exec_always --no-startup-id xrdb ${HOME}/.Xresources
+exec_always --no-startup-id /home/shagbag913/.config/i3/exec_ngrok
 # get rid of chromium crash dialog
 exec --no-startup-id sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
 
