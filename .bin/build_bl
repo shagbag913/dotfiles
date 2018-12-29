@@ -2,10 +2,22 @@
 
 tg_bot "Starting BootleggersROM build for sailfish $1"
 OLDTIME=$(elapsed)
+rm /tmp/build.log
 . build/envsetup.sh
 lunch bootleg_sailfish-userdebug
-if ! make bacon -j30; then
-    tg_bot "BootleggersROM build for sailfish failed, @shagbag913"
+make bacon -j30 |& tee /tmp/build.log
+if [[ ${PIPESTATUS[0]} != 0 ]]; then
+    for i in "FAILED" "ninja: error"; do
+        if [[ $(cat /tmp/build.log | sed -ne '/'"$i"'/,$p') != "" ]]; then
+            ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,$p')
+        fi
+    done
+    DDLINK=$(deldog "$ERROR")
+    if [[ -z $ERROR ]]; then
+        tg_bot "BootleggersROM build for sailfish failed, @shagbag913."
+    else
+        tg_bot "BootleggersROM build for sailfish failed, @shagbag913. Error: $DDLINK"
+    fi
     exit 1
 else
     tg_bot "BootleggersROM build for sailfish successful in $(elapsed $OLDTIME)" 
