@@ -4,16 +4,17 @@ tg_bot "Starting BootleggersROM build for sailfish $1"
 OLDTIME=$(elapsed)
 . build/envsetup.sh
 lunch bootleg_sailfish-userdebug
-if ! make bacon -j31; then
+if ! make bacon -j30; then
     tg_bot "BootleggersROM build for sailfish failed, @shagbag913"
     exit 1
 else
+    tg_bot "BootleggersROM build for sailfish successful in $(elapsed $OLDTIME)" 
+    OLDTIME=$(elapsed)
     (
         cd out/target/product/sailfish
         cp $(ls BootleggersROM*.zip | sort | tail -n 1) $HOME/gdrive/Public/Bootleggers
     )
     if grive -p $HOME/gdrive; then
-        ELAPSED_TIME=$(elapsed $OLDTIME)
-        tg_bot "BootleggersROM build for sailfish successful! Built and uploaded in $ELAPSED_TIME."
+        tg_bot "BootleggersROM build for sailfish uploaded in $(elapsed $OLDTIME)."
     fi
 fi

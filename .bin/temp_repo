@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 export TEMPREPO=https://github.com/shagbag913/temp-repo
-[[ -z $1 ]] && { echo "You must provide a branch name!"; return 1; }
+[[ -z $1 ]] && { echo "You must provide a branch name!"; exit 1; }
 git push -f $TEMPREPO HEAD:$1
