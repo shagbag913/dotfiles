@@ -28,7 +28,7 @@ source ${HOME}/.alias
 source ${HOME}/.export
 source ${HOME}/.git-completion.bash
 
-# shagfetch
-shagfetch
+neofetch
+
 export LC_ALL=C
 PATH=~/.bin:$PATH
