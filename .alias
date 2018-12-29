@@ -3,7 +3,7 @@ if [[ ${HOSTNAME} = "ShagBox" ]]; then
   alias tm='tmux -u'
   alias tma='tmux -u attach'
 else
-  alias tm='ssh -t $(sed -n 1p ${HOME}/.sshconf) -p $(sed -n 2p ${HOME}/.sshconf) \
+  alias tm='ssh -t $SSHNAME -p $SSHPORT \
             "if ! tmux -u attach; then tmux -u; echo "Made new tmux session"; fi"'
 fi
 
