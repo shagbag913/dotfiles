@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+URL="https://api.telegram.org/bot$TGBOTTOKEN/sendMessage"
+CHATIDS=(
+    '499109275'
+    '-1001247942938'
+)
+
+while [[ $# -gt 1 ]]; do
+    case $1 in
+        -p)
+           shift
+           case $1 in
+               all)
+                   CHATID="${CHATIDS[@]}"
+                   ;;
+               pm)
+                   CHATID="${CHATIDS[0]}"
+                   ;;
+           esac
+           ;;
+        -m)
+            shift
+            MESSAGE="$1"
+            ;;
+    esac
+shift
+done
+
+if [[ -z $MESSAGE ]]; then
+    echo "You must specify a message!"
+    exit 1
+fi
+
+if [[ -z $CHATID ]]; then
+    echo "You must specify where to notify!"
+    exit 1
+fi
+
+for i in $CHATID; do
+    curl -s -X POST $URL -d chat_id=$i -d text="$MESSAGE" &>/dev/null
+    echo "Notified $i"
+done

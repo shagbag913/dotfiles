@@ -27,6 +27,7 @@
 !.bin/rmul
 !.bin/shagfetch
 !.bin/temp_repo
+!.bin/tg_bot
 !.bin/volume
 
 !.config/
