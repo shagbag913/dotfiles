@@ -27,6 +27,7 @@ PS1+="\[${GREEN}\]$ \[${REST}\]"
 source ${HOME}/.alias
 source ${HOME}/.export
 source ${HOME}/.git-completion.bash
+[[ -f $HOME/.secret ]] && source $HOME/.secret
 
 neofetch
 
