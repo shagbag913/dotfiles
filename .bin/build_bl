@@ -23,18 +23,24 @@ while [[ $# -gt 1 ]]; do
         -m|--message)
             shift
             MESSAGE="$1"
+            ;;
+        -b|--build-type)
+            shift
+            BUILDTYPE="$1"
+            ;;
     esac
 shift
 done
 
 [[ -z $DEVICE ]] && DEVICE="sailfish"
 [[ -z $JOBS ]] && JOBS="30"
+[[ -z $BUILDTYPE ]] && BUILDTYPE="userdebug"
 
 # old build.log file
 rm /tmp/build.log
 
 . build/envsetup.sh
-lunch bootleg_$DEVICE-userdebug
+lunch bootleg_$DEVICE-$BUILDTYPE
 BUILDTIME=$(elapsed)
 make bacon -j$JOBS |& tee /tmp/build.log
 BUILDSTATUS=${PIPESTATUS[0]}
