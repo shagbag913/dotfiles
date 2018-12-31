@@ -23,47 +23,23 @@ while [[ $# -gt 1 ]]; do
         -m|--message)
             shift
             MESSAGE="$1"
-            ;;
-        -b|--build-type)
-            shift
-            case $1 in
-                eng)
-                    BUILDTYPE="eng"
-                    ;;
-                userdebug)
-                    BUILDTYPE="userdebug"
-                    ;;
-                user)
-                    BUILDTYPE="user"
-                    ;;
-                *)
-                    echo "Invalid build type!"
-                    exit 1
-                    ;;
-            esac
     esac
 shift
 done
 
 [[ -z $DEVICE ]] && DEVICE="sailfish"
 [[ -z $JOBS ]] && JOBS="30"
-[[ -z $BUILDTYPE ]] && BUILDTYPE="userdebug"
 
 # old build.log file
 rm /tmp/build.log
 
-# check if build is dirty or clean
-[[ -d out ]] && CODBUILD="dirty" || CODBUILD="clean"
-
 . build/envsetup.sh
-lunch bootleg_$DEVICE-$BUILDTYPE
-tg_notify "BootleggersROM build for $DEVICE started."
+lunch bootleg_$DEVICE-userdebug
 BUILDTIME=$(elapsed)
 make bacon -j$JOBS |& tee /tmp/build.log
 BUILDSTATUS=${PIPESTATUS[0]}
 if [[ $BUILDSTATUS = 141 ]]; then
-    tg_notify "$(echo "BootleggersROM build for $DEVICE aborted!%0A - Build type: $BUILDTYPE%0A" \
-        " - Build status: $CODBUILD%0A - Elapsed time: $(elapsed $BUILDTIME)")"
+    tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
 elif [[ $BUILDSTATUS != 0 ]]; then
     for i in "FAILED" "ninja: error" "make:.*Stop."; do
         if [[ -n $(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }') ]]; then
@@ -72,11 +48,9 @@ elif [[ $BUILDSTATUS != 0 ]]; then
     done
     DDLINK=$(deldog "$ERROR")
     if [[ -z $ERROR ]]; then
-        tg_notify "$(echo "BootleggersROM build for $DEVICE failed.%0A - Build type: $BUILDTYPE%0A" \
-            " - Build status: $CODBUILD%0A - Elapsed time: $(elapsed $BUILDTIME)")"
+        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $(elapsed $BUILDTIME)"
     else
-        tg_notify "$(echo "BootleggersROM build for $DEVICE failed.%0A - Build type: $BUILDTYPE%0A" \
-            " - Build status: $CODBUILD%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)")"
+        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)"
     fi
     exit 1
 else
@@ -86,13 +60,11 @@ else
     if gdrive upload --parent 1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0 $BUILDZIP; then
         UPLOADTIME=$(elapsed $UPLOADTIME)
         tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
-            " - Build type: $BUILDTYPE%0A - Build status: $CODBUILD%0A - Build time: $BUILDTIME%0A" \
-            " - Upload time: $UPLOADTIME%0A - Download: [gdrive]($(gdrive info \
+            "- Build time: $BUILDTIME%0A - Upload time: $UPLOADTIME%0A - Download: [gdrive]($(gdrive info \
             $(gdrive list --query "name contains 'Bootleggers'" --order "modifiedTime desc" -m 1 | tail -n 1 \
             | cut -d' ' -f 1) | sed -n 's/DownloadUrl: //p'))")"
     else
         tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
-            " - Build type: $BUILDTYPE%0A - Build status: $CODBUILD%0A" \
             "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
     fi
 fi
