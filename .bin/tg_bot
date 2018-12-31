@@ -38,6 +38,6 @@ if [[ -z $CHATID ]]; then
 fi
 
 for i in $CHATID; do
-    curl -s -X POST $URL -d chat_id=$i -d text="$MESSAGE" &>/dev/null
+    curl -s -X POST $URL -d chat_id=$i -d text="$MESSAGE" -d parse_mode="Markdown" &>/dev/null
     echo "Notified $i"
 done
