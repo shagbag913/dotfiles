@@ -42,8 +42,8 @@ if [[ $BUILDSTATUS = 141 ]]; then
     tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
 elif [[ $BUILDSTATUS != 0 ]]; then
     for i in "FAILED" "ninja: error" "make:.*Stop."; do
-        if [[ $(cat /tmp/build.log | sed -ne '/'"$i"'/,$p') != "" ]]; then
-            ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,$p')
+        if [[ -n $(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }') ]]; then
+            ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }')
         fi
     done
     DDLINK=$(deldog "$ERROR")
