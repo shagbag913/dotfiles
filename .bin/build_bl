@@ -42,6 +42,7 @@ rm /tmp/build.log
 . build/envsetup.sh
 lunch bootleg_$DEVICE-$BUILDTYPE
 BUILDTIME=$(elapsed)
+tg_notify "BootleggersROM build for $DEVICE started"
 make bacon -j$JOBS |& tee /tmp/build.log
 BUILDSTATUS=${PIPESTATUS[0]}
 if [[ $BUILDSTATUS = 141 ]]; then
