@@ -33,47 +33,38 @@ done
 # old build.log file
 rm /tmp/build.log
 
-if [[ -z $MESSAGE ]]; then
-    tg_notify "Starting BootleggersROM build for $DEVICE"
-else
-    tg_notify "Starting BootleggersROM build for $DEVICE
-Notes:
-$MESSAGE"
-fi
-
 . build/envsetup.sh
 lunch bootleg_$DEVICE-userdebug
-OLDTIME=$(elapsed)
+BUILDTIME=$(elapsed)
 make bacon -j$JOBS |& tee /tmp/build.log
-if [[ ${PIPESTATUS[0]} = 141 ]]; then
-    tg_notify "${DEVICE^} build aborted!
-Elapsed time: $(elapsed $OLDTIME)"
-elif [[ ${PIPESTATUS[0]} != 0 ]]; then
-    for i in "FAILED" "ninja: error"; do
+BUILDSTATUS=${PIPESTATUS[0]}
+if [[ $BUILDSTATUS = 141 ]]; then
+    tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
+elif [[ $BUILDSTATUS != 0 ]]; then
+    for i in "FAILED" "ninja: error" "make:.*Stop."; do
         if [[ $(cat /tmp/build.log | sed -ne '/'"$i"'/,$p') != "" ]]; then
             ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,$p')
         fi
     done
     DDLINK=$(deldog "$ERROR")
     if [[ -z $ERROR ]]; then
-        tg_notify "BootleggersROM build for $DEVICE failed.
-Elapsed time: $(elapsed $OLDTIME)"
+        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $(elapsed $BUILDTIME)"
     else
-        tg_notify "BootleggersROM build for $DEVICE failed.
-Error: $DDLINK
-Elapsed time: $(elapsed $OLDTIME)"
+        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)"
     fi
     exit 1
 else
-    tg_notify "BootleggersROM build for $DEVICE successful!
-Elapsed time: $(elapsed $OLDTIME)" 
-    OLDTIME=$(elapsed)
-    (
-        cd out/target/product/sailfish
-        cp $(ls BootleggersROM*.zip | sort | tail -n 1) $HOME/gdrive/Public/Bootleggers
-    )
-    if grive -p $HOME/gdrive; then
-        tg_notify "BootleggersROM build for sailfish uploaded!
-Elapsed time: $(elapsed $OLDTIME)."
+    BUILDTIME=$(elapsed $BUILDTIME)
+    UPLOADTIME=$(elapsed)
+    BUILDZIP=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
+    if gdrive upload --parent 1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0 $BUILDZIP; then
+        UPLOADTIME=$(elapsed $UPLOADTIME)
+        tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
+            "- Build time: $BUILDTIME%0A - Upload time: $UPLOADTIME%0A - Download: [gdrive]($(gdrive info \
+            $(gdrive list --query "name contains 'Bootleggers'" --order "modifiedTime desc" -m 1 | tail -n 1 \
+            | cut -d' ' -f 1) | sed -n 's/DownloadUrl: //p'))")"
+    else
+        tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
+            "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
     fi
 fi
