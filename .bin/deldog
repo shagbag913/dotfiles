@@ -2,7 +2,6 @@
 
 # Function to upload to del.dog, from Nathan Chancellor!
 
-set -x
 RESULT=$(curl -sf --data-binary "${1}" https://del.dog/documents) || {
     echo "ERROR: failed to post document" >&2
     exit 1
