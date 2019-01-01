@@ -34,7 +34,7 @@ done
 
 [[ -z $DEVICE ]] && DEVICE="sailfish"
 [[ -z $JOBS ]] && JOBS="30"
-[[ -z $BUILDTYPE ]] && BUILDTYPE="userdebug"
+[[ -z $BUILDTYPE ]] && BUILDTYPE="user"
 
 # old build.log file
 rm /tmp/build.log
