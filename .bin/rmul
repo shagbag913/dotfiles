@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-rsync -re "ssh -p$SSHPORT" "$1" $SSHNAME:"$2"
+rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2"
