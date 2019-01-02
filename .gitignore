@@ -20,13 +20,13 @@
 !.bin/build_bl
 !.bin/colors
 !.bin/deldog
-!.bin/elapsed
 !.bin/reinit_mouse
 !.bin/reposync
 !.bin/rmdl
 !.bin/rmul
 !.bin/shagfetch
 !.bin/temp_repo
+!.bin/timer
 !.bin/tg_bot
 !.bin/volume
 
