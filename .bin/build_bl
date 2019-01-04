@@ -10,9 +10,12 @@ tg_notify() {
 
 while [[ $# -gt 1 ]]; do
     case $1 in
-        -n|--notify)
+        -b|--build-type)
             shift
-            NOTIFY+=" $1"
+            BUILDTYPE="$1"
+            ;;
+        -c|--clean)
+            make clean
             ;;
         -d|--device)
             shift
@@ -26,9 +29,15 @@ while [[ $# -gt 1 ]]; do
             shift
             MESSAGE="$1"
             ;;
-        -b|--build-type)
+        -n|--notify)
             shift
-            BUILDTYPE="$1"
+            NOTIFY+=" $1"
+            ;;
+        -r|--repo-sync)
+            if ! reposync; then
+                echo "reposync script not found! Using regular repo sync."
+                repo sync
+            fi
             ;;
     esac
 shift
