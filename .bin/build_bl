@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# make sure we're in a ROM directory
+if [[ ! -d frameworks/base ]]; then
+    echo "You must be in the ROM directory! Aborting.."
+    exit 1
+fi
+
 # function to only notify if notifications are enabled
 tg_notify() {
     [[ -z $NOTIFY ]] && return 0
