@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 
 URL="https://api.telegram.org/bot$TGBOTTOKEN/sendMessage"
 CHATIDS=(
@@ -13,16 +14,16 @@ while [[ $# -gt 1 ]]; do
            shift
            case $1 in
                all)
-                   CHATID="${CHATIDS[@]}"
+                   CHATID+=" ${CHATIDS[@]}"
                    ;;
                pm)
-                   CHATID="${CHATIDS[0]}"
+                   CHATID+=" ${CHATIDS[0]}"
                    ;;
                nug)
-                   CHATID="${CHATIDS[1]}"
+                   CHATID+=" ${CHATIDS[1]}"
                    ;;
                au)
-                   CHATID="${CHATIDS[2]}"
+                   CHATID+=" ${CHATIDS[2]}"
                    ;;
            esac
            ;;
