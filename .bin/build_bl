@@ -38,9 +38,6 @@ done
 [[ -z $JOBS ]] && JOBS="30"
 [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
 
-# old build.log file
-rm /tmp/build.log
-
 . build/envsetup.sh
 lunch bootleg_$DEVICE-$BUILDTYPE
 BUILDTIME=$(elapsed)
