@@ -7,4 +7,4 @@ fi
 # show color with GCC
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export EDITOR=vim
-export PATH="~/.bin:${PATH}"
+export PATH="~/.bin:$HOME/Android/Sdk/build-tools/28.0.3:$PATH"
