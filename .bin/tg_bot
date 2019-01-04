@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 
 URL="https://api.telegram.org/bot$TGBOTTOKEN/sendMessage"
 CHATIDS=(

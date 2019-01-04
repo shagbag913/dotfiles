@@ -3,14 +3,16 @@
 # function to only notify if notifications are enabled
 tg_notify() {
     [[ -z $NOTIFY ]] && return 0
-    tg_bot -m "$1" -p "$NOTIFY"
+    for i in $NOTIFY; do
+        tg_bot -m "$1" -p "$i"
+    done
 }
 
 while [[ $# -gt 1 ]]; do
     case $1 in
         -n|--notify)
             shift
-            NOTIFY="$1"
+            NOTIFY+=" $1"
             ;;
         -d|--device)
             shift
