@@ -43,12 +43,12 @@ rm /tmp/build.log
 
 . build/envsetup.sh
 lunch bootleg_$DEVICE-$BUILDTYPE
+BUILDTIME=$(elapsed)
 tg_notify "BootleggersROM build for $DEVICE started"
-. $HOME/.bin/timer make bacon -j$JOBS |& tee /tmp/build.log
+make bacon -j$JOBS |& tee /tmp/build.log
 BUILDSTATUS=${PIPESTATUS[0]}
-BUILDTIME="$TIMER_TOTAL"
 if [[ $BUILDSTATUS = 141 ]]; then
-    tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
+    tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
 elif [[ $BUILDSTATUS != 0 ]]; then
     for i in "FAILED" "ninja: error" "make:.*Stop."; do
         if [[ -n $(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }') ]]; then
@@ -57,15 +57,17 @@ elif [[ $BUILDSTATUS != 0 ]]; then
     done
     DDLINK=$(deldog "$ERROR")
     if [[ -z $ERROR ]]; then
-        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
+        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $(elapsed $BUILDTIME)"
     else
-        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $BUILDTIME"
+        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)"
     fi
     exit 1
 else
+    BUILDTIME=$(elapsed $BUILDTIME)
+    UPLOADTIME=$(elapsed)
     BUILDZIP=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
-    if . $HOME/.bin/timer gdrive upload --parent 1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0 $BUILDZIP; then
-        UPLOADTIME=$TIMER_TOTAL
+    if gdrive upload --parent 1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0 $BUILDZIP; then
+        UPLOADTIME=$(elapsed $UPLOADTIME)
         tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
             "- Build time: $BUILDTIME%0A - Upload time: $UPLOADTIME%0A - Download: [gdrive]($(gdrive info \
             $(gdrive list --query "name contains 'Bootleggers'" --order "modifiedTime desc" -m 1 | tail -n 1 \
