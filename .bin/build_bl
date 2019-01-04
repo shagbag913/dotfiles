@@ -38,30 +38,6 @@ done
 [[ -z $JOBS ]] && JOBS="32"
 [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
 
-read -n 1 -p "CLEAR OUT DIRECTORY?: " cod
-echo
-case $cod in
-    Y|y)
-        make clobber
-        echo "OUT DIRECTORY CLEARED."
-        ;;
-    N|n)
-        echo "NOT CLEARING OUT DIRECTORY."
-        ;;
-esac
-
-read -n 1 -p "SYNC BEFORE BUILDING?: " sync
-echo
-case $sync in
-    Y|y)
-        reposync
-        echo "REPOSYNCED."
-        ;;
-    N|n)
-        echo "NOT REPOSYNCING."
-        ;;
-esac
-
 . build/envsetup.sh
 lunch bootleg_$DEVICE-$BUILDTYPE
 BUILDTIME=$(elapsed)
