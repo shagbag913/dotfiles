@@ -30,6 +30,3 @@ source ${HOME}/.git-completion.bash
 [[ -f $HOME/.secret ]] && source $HOME/.secret
 
 neofetch
-
-export LC_ALL=C
-PATH=~/.bin:$PATH
