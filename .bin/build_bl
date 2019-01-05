@@ -14,7 +14,7 @@ tg_notify() {
     done
 }
 
-while [[ $# -gt 1 ]]; do
+while [[ $# -ge 1 ]]; do
     case $1 in
         -b|--build-type)
             shift
