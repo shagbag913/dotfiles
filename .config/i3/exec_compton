@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+if ! ps -xe | grep " compton " | grep -v grep; then
+    compton
+fi
