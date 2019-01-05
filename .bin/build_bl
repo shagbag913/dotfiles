@@ -21,7 +21,7 @@ while [[ $# -gt 1 ]]; do
             BUILDTYPE="$1"
             ;;
         -c|--clean)
-            make clean
+            make clobber
             ;;
         -d|--device)
             shift
@@ -40,7 +40,7 @@ while [[ $# -gt 1 ]]; do
             NOTIFY+=" $1"
             ;;
         -r|--repo-sync)
-            repo sync
+            reposync
             ;;
     esac
 shift
