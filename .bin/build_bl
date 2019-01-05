@@ -40,10 +40,7 @@ while [[ $# -gt 1 ]]; do
             NOTIFY+=" $1"
             ;;
         -r|--repo-sync)
-            if ! reposync; then
-                echo "reposync script not found! Using regular repo sync."
-                repo sync
-            fi
+            repo sync
             ;;
     esac
 shift
