@@ -21,6 +21,7 @@
 !.bin/colors
 !.bin/deldog
 !.bin/elapsed
+!.bin/getimages
 !.bin/reinit_mouse
 !.bin/reposync
 !.bin/rmdl

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+FACTIMAGE_DIR="$HOME/factimages"
+FACTIMAGE_URL="$1"
+FACTIMAGE_ZIP="$(basename $1)"
+FACTIMAGE_FOLDER="$(echo $FACTIMAGE_ZIP | sed -n 's/-factory.*//p')"
+DEVICE="$(echo $FACTIMAGE_ZIP | sed -n 's/-.*//p')"
+BUILDID="$(echo $FACTIMAGE_FOLDER | sed -n 's/'"$DEVICE"'-//p')"
+GD_IMAGES_TOP="1Sg3yip59wajhjdk7qUMYf9pabeClLctL"
+
+wget $FACTIMAGE_URL -P $FACTIMAGE_DIR
+unzip $FACTIMAGE_DIR/$FACTIMAGE_ZIP -d $FACTIMAGE_DIR
+unzip $FACTIMAGE_DIR/$FACTIMAGE_FOLDER/image*.zip -d $FACTIMAGE_DIR/$FACTIMAGE_FOLDER/
+
+if ! gdrive list --query " '$GD_IMAGES_TOP' in parents" | grep $DEVICE; then
+    gdrive mkdir -p $GD_IMAGES_TOP $DEVICE
+fi
+
+GD_DEVICE_IMAGES="$(gdrive list --query " '$GD_IMAGES_TOP' in parents" | grep $DEVICE | cut -d ' ' -f 1)"
+
+GD_DEVICE_BUILDID="$(gdrive mkdir -p $GD_DEVICE_IMAGES $BUILDID | cut -d ' ' -f 2)"
+
+for i in "vendor.img" "bootloader*.img" "radio*.img"; do
+    gdrive upload -p $GD_DEVICE_BUILDID $FACTIMAGE_DIR/$FACTIMAGE_FOLDER/$i
+done
