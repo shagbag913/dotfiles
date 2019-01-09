@@ -47,7 +47,7 @@ shift
 done
 
 [[ -z $DEVICE ]] && DEVICE="sailfish"
-[[ -z $JOBS ]] && JOBS="32"
+[[ -z $JOBS ]] && JOBS="30"
 [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
 
 . build/envsetup.sh
