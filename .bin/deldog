@@ -7,4 +7,4 @@ RESULT=$(curl -sf --data-binary "${1}" https://del.dog/documents) || {
     exit 1
 }
 KEY=$(jq -r .key <<< "${RESULT}")
-echo "https://del.dog/raw/${KEY}"
+echo "https://del.dog/${KEY}"
