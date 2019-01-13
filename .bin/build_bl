@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 BTLG_GDRIVE="1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0"
+BTLG_DIR="$HOME/bootleg"
 
 # make sure we're in a ROM directory
 if [[ ! -d frameworks/base ]]; then
@@ -62,7 +63,33 @@ params() {
 
 [[ -z $JOBS ]] && JOBS="30"
 
+build-kernel() {
+    cd $BTLG_DIR/kernel/google/marlin
+
+    [[ -n $CLEAN ]] && make mrproper
+    [[ -z $CROSS_COMPILE ]] && \
+        CROSS_COMPILE="prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+    [[ -z $CROSS_COMPILE_ARM32 ]] && \
+        CROSS_COMPILE_ARM32="prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-"
+    if [[ -z $CC ]]; then
+        CLANG=$(grep -r "TARGET_KERNEL_CLANG_VERSION" device/*/* | cut -d ' ' -f 3)
+        CLANG=$(grep -r $CLANG_VER prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
+        CLANG=$(dirname $CLANG_VER)
+        CLANG="$CLANG_VER/bin/clang"
+        CC="$CLANG"
+    fi
+    [[ -z $CLANG_TRIPLE ]] && CLANG_TRIPLE=aarch64-linux-gnu-
+
+    make O=out bootleg_defconfig
+    make O=out CC="$CC" -j $JOBS
+
+    #TODO: add ak2 heya
+}
+
+
 build-rom() {
+    cd $BTLG_DIR
+
     [[ -z $DEVICE ]] && DEVICE="sailfish"
     [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
     [[ -n $CLEAN ]] && make clobber
