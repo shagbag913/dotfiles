@@ -135,8 +135,8 @@ build-rom() {
         BUILDZIP=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
         if ULSTAT="$(gdrive-ul $BTLG_GDRIVE $BUILDZIP)"; then
             tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
-                "- Build time: $BUILDTIME%0A - Upload time: $(echo $ULSTAT | cut -d ' ' -f 1)" \
-                "%0A - Download: [gdrive]($(echo $ULSTAT | cut -d ' ' -f 2))")"
+                "- Build time: $BUILDTIME%0A - Upload time: $(echo $ULSTAT | tail -n 1 | cut -d ' ' -f 1)" \
+                "%0A - Download: [gdrive]($(echo $ULSTAT | tail -n 1 | cut -d ' ' -f 2))")"
         else
             tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
                 "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
