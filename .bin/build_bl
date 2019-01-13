@@ -75,11 +75,11 @@ build-kernel() {
     BUILDTIME=$(elapsed)
     make O=out bootleg_defconfig |& tee /tmp/build.log
     make O=out CC="$CC" -j $JOBS |& tee -a /tmp/build.log
-    BUILDSTATUS=$(pipe_error)
+    pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
-    if [[ $BUILDSTATUS = 130 ]]; then
+    if [[ $ERRNO = 130 ]]; then
         tg_notify "BootleggersROM kernel build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
-    elif [[ $BUILDSTATUS = 1 ]]; then
+    elif [[ $ERRNO = 1 ]]; then
         if [[ -z $DDLINK ]]; then
             tg_notify "BootleggersROM kernel build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
         else
@@ -138,7 +138,6 @@ build-rom() {
     if [[ $BUILDSTATUS = 130 ]]; then
         tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
     elif [[ $BUILDSTATUS = 1 ]]; then
-        DDLINK=$(deldog "$ERROR")
         if [[ -z $DDLINK ]]; then
             tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
         else
@@ -161,15 +160,15 @@ build-rom() {
 pipe_error() {
     STATUS=${PIPESTATUS[0]}
     if [[ $STATUS = 141 ]]; then
-        echo "130"
+        ERRNO=130
     elif [[ $STATUS != 0 ]]; then
-        for i in "FAILED" "ninja: error" "make:.*Stop."; do
-            if [[ -n $(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }') ]]; then
-                ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }')
+        for i in "FAILED" "ninja: error" "make:.*Stop." "fatal error:"; do
+            if [[ -n $(cat /tmp/build.log | sed -ne '/'"$i"'/,$p' | head -n 100) ]]; then
+                ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,$p' | head -n 100)
             fi
         done
         [[ -n $ERROR ]] && DDLINK=$(deldog "$ERROR")
-        echo 1
+        ERRNO=1
     fi
 }
 
