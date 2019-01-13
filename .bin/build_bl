@@ -9,14 +9,6 @@ if [[ ! -d frameworks/base ]]; then
     exit 1
 fi
 
-# function to only notify if notifications are enabled
-tg_notify() {
-    [[ -z $NOTIFY ]] && return 0
-    for i in $NOTIFY; do
-        tg_bot -m "$(whoami): $1" -p "$i"
-    done
-}
-
 params() {
     while [[ $# -ge 1 ]]; do
         case $1 in
@@ -153,6 +145,14 @@ gdrive-ul() {
     else
         return 1
     fi
+}
+
+# function to only notify if notifications are enabled
+tg_notify() {
+    [[ -z $NOTIFY ]] && return 0
+    for i in $NOTIFY; do
+        tg_bot -m "@$(whoami): $1" -p "$i"
+    done
 }
 
 params "${@}"
