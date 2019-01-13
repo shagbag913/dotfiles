@@ -133,10 +133,10 @@ build-rom() {
     else
         BUILDTIME=$(elapsed $BUILDTIME)
         BUILDZIP=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
-        if ULSTAT="$(gdrive-ul $BTLG_GDRIVE $BUILDZIP)"; then
+        if gdrive-ul $BTLG_GDRIVE $BUILDZIP; then
             tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
-                "- Build time: $BUILDTIME%0A - Upload time: $(echo $ULSTAT | tail -n 1 | cut -d ' ' -f 1)" \
-                "%0A - Download: [gdrive]($(echo $ULSTAT | tail -n 1 | cut -d ' ' -f 2))")"
+                "- Build time: $BUILDTIME%0A - Upload time: $ULTIME" \
+                "%0A - Download: [gdrive]($DLURL)")"
         else
             tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
                 "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
@@ -150,7 +150,6 @@ gdrive-ul() {
         ULTIME=$(elapsed $ULTIME)
         DLURL=($(gdrive info $(gdrive list --order "modifiedTime desc" -m 1 \
             | tail -n 1 | cut -d' ' -f 1) | sed -n 's/DownloadUrl: //p'))
-        echo "$ULTIME $DLURL"
     else
         return 1
     fi
