@@ -50,6 +50,16 @@ done
 [[ -z $JOBS ]] && JOBS="30"
 [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
 
+# clone repos if they aren't there for marlin/sailfish
+if [[ $DEVICE = marlin || $DEVICE = sailfish ]]; then
+    for i in "kernel_google_marlin" "device_google_marlin" "vendor_google"; do
+        DIR=$(sed -n 's/_/\//gp' <<< $i)
+        if [[ ! -d $DIR ]]; then
+            git clone https://github.com/BootleggersROM-devices/$i -b pasta $DIR
+        fi
+    done
+fi
+
 . build/envsetup.sh
 lunch bootleg_$DEVICE-$BUILDTYPE
 BUILDTIME=$(elapsed)
