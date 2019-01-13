@@ -24,7 +24,7 @@ params() {
                 BUILDTYPE="$1"
                 ;;
             -c|--clean)
-                make clobber
+                CLEAN=true
                 ;;
             -d|--device)
                 shift
@@ -43,16 +43,16 @@ params() {
                 NOTIFY+=" $1"
                 ;;
             -r|--repo-sync)
-                reposync
+                SYNC=true
                 ;;
             -t|--target)
                 shift
                 case $1 in
                     kernel)
-                        build-kernel
+                        TARGET=kernel
                         ;;
                     bl)
-                        build-rom
+                        TARGET=rom
                         ;;
                 esac
         esac
@@ -65,6 +65,8 @@ params() {
 build-rom() {
     [[ -z $DEVICE ]] && DEVICE="sailfish"
     [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
+    [[ -n $CLEAN ]] && make clobber
+    [[ -n $SYNC ]] && reposync
 
     # clone repos if they aren't there for marlin/sailfish
     if [[ $DEVICE = marlin || $DEVICE = sailfish ]]; then
@@ -128,3 +130,8 @@ gdrive-ul() {
 }
 
 params "${@}"
+if [[ $TARGET = rom ]]; then
+    build-rom
+elif [[ $TARGET = kernel ]]; then
+    build-kernel
+fi
