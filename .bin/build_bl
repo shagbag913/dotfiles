@@ -78,12 +78,12 @@ build-kernel() {
     BUILDSTATUS=$(pipe_error)
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $BUILDSTATUS = 130 ]]; then
-        tg_notify "BootleggersROM kernel build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
+        tg_notify "BootleggersROM kernel build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
     elif [[ $BUILDSTATUS = 1 ]]; then
         if [[ -z $DDLINK ]]; then
-            tg_notify "BootleggersROM kernel build for $DEVICE failed.%0A - Elapsed time: $(elapsed $BUILDTIME)"
+            tg_notify "BootleggersROM kernel build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
         else
-            tg_notify "BootleggersROM kernel build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)"
+            tg_notify "BootleggersROM kernel build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $BUILDTIME"
         fi
     else
         rm -rf $AK2_DIR/kernel/* $AK2_DIR/dtbs/* $AK2_DIR/Bootleg*.zip
@@ -134,18 +134,18 @@ build-rom() {
     fi
     make bacon -j$JOBS |& tee /tmp/build.log
     BUILDSTATUS=$(pipe_error)
+    BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $BUILDSTATUS = 130 ]]; then
-        tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
+        tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
     elif [[ $BUILDSTATUS = 1 ]]; then
         DDLINK=$(deldog "$ERROR")
         if [[ -z $DDLINK ]]; then
-            tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $(elapsed $BUILDTIME)"
+            tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
         else
-            tg_notify "BootleggersROM build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)"
+            tg_notify "BootleggersROM build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $BUILDTIME"
         fi
         exit 1
     else
-        BUILDTIME=$(elapsed $BUILDTIME)
         BUILDZIP=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
         if gdrive-ul $BTLG_GDRIVE $BUILDZIP; then
             tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
