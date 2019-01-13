@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+BTLG_GDRIVE="1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0"
+
 # make sure we're in a ROM directory
 if [[ ! -d frameworks/base ]]; then
     echo "You must be in the ROM directory! Aborting.."
@@ -14,89 +16,115 @@ tg_notify() {
     done
 }
 
-while [[ $# -ge 1 ]]; do
-    case $1 in
-        -b|--build-type)
-            shift
-            BUILDTYPE="$1"
-            ;;
-        -c|--clean)
-            make clobber
-            ;;
-        -d|--device)
-            shift
-            DEVICE="$1"
-            ;;
-        -j|--jobs)
-            shift
-            JOBS="$1"
-            ;;
-        -m|--message)
-            shift
-            MESSAGE="$1"
-            ;;
-        -n|--notify)
-            shift
-            NOTIFY+=" $1"
-            ;;
-        -r|--repo-sync)
-            reposync
-            ;;
-    esac
-shift
-done
+params() {
+    while [[ $# -ge 1 ]]; do
+        case $1 in
+            -b|--build-type)
+                shift
+                BUILDTYPE="$1"
+                ;;
+            -c|--clean)
+                make clobber
+                ;;
+            -d|--device)
+                shift
+                DEVICE="$1"
+                ;;
+            -j|--jobs)
+                shift
+                JOBS="$1"
+                ;;
+            -m|--message)
+                shift
+                MESSAGE="$1"
+                ;;
+            -n|--notify)
+                shift
+                NOTIFY+=" $1"
+                ;;
+            -r|--repo-sync)
+                reposync
+                ;;
+            -t|--target)
+                shift
+                case $1 in
+                    kernel)
+                        build-kernel
+                        ;;
+                    bl)
+                        build-rom
+                        ;;
+                esac
+        esac
+    shift
+    done
+}
 
-[[ -z $DEVICE ]] && DEVICE="sailfish"
 [[ -z $JOBS ]] && JOBS="30"
-[[ -z $BUILDTYPE ]] && BUILDTYPE="user"
 
-# clone repos if they aren't there for marlin/sailfish
-if [[ $DEVICE = marlin || $DEVICE = sailfish ]]; then
-    for i in "kernel_google_marlin" "device_google_marlin" "vendor_google"; do
-        DIR=$(sed -n 's/_/\//gp' <<< $i)
-        if [[ ! -d $DIR ]]; then
-            git clone https://github.com/BootleggersROM-devices/$i -b pasta $DIR
-        fi
-    done
-fi
+build-rom() {
+    [[ -z $DEVICE ]] && DEVICE="sailfish"
+    [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
 
-. build/envsetup.sh
-lunch bootleg_$DEVICE-$BUILDTYPE
-BUILDTIME=$(elapsed)
-if [[ -z $MESSAGE ]]; then
-    tg_notify "BootleggersROM build for $DEVICE started"
-else
-    tg_notify "BootleggersROM build for $DEVICE started%0A - Notes for this build:%0A$MESSAGE"
-fi
-make bacon -j$JOBS |& tee /tmp/build.log
-BUILDSTATUS=${PIPESTATUS[0]}
-if [[ $BUILDSTATUS = 141 ]]; then
-    tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
-elif [[ $BUILDSTATUS != 0 ]]; then
-    for i in "FAILED" "ninja: error" "make:.*Stop."; do
-        if [[ -n $(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }') ]]; then
-            ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }')
+    # clone repos if they aren't there for marlin/sailfish
+    if [[ $DEVICE = marlin || $DEVICE = sailfish ]]; then
+        for i in "kernel_google_marlin" "device_google_marlin" "vendor_google"; do
+            DIR=$(sed -n 's/_/\//gp' <<< $i)
+            if [[ ! -d $DIR ]]; then
+                git clone https://github.com/BootleggersROM-devices/$i -b pasta $DIR
+            fi
+        done
+    fi
+
+    . build/envsetup.sh
+    lunch bootleg_$DEVICE-$BUILDTYPE
+    BUILDTIME=$(elapsed)
+    if [[ -z $MESSAGE ]]; then
+        tg_notify "BootleggersROM build for $DEVICE started"
+    else
+        tg_notify "BootleggersROM build for $DEVICE started%0A - Notes for this build:%0A$MESSAGE"
+    fi
+    make bacon -j$JOBS |& tee /tmp/build.log
+    BUILDSTATUS=${PIPESTATUS[0]}
+    if [[ $BUILDSTATUS = 141 ]]; then
+        tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
+    elif [[ $BUILDSTATUS != 0 ]]; then
+        for i in "FAILED" "ninja: error" "make:.*Stop."; do
+            if [[ -n $(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }') ]]; then
+                ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }')
+            fi
+        done
+        DDLINK=$(deldog "$ERROR")
+        if [[ -z $ERROR ]]; then
+            tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $(elapsed $BUILDTIME)"
+        else
+            tg_notify "BootleggersROM build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)"
         fi
-    done
-    DDLINK=$(deldog "$ERROR")
-    if [[ -z $ERROR ]]; then
-        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $(elapsed $BUILDTIME)"
+        exit 1
     else
-        tg_notify "BootleggersROM build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)"
+        BUILDTIME=$(elapsed $BUILDTIME)
+        BUILDZIP=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
+        if ULSTAT="$(gdrive-ul $BTLG_GDRIVE $BUILDZIP)"; then
+            tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
+                "- Build time: $BUILDTIME%0A - Upload time: $(echo $ULSTAT | cut -d ' ' -f 1)" \
+                "%0A - Download: [gdrive]($(echo $ULSTAT | cut -d ' ' -f 2))")"
+        else
+            tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
+                "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
+        fi
     fi
-    exit 1
-else
-    BUILDTIME=$(elapsed $BUILDTIME)
-    UPLOADTIME=$(elapsed)
-    BUILDZIP=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
-    if gdrive upload --parent 1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0 $BUILDZIP; then
-        UPLOADTIME=$(elapsed $UPLOADTIME)
-        tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
-            "- Build time: $BUILDTIME%0A - Upload time: $UPLOADTIME%0A - Download: [gdrive]($(gdrive info \
-            $(gdrive list --query "name contains 'Bootleggers'" --order "modifiedTime desc" -m 1 | tail -n 1 \
-            | cut -d' ' -f 1) | sed -n 's/DownloadUrl: //p'))")"
+}
+
+gdrive-ul() {
+    ULTIME=$(elapsed)
+    if gdrive upload --parent $1 $2; then
+        ULTIME=$(elapsed $ULTIME)
+        DLURL=($(gdrive info $(gdrive list --order "modifiedTime desc" -m 1 \
+            | tail -n 1 | cut -d' ' -f 1) | sed -n 's/DownloadUrl: //p'))
+        echo "$ULTIME $DLURL"
     else
-        tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
-            "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
+        return 1
     fi
-fi
+}
+
+params "${@}"
