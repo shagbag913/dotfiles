@@ -74,7 +74,7 @@ build-kernel() {
     tg_notify "BootleggersROM kernel build for $DEVICE started."    #TODO: come up with a device family thing
     BUILDTIME=$(elapsed)
     make O=out bootleg_defconfig |& tee /tmp/build.log
-    make O=out CC="$CC" -j $JOBS |& tee -a /tmp/build.log
+    make O=out CC="ccache $CC" -j $JOBS |& tee -a /tmp/build.log
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $ERRNO = 130 ]]; then
