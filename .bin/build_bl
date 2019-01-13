@@ -74,8 +74,18 @@ build-kernel() {
     tg_notify "BootleggersROM kernel build for $DEVICE started."    #TODO: come up with a device family thing
     BUILDTIME=$(elapsed)
     make O=out bootleg_defconfig |& tee /tmp/build.log
-    if make O=out CC="$CC" -j $JOBS |& tee -a /tmp/build.log; then
-        BUILDTIME=$(elapsed $BUILDTIME)
+    make O=out CC="$CC" -j $JOBS |& tee -a /tmp/build.log
+    BUILDSTATUS=$(pipe_error)
+    BUILDTIME=$(elapsed $BUILDTIME)
+    if [[ $BUILDSTATUS = 130 ]]; then
+        tg_notify "BootleggersROM kernel build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
+    elif [[ $BUILDSTATUS = 1 ]]; then
+        if [[ -z $DDLINK ]]; then
+            tg_notify "BootleggersROM kernel build for $DEVICE failed.%0A - Elapsed time: $(elapsed $BUILDTIME)"
+        else
+            tg_notify "BootleggersROM kernel build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)"
+        fi
+    else
         rm -rf $AK2_DIR/kernel/* $AK2_DIR/dtbs/* $AK2_DIR/Bootleg*.zip
         cp out/arch/arm64/boot/Image.lz4 $AK2_DIR/kernel/.
         cp out/arch/arm64/boot/dts/htc/*.dtb $AK2_DIR/dtbs/.
@@ -90,12 +100,7 @@ build-kernel() {
             tg_notify "$(echo "BootleggersROM kernel build for $DEVICE successful!%0A" \
                 "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
         fi
-    else
-        tg_notify "$(echo "BootleggersROM kernel build for $DEVICE failed!%0A" \
-            "- Elapsed time: $BUILDTIME%0A")"
     fi
-
-
 }
 
 
@@ -128,17 +133,12 @@ build-rom() {
         tg_notify "BootleggersROM build for $DEVICE started%0A - Notes for this build:%0A$MESSAGE"
     fi
     make bacon -j$JOBS |& tee /tmp/build.log
-    BUILDSTATUS=${PIPESTATUS[0]}
-    if [[ $BUILDSTATUS = 141 ]]; then
+    BUILDSTATUS=$(pipe_error)
+    if [[ $BUILDSTATUS = 130 ]]; then
         tg_notify "BootleggersROM build for $DEVICE aborted!%0A - Elapsed time: $(elapsed $BUILDTIME)"
-    elif [[ $BUILDSTATUS != 0 ]]; then
-        for i in "FAILED" "ninja: error" "make:.*Stop."; do
-            if [[ -n $(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }') ]]; then
-                ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }')
-            fi
-        done
+    elif [[ $BUILDSTATUS = 1 ]]; then
         DDLINK=$(deldog "$ERROR")
-        if [[ -z $ERROR ]]; then
+        if [[ -z $DDLINK ]]; then
             tg_notify "BootleggersROM build for $DEVICE failed.%0A - Elapsed time: $(elapsed $BUILDTIME)"
         else
             tg_notify "BootleggersROM build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $(elapsed $BUILDTIME)"
@@ -155,6 +155,21 @@ build-rom() {
             tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
                 "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
         fi
+    fi
+}
+
+pipe_error() {
+    STATUS=${PIPESTATUS[0]}
+    if [[ $STATUS = 141 ]]; then
+        echo "130"
+    elif [[ $STATUS != 0 ]]; then
+        for i in "FAILED" "ninja: error" "make:.*Stop."; do
+            if [[ -n $(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }') ]]; then
+                ERROR=$(cat /tmp/build.log | sed -ne '/'"$i"'/,/\[ [0-9]/{ /\[ [0-9]/d; p }')
+            fi
+        done
+        [[ -n $ERROR ]] && DDLINK=$(deldog "$ERROR")
+        echo 1
     fi
 }
 
