@@ -3,12 +3,6 @@
 BTLG_GDRIVE="1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0"
 BTLG_DIR="$HOME/bootleg"
 
-# make sure we're in a ROM directory
-if [[ ! -d frameworks/base ]]; then
-    echo "You must be in the ROM directory! Aborting.."
-    exit 1
-fi
-
 params() {
     while [[ $# -ge 1 ]]; do
         case $1 in
@@ -54,35 +48,60 @@ params() {
 }
 
 [[ -z $JOBS ]] && JOBS="30"
+[[ -z $DEVICE ]] && DEVICE="sailfish"
 
 build-kernel() {
+    AK2_DIR="$HOME/ak2"
+
+    [[ -z $CROSS_COMPILE ]] && \
+        export CROSS_COMPILE="$BTLG_DIR/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+    [[ -z $CROSS_COMPILE_ARM32 ]] && \
+        export CROSS_COMPILE_ARM32="$BTLG_DIR/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-"
+    if [[ -z $CC ]]; then
+        CLANG=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/* | cut -d ' ' -f 3)
+        CLANG=$(grep -r $CLANG $BTLG_DIR/prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
+        CLANG=$(dirname $CLANG)
+        CLANG="$CLANG/bin/clang"
+        [[ -n $CLANG ]] && export CC="$CLANG"
+    fi
+    [[ -z $CLANG_TRIPLE && -n $CC ]] && export CLANG_TRIPLE=aarch64-linux-gnu-
+    [[ -z $ARCH ]] && export ARCH=arm64
+
     cd $BTLG_DIR/kernel/google/marlin
 
     [[ -n $CLEAN ]] && make mrproper
-    [[ -z $CROSS_COMPILE ]] && \
-        CROSS_COMPILE="prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
-    [[ -z $CROSS_COMPILE_ARM32 ]] && \
-        CROSS_COMPILE_ARM32="prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-"
-    if [[ -z $CC ]]; then
-        CLANG=$(grep -r "TARGET_KERNEL_CLANG_VERSION" device/*/* | cut -d ' ' -f 3)
-        CLANG=$(grep -r $CLANG_VER prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
-        CLANG=$(dirname $CLANG_VER)
-        CLANG="$CLANG_VER/bin/clang"
-        CC="$CLANG"
+
+    tg_notify "BootleggersROM kernel build for $DEVICE started."    #TODO: come up with a device family thing
+    BUILDTIME=$(elapsed)
+    make O=out bootleg_defconfig |& tee /tmp/build.log
+    if make O=out CC="$CC" -j $JOBS |& tee -a /tmp/build.log; then
+        BUILDTIME=$(elapsed $BUILDTIME)
+        rm -rf $AK2_DIR/kernel/* $AK2_DIR/dtbs/* $AK2_DIR/Bootleg*.zip
+        cp out/arch/arm64/boot/Image.lz4 $AK2_DIR/kernel/.
+        cp out/arch/arm64/boot/dts/htc/*.dtb $AK2_DIR/dtbs/.
+        cd $AK2_DIR
+        KERNELZIP="BootleggersROM-kernel-$(date +%m%d-%H%M).zip"
+        zip -r9 $KERNELZIP *
+        if gdrive-ul $BTLG_GDRIVE $KERNELZIP; then
+            tg_notify "$(echo "BootleggersROM kernel build for $DEVICE successful!%0A" \
+                "- Build time: $BUILDTIME%0A - Upload time: $ULTIME" \
+                "%0A - Download: [gdrive]($DLURL)")"
+        else
+            tg_notify "$(echo "BootleggersROM kernel build for $DEVICE successful!%0A" \
+                "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
+        fi
+    else
+        tg_notify "$(echo "BootleggersROM kernel build for $DEVICE failed!%0A" \
+            "- Elapsed time: $BUILDTIME%0A")"
     fi
-    [[ -z $CLANG_TRIPLE ]] && CLANG_TRIPLE=aarch64-linux-gnu-
 
-    make O=out bootleg_defconfig
-    make O=out CC="$CC" -j $JOBS
 
-    #TODO: add ak2 heya
 }
 
 
 build-rom() {
     cd $BTLG_DIR
 
-    [[ -z $DEVICE ]] && DEVICE="sailfish"
     [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
     [[ -n $CLEAN ]] && make clobber
     [[ -n $SYNC ]] && reposync
@@ -97,9 +116,12 @@ build-rom() {
         done
     fi
 
+    # make sure kernel directory is clean before building
+    [[ -f kernel/google/marlin/.config ]] && ( cd kernel/google/marlin; make mrproper )
+
+    BUILDTIME=$(elapsed)
     . build/envsetup.sh
     lunch bootleg_$DEVICE-$BUILDTYPE
-    BUILDTIME=$(elapsed)
     if [[ -z $MESSAGE ]]; then
         tg_notify "BootleggersROM build for $DEVICE started"
     else
