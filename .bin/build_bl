@@ -34,21 +34,20 @@ params() {
                 ;;
             -t|--target)
                 shift
-                case $1 in
-                    kernel)
-                        TARGET=kernel
-                        ;;
-                    bl)
-                        TARGET=rom
-                        ;;
-                esac
+                if [[ $1 = kernel ]]; then
+                    TARGET=kernel
+                elif [[ -z $1 ]]; then
+                    TARGET=$1
+                fi
+                ;;
         esac
     shift
     done
 }
 
-[[ -z $JOBS ]] && JOBS="30"
-[[ -z $DEVICE ]] && DEVICE="sailfish"
+[[ -z $JOBS ]] && JOBS=30
+[[ -z $DEVICE ]] && DEVICE=sailfish
+[[ -z $TARGET ]] && TARGET=bacon
 
 build-kernel() {
     AK2_DIR="$HOME/ak2"
@@ -132,7 +131,7 @@ build-rom() {
     else
         tg_notify "BootleggersROM build for $DEVICE started%0A - Notes for this build:%0A$MESSAGE"
     fi
-    make bacon -j$JOBS |& tee /tmp/build.log
+    make $TARGET -j$JOBS |& tee /tmp/build.log
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $ERRNO = 130 ]]; then
