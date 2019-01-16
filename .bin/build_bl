@@ -36,7 +36,7 @@ params() {
                 shift
                 if [[ $1 = kernel ]]; then
                     TARGET=kernel
-                elif [[ -z $1 ]]; then
+                elif [[ -n $1 ]]; then
                     TARGET=$1
                 fi
                 ;;
@@ -191,8 +191,8 @@ tg_notify() {
 }
 
 params "${@}"
-if [[ $TARGET = rom ]]; then
-    build-rom
-elif [[ $TARGET = kernel ]]; then
+if [[ $TARGET = kernel ]]; then
     build-kernel
+else
+    build-rom
 fi
