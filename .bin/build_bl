@@ -29,9 +29,6 @@ params() {
                 shift
                 NOTIFY+=" $1"
                 ;;
-            -r|--repo-sync)
-                SYNC=true
-                ;;
             -t|--target)
                 shift
                 if [[ $1 = kernel ]]; then
@@ -108,7 +105,6 @@ build-rom() {
 
     [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
     [[ -n $CLEAN ]] && make clobber
-    [[ -n $SYNC ]] && reposync
 
     # clone repos if they aren't there for marlin/sailfish
     if [[ $DEVICE = marlin || $DEVICE = sailfish ]]; then
