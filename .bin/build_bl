@@ -42,9 +42,11 @@ params() {
     done
 }
 
+# DEFAULTS
 [[ -z $JOBS ]] && JOBS=30
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
+[[ -z $NOTIFY ]] && NOTIFY=nug
 
 build-kernel() {
     AK2_DIR="$HOME/ak2"
@@ -140,8 +142,12 @@ build-rom() {
         fi
         exit 1
     else
-        BUILDZIP=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
-        if gdrive-ul $BTLG_GDRIVE $BUILDZIP; then
+        if [[ $TARGET = bacon ]]; then
+            OUTPUT=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
+        else
+            OUTPUT=$(cat /tmp/build.log | sed -n 's/\[.*100%.*\] Install: //p')
+        fi
+        if gdrive-ul $BTLG_GDRIVE $OUTPUT; then
             tg_notify "$(echo "BootleggersROM build for $DEVICE successful!%0A" \
                 "- Build time: $BUILDTIME%0A - Upload time: $ULTIME" \
                 "%0A - Download: [gdrive]($DLURL)")"
