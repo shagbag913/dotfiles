@@ -121,7 +121,7 @@ build-rom() {
     if [[ -z $MESSAGE ]]; then
         tg_notify "BootleggersROM build for $DEVICE started"
     else
-        tg_notify "BootleggersROM build for $DEVICE started%0A    Notes for this build:%0A$MESSAGE"
+        tg_notify "BootleggersROM build for $DEVICE started%0ANotes for this build:%0A$MESSAGE"
     fi
     make $TARGET -j$JOBS |& tee /tmp/build.log
     pipe_error
