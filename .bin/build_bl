@@ -127,20 +127,20 @@ build-rom() {
     fi
 
     if [[ -z $MESSAGE ]]; then
-        tg_notify "BootleggersROM${TGT_MSG}build for $DEVICE started"
+        tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE started"
     else
-        tg_notify "BootleggersROM${TGT_MSG}build for $DEVICE started%0ANotes for this build:%0A$MESSAGE"
+        tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE started%0ANotes for this build:%0A$MESSAGE"
     fi
     make $TARGET -j$JOBS |& tee /tmp/build.log
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $ERRNO = 130 ]]; then
-        tg_notify "BootleggersROM${TGT_MSG}build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
+        tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
     elif [[ $ERRNO = 1 ]]; then
         if [[ -z $DDLINK ]]; then
-            tg_notify "BootleggersROM${TGT_MSG}build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
+            tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
         else
-            tg_notify "BootleggersROM${TGT_MSG}build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $BUILDTIME"
+            tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $BUILDTIME"
         fi
         exit 1
     else
@@ -150,11 +150,11 @@ build-rom() {
             OUTPUT=$(cat /tmp/build.log | sed -n 's/\[.*100%.*\] Install: //p')
         fi
         if gdrive-ul $BTLG_GDRIVE $OUTPUT; then
-            tg_notify "$(echo "BootleggersROM${TGT_MSG}build for $DEVICE successful!%0A" \
+            tg_notify "$(echo "BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A" \
                 "- Build time: $BUILDTIME%0A - Upload time: $ULTIME" \
                 "%0A - Download: [gdrive]($DLURL)")"
         else
-            tg_notify "$(echo "BootleggersROM${TGT_MSG}build for $DEVICE successful!%0A" \
+            tg_notify "$(echo "BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A" \
                 "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
         fi
     fi
