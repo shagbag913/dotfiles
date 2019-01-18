@@ -42,12 +42,6 @@ params() {
     done
 }
 
-# DEFAULTS
-[[ -z $JOBS ]] && JOBS=30
-[[ -z $DEVICE ]] && DEVICE=sailfish
-[[ -z $TARGET ]] && TARGET=bacon
-[[ -z $NOTIFY ]] && NOTIFY=nug
-
 build-kernel() {
     AK2_DIR="$HOME/ak2"
 
@@ -193,6 +187,11 @@ tg_notify() {
 }
 
 params "${@}"
+# DEFAULTS
+[[ -z $JOBS ]] && JOBS=30
+[[ -z $DEVICE ]] && DEVICE=sailfish
+[[ -z $TARGET ]] && TARGET=bacon
+[[ -z $NOTIFY ]] && NOTIFY=nug
 if [[ $TARGET = kernel ]]; then
     build-kernel
 else
