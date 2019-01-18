@@ -99,7 +99,7 @@ build-kernel() {
 build-rom() {
     cd $BTLG_DIR
 
-    [[ -z $BUILDTYPE ]] && BUILDTYPE="user"
+    [[ -z $BUILDTYPE ]] && BUILDTYPE="userdebug"
     [[ -n $CLEAN ]] && make clobber
 
     # clone repos if they aren't there for marlin/sailfish
