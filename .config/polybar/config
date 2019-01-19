@@ -178,5 +178,5 @@ margin-bottom = 5
 type = custom/script
 exec = ~/.config/polybar/update-check -n
 click-left = ~/.config/polybar/update-check -u
-interval = 300
+interval = 30
 ; vim:ft=dosini
