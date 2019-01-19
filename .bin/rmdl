@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
+[[ $HOSTNAME != "ShagBook" ]] && { echo "$(basename $0) is meant to be run on ShagBook!"; exit 1; }
+
 rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2"
