@@ -117,7 +117,7 @@ build-rom() {
 
     # check if ccache is cleared
     if [[ $(ccache -s | sed -n 's/files in cache.* //p') = 0 ]]; then
-        MESSAGE+="ccache cleared! This build will take longer than usual."
+        MESSAGE+=" - ccache cleared! This build will take longer than usual."
     fi
 
     BUILDTIME=$(elapsed)
@@ -157,7 +157,7 @@ build-rom() {
         if gdrive-ul $BTLG_GDRIVE $OUTPUT; then
             tg_notify "$(echo "BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A" \
                 "- Build time: $BUILDTIME%0A - Upload time: $ULTIME" \
-                "%0A - Download: [gdrive]($DLURL)")"
+                "%0A - Download: [gdrive]($DLURL)%0ANotes for this build:%0A$MESSAGE")"
         else
             tg_notify "$(echo "BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A" \
                 "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
