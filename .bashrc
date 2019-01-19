@@ -15,18 +15,12 @@ REST='\e[39m'
 
 ### PS1 ###
 # hostname
-PS1="\[${CYAN}\]\u@\[${REST}\]"
-# user
-PS1+="\[${RED}\]\h\[${REST}\]"
-# directory
-PS1+="\[${CYAN}\] \W \[${REST}\]"
-# Dollah sign bcuz why not
-PS1+="\[${GREEN}\]$ \[${REST}\]"
+PS1="\[${CYAN}\]\u@\[${RED}\]\h\[${CYAN}\] \W \[${GREEN}\]$ \[${REST}\]"
 
 # Source outside files for further configuration
 source ${HOME}/.alias
 source ${HOME}/.export
 source ${HOME}/.git-completion.bash
-[[ -f $HOME/.secret ]] && source $HOME/.secret
+source $HOME/.secret
 
 neofetch

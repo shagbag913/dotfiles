@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# startup stuff for ShagBox only
+ngrok tcp 22

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# startup stuff for ShagBook only
+
+xinput set-prop "Elan Touchpad" "libinput Middle Emulation Enabled" 1
+xinput set-prop "Elan Touchpad" "libinput Natural Scrolling Enabled" 1
+xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1
+xrandr --output eDP-1 --mode 1600x900

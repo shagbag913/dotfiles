@@ -8,7 +8,8 @@
 !.git-completion.bash
 !.gitconfig
 !.gitignore
-!.setscreenres
+!.shagbookstart
+!.shagboxstart
 !.tmux.conf
 !.Xresources
 !.vimrc
