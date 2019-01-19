@@ -115,6 +115,11 @@ build-rom() {
     # make sure kernel directory is clean before building
     [[ -f kernel/google/marlin/.config ]] && ( cd kernel/google/marlin; make mrproper )
 
+    # check if ccache is cleared
+    if [[ $(ccache -s | sed -n 's/files in cache.* //p') = 0 ]]; then
+        MESSAGE+="ccache cleared! This build will take longer than usual."
+    fi
+
     BUILDTIME=$(elapsed)
     . build/envsetup.sh
     lunch bootleg_$DEVICE-$BUILDTYPE
@@ -196,7 +201,7 @@ tg_notify() {
 
 params "${@}"
 # DEFAULTS
-[[ -z $JOBS ]] && JOBS=30
+[[ -z $JOBS ]] && JOBS=24
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
 [[ -z $NOTIFY ]] && NOTIFY=nug
