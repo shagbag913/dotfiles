@@ -6,7 +6,7 @@ foreground-alt = ${xrdb:foreground-alt}
 
 [bar/top]
 width = 100%
-height = 3%
+height = 4%
 
 border-top-size = 15
 border-right-size = 30
