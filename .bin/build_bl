@@ -100,7 +100,7 @@ build-rom() {
     cd $BTLG_DIR
 
     [[ -z $BUILDTYPE ]] && BUILDTYPE="userdebug"
-    [[ -n $CLEAN ]] && make clobber
+    [[ -n $CLEAN ]] && make installclean
 
     # clone repos if they aren't there for marlin/sailfish
     if [[ $DEVICE = marlin || $DEVICE = sailfish ]]; then
