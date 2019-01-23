@@ -100,17 +100,6 @@ build-rom() {
     cd $BTLG_DIR
 
     [[ -z $BUILDTYPE ]] && BUILDTYPE="userdebug"
-    [[ -n $CLEAN ]] && make installclean
-
-    # clone repos if they aren't there for marlin/sailfish
-    if [[ $DEVICE = marlin || $DEVICE = sailfish ]]; then
-        for i in "kernel_google_marlin" "device_google_marlin" "vendor_google"; do
-            DIR=$(sed -n 's/_/\//gp' <<< $i)
-            if [[ ! -d $DIR ]]; then
-                git clone https://github.com/BootleggersROM-devices/$i -b pasta $DIR
-            fi
-        done
-    fi
 
     # make sure kernel directory is clean before building
     [[ -f kernel/google/marlin/.config ]] && ( cd kernel/google/marlin; make mrproper )
@@ -123,6 +112,8 @@ build-rom() {
     BUILDTIME=$(elapsed)
     . build/envsetup.sh
     lunch bootleg_$DEVICE-$BUILDTYPE
+
+    [[ -n $CLEAN ]] && make installclean
 
     # short way to notify of target we are building
     if [[ $TARGET = bacon ]]; then
