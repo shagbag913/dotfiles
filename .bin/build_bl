@@ -113,7 +113,7 @@ build-rom() {
     . build/envsetup.sh
     lunch bootleg_$DEVICE-$BUILDTYPE
 
-    [[ -n $CLEAN ]] && make installclean
+    [[ -n $CLEAN ]] && make clobber
 
     # short way to notify of target we are building
     if [[ $TARGET = bacon ]]; then
