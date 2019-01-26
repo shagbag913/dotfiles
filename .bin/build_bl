@@ -6,10 +6,6 @@ BTLG_DIR="$HOME/bootleg"
 params() {
     while [[ $# -ge 1 ]]; do
         case $1 in
-            -b|--build-type)
-                shift
-                BUILDTYPE="$1"
-                ;;
             -c|--clean)
                 CLEAN=true
                 ;;
@@ -44,7 +40,6 @@ params() {
 
 build-kernel() {
     AK2_DIR="$HOME/ak2"
-
     [[ -z $CROSS_COMPILE ]] && \
         export CROSS_COMPILE="$BTLG_DIR/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
     [[ -z $CROSS_COMPILE_ARM32 ]] && \
@@ -63,20 +58,18 @@ build-kernel() {
 
     [[ -n $CLEAN ]] && make mrproper
 
-    tg_notify "BootleggersROM kernel build for $DEVICE started."    #TODO: come up with a device family thing
-    BUILDTIME=$(elapsed)
+    tg_notify "BootleggersROM kernel build for $DEVICE started."
+
     make O=out bootleg_defconfig |& tee /tmp/build.log
+    BUILDTIME=$(elapsed)
     make O=out CC="ccache $CC" -j $JOBS |& tee -a /tmp/build.log
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $ERRNO = 130 ]]; then
-        tg_notify "BootleggersROM kernel build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
+        TG_MSG="BootleggersROM kernel build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
     elif [[ $ERRNO = 1 ]]; then
-        if [[ -z $DDLINK ]]; then
-            tg_notify "BootleggersROM kernel build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
-        else
-            tg_notify "BootleggersROM kernel build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $BUILDTIME"
-        fi
+        TG_MSG="BootleggersROM kernel build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
+        [[ -n $DDLINK ]] && TG_MSG="%0A - Error: [del.dog]($DDLINK)"
     else
         rm -rf $AK2_DIR/kernel/* $AK2_DIR/dtbs/* $AK2_DIR/Bootleg*.zip
         cp out/arch/arm64/boot/Image.lz4 $AK2_DIR/kernel/.
@@ -84,76 +77,61 @@ build-kernel() {
         cd $AK2_DIR
         KERNELZIP="BootleggersROM-kernel-$(date +%m%d-%H%M).zip"
         zip -r9 $KERNELZIP *
+        TG_MSG="BootleggersROM kernel build for $DEVICE successful!%0A - Build time: $BUILDTIME"
         if gdrive-ul $BTLG_GDRIVE $KERNELZIP; then
-            tg_notify "$(echo "BootleggersROM kernel build for $DEVICE successful!%0A" \
-                "- Build time: $BUILDTIME%0A - Upload time: $ULTIME" \
-                "%0A - Download: [gdrive]($DLURL)")"
+            TG_MSG="$TG_MSG%0A - Upload time: $ULTIME%0A - Download: [gdrive]($DLURL)"
         else
-            tg_notify "$(echo "BootleggersROM kernel build for $DEVICE successful!%0A" \
-                "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
+            TG_MSG="$TG_MSG%0A - Upload time: Upload failed!"
         fi
     fi
+    tg_notify "$TG_MSG"
 }
 
 
 build-rom() {
+    BUILDTYPE="userdebug"
+
     cd $BTLG_DIR
-
-    [[ -z $BUILDTYPE ]] && BUILDTYPE="userdebug"
-
-    # make sure kernel directory is clean before building
-    [[ -f kernel/google/marlin/.config ]] && ( cd kernel/google/marlin; make mrproper )
 
     # check if ccache is cleared
     if [[ $(ccache -s | sed -n 's/files in cache.* //p') = 0 ]]; then
         MESSAGE+=" - ccache cleared! This build will take longer than usual."
     fi
 
-    BUILDTIME=$(elapsed)
     . build/envsetup.sh
     lunch bootleg_$DEVICE-$BUILDTYPE
-
     [[ -n $CLEAN ]] && make clobber
 
     # short way to notify of target we are building
-    if [[ $TARGET = bacon ]]; then
-        MSG_TGT=" "
-    else
-        MSG_TGT=" $TARGET "
-    fi
+    [[ $TARGET = bacon ]] && MSG_TGT=" " || MSG_TGT=" $TARGET "
+    TG_MSG="BootleggersROM${MSG_TGT}build for $DEVICE started"
+    [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0ANotes for this build:%0A$MESSAGE"
+    tg_notify "$TG_MSG"
 
-    if [[ -z $MESSAGE ]]; then
-        tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE started"
-    else
-        tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE started%0ANotes for this build:%0A$MESSAGE"
-    fi
+    BUILDTIME=$(elapsed)
     make $TARGET -j$JOBS |& tee /tmp/build.log
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $ERRNO = 130 ]]; then
-        tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
+        TG_MSG="BootleggersROM${MSG_TGT}build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
     elif [[ $ERRNO = 1 ]]; then
-        if [[ -z $DDLINK ]]; then
-            tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
-        else
-            tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE failed.%0A - Error: [del.dog]($DDLINK)%0A - Elapsed time: $BUILDTIME"
-        fi
-        exit 1
+        TG_MSG="BootleggersROM${MSG_TGT}build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
+        [[ -n $DDLINK ]] && TG_MSG="$TG_MSG%0A - Error: [del.dog]($DDLINK)"
     else
         if [[ $TARGET = bacon ]]; then
             OUTPUT=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
         else
             OUTPUT=$(cat /tmp/build.log | sed -n 's/\[.*100%.*\] Install: //p')
         fi
+        TG_MSG="BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A - Build time: $BUILDTIME"
         if gdrive-ul $BTLG_GDRIVE $OUTPUT; then
-            tg_notify "$(echo "BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A" \
-                "- Build time: $BUILDTIME%0A - Upload time: $ULTIME" \
-                "%0A - Download: [gdrive]($DLURL)%0ANotes for this build:%0A$MESSAGE")"
+            TG_MSG="$TG_MSG%0A - Upload time: $ULTIME%0A - Download: [gdrive]($DLURL)"
+            [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0ANotes for this build:%0A$MESSAGE"
         else
-            tg_notify "$(echo "BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A" \
-                "- Build time: $BUILDTIME%0A - Upload time: Upload failed!")"
+            TG_MSG="$TG_MSG%0A - Upload time: Upload failed!"
         fi
     fi
+    tg_notify "$TG_MSG"
 }
 
 pipe_error() {
