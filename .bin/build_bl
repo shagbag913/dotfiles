@@ -58,7 +58,9 @@ build-kernel() {
 
     [[ -n $CLEAN ]] && make mrproper
 
-    tg_notify "BootleggersROM kernel build for $DEVICE started."
+    TG_MSG="BootleggersROM kernel build for $DEVICE started."
+    [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0ANotes for this build:%0A$MESSAGE"
+    tg_notify "$TG_MSG"
 
     make O=out bootleg_defconfig |& tee /tmp/build.log
     BUILDTIME=$(elapsed)
