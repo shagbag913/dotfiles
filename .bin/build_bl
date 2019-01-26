@@ -62,9 +62,9 @@ build-kernel() {
     [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0ANotes for this build:%0A$MESSAGE"
     tg_notify "$TG_MSG"
 
-    make O=out bootleg_defconfig |& tee /tmp/build.log
+    make bootleg_defconfig |& tee /tmp/build.log
     BUILDTIME=$(elapsed)
-    make O=out CC="ccache $CC" -j $JOBS |& tee -a /tmp/build.log
+    make CC="ccache $CC" -j $JOBS |& tee -a /tmp/build.log
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $ERRNO = 130 ]]; then
@@ -74,8 +74,8 @@ build-kernel() {
         [[ -n $DDLINK ]] && TG_MSG="%0A - Error: [del.dog]($DDLINK)"
     else
         rm -rf $AK2_DIR/kernel/* $AK2_DIR/dtbs/* $AK2_DIR/Bootleg*.zip
-        cp out/arch/arm64/boot/Image.lz4 $AK2_DIR/kernel/.
-        cp out/arch/arm64/boot/dts/htc/*.dtb $AK2_DIR/dtbs/.
+        cp arch/arm64/boot/Image.lz4 $AK2_DIR/kernel/.
+        cp arch/arm64/boot/dts/htc/*.dtb $AK2_DIR/dtbs/.
         cd $AK2_DIR
         KERNELZIP="BootleggersROM-kernel-$(date +%m%d-%H%M).zip"
         zip -r9 $KERNELZIP *
