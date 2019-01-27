@@ -38,6 +38,20 @@ params() {
     done
 }
 
+prep() {
+    BRANCH=pasta
+    if [[ ! -d $BTLG_DIR ]]; then
+        mkdir $BTLG_DIR && cd $BTLG_DIR
+        repo init --depth 1 -u https://github.com/BootleggersROM/manifest -b $BRANCH
+        reposync
+    fi
+    for i in vendor/google_devices kernel/google/marlin device/google/marlin; do
+        if [[ ! -d $BTLG_DIR/$i ]]; then
+            git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $BTLG_DIR/$i
+        fi
+    done
+}
+
 build-kernel() {
     AK2_DIR="$HOME/ak2"
 
@@ -173,13 +187,12 @@ tg_notify() {
 }
 
 params "${@}"
+
 # DEFAULTS
 [[ -z $JOBS ]] && JOBS=$MAKEFLAGS
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
 [[ -z $NOTIFY ]] && NOTIFY=nug
-if [[ $TARGET = kernel ]]; then
-    build-kernel
-else
-    build-rom
-fi
+
+prep
+[[ $TARGET = kernel ]] && build-kernel || build-rom
