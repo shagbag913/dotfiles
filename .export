@@ -3,6 +3,7 @@ if [[ $HOSTNAME = "ShagBox" ]]; then
     export USE_CCACHE=1
     export LC_ALL=C
     export PATH="$HOME/Android/Sdk/build-tools/28.0.3:$PATH"
+    export MAKEFLAGS=24
 fi
 
 export PATH="$HOME/.bin:$PATH"

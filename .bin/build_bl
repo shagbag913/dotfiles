@@ -174,7 +174,7 @@ tg_notify() {
 
 params "${@}"
 # DEFAULTS
-[[ -z $JOBS ]] && JOBS=24
+[[ -z $JOBS ]] && JOBS=$MAKEFLAGS
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
 [[ -z $NOTIFY ]] && NOTIFY=nug
