@@ -40,19 +40,12 @@ params() {
 
 build-kernel() {
     AK2_DIR="$HOME/ak2"
-    [[ -z $CROSS_COMPILE ]] && \
-        export CROSS_COMPILE="$BTLG_DIR/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
-    [[ -z $CROSS_COMPILE_ARM32 ]] && \
-        export CROSS_COMPILE_ARM32="$BTLG_DIR/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-"
-    if [[ -z $CC ]]; then
-        CLANG=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/* | cut -d ' ' -f 3)
-        CLANG=$(grep -r $CLANG $BTLG_DIR/prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
-        CLANG=$(dirname $CLANG)
-        CLANG="$CLANG/bin/clang"
-        [[ -n $CLANG ]] && export CC="$CLANG"
-    fi
-    [[ -z $CLANG_TRIPLE && -n $CC ]] && export CLANG_TRIPLE=aarch64-linux-gnu-
-    [[ -z $ARCH ]] && export ARCH=arm64
+
+    # find clang version
+    CLANG=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/* | cut -d ' ' -f 3)
+    CLANG=$(grep -r $CLANG $BTLG_DIR/prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
+    CLANG=$(dirname $CLANG)
+    CLANG="$CLANG/bin/"
 
     cd $BTLG_DIR/kernel/google/marlin
 
@@ -62,9 +55,12 @@ build-kernel() {
     [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0ANotes for this build:%0A$MESSAGE"
     tg_notify "$TG_MSG"
 
-    make bootleg_defconfig |& tee /tmp/build.log
+    make bootleg_defconfig ARCH=arm64 |& tee /tmp/build.log
     BUILDTIME=$(elapsed)
-    make CC="ccache $CC" -j $JOBS |& tee -a /tmp/build.log
+    make -j $JOBS CC="ccache $CLANG/clang" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
+        CROSS_COMPILE="$BTLG_DIR/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-" \
+        CROSS_COMPILE_ARM32="$BTLG_DIR/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-" \
+        |& tee -a /tmp/build.log
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $ERRNO = 130 ]]; then
@@ -158,7 +154,13 @@ gdrive-ul() {
         DLURL=($(gdrive info $(gdrive list --order "modifiedTime desc" -m 1 \
             | tail -n 1 | cut -d' ' -f 1) | sed -n 's/DownloadUrl: //p'))
     else
-        return 1
+        FAILCNT=$((FAILCNT+1))
+        if [[ $FAILCNT = 3 ]]; then
+            echo "Upload failed!"
+            return 1
+        else
+            gdrive-ul
+        fi
     fi
 }
 
