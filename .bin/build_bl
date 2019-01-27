@@ -40,7 +40,7 @@ params() {
 
 prep() {
     BRANCH=pasta
-    if [[ ! -d $BTLG_DIR ]]; then
+    if ! ls $BTLG_DIR/*; then
         mkdir $BTLG_DIR && cd $BTLG_DIR
         repo init --depth 1 -u https://github.com/BootleggersROM/manifest -b $BRANCH
         reposync
