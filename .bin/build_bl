@@ -52,6 +52,8 @@ prep() {
                 git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $BTLG_DIR/$i
             fi
         done
+    else
+        exit 1
     fi
 }
 
