@@ -44,12 +44,15 @@ prep() {
         mkdir $BTLG_DIR && cd $BTLG_DIR
         repo init --depth 1 -u https://github.com/BootleggersROM/manifest -b $BRANCH
         reposync
+        ERR=$?
     fi
-    for i in vendor/google_devices kernel/google/marlin device/google/marlin; do
-        if [[ ! -d $BTLG_DIR/$i ]]; then
-            git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $BTLG_DIR/$i
-        fi
-    done
+    if [[ $ERR = 0 ]]; then
+        for i in vendor/google_devices kernel/google/marlin device/google/marlin; do
+            if [[ ! -d $BTLG_DIR/$i ]]; then
+                git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $BTLG_DIR/$i
+            fi
+        done
+    fi
 }
 
 build-kernel() {
