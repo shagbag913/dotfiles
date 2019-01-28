@@ -3,7 +3,6 @@ if [[ $HOSTNAME = "ShagBox" ]]; then
     export USE_CCACHE=1
     export LC_ALL=C
     export PATH="$HOME/Android/Sdk/build-tools/28.0.3:$PATH"
-    export MAKEFLAGS=24
 fi
 
 export PATH="$HOME/.bin:$PATH"
@@ -11,3 +10,10 @@ export PATH="$HOME/.bin:$PATH"
 # show color with GCC
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export EDITOR=vim
+
+# cpu cores
+export CORES=$(lscpu | sed -n 's/Core(s) per socket:.* //p')
+# cpu threads
+export THREADS=$((CORES * $(lscpu | sed -n 's/Thread(s) per core:.* //p')))
+
+export MAKEFLAGS=$((THREADS * 150 / 100))
