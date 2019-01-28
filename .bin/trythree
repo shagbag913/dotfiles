@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# try a command three times before failing
+# this is inspired by my garbage internet that likes to cut out during repo syncs
+
+while :; do
+    "${@}"
+    RET="$?"
+    [[ $RET = 0 ]] && exit $RET
+    STAT=$((STAT+1))
+    [[ $STAT = 3 ]] && exit $RET
+done
+    
