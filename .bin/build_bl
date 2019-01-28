@@ -40,8 +40,9 @@ params() {
 
 prep() {
     BRANCH=pasta
-    if ! ls $BTLG_DIR/*; then
-        mkdir $BTLG_DIR && cd $BTLG_DIR
+    if repo status | grep missing &>/dev/null; then
+        [[ -d $BTLG_DIR ]] || mkdir $BTLG_DIR
+        cd $BTLG_DIR
         repo init --depth 1 -u https://github.com/BootleggersROM/manifest -b $BRANCH
         reposync
         ERR=$?
