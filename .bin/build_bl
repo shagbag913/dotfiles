@@ -123,6 +123,14 @@ build-rom() {
 
     cd $BTLG_DIR
 
+    # make sure kernel directory is clean
+    if [[ -f kernel/google/marlin/.config ]]; then
+        (
+            cd kernel/google/marlin
+            make mrproper
+        )
+    fi
+
     # check if ccache is cleared
     if [[ $(ccache -s | sed -n 's/files in cache.* //p') = 0 ]]; then
         MESSAGE+=" - ccache cleared! This build will take longer than usual."
