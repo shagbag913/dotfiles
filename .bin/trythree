@@ -9,5 +9,6 @@ while :; do
     [[ $RET = 0 ]] && exit $RET
     STAT=$((STAT+1))
     [[ $STAT = 3 ]] && exit $RET
+    sleep 1
 done
     

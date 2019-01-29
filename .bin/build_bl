@@ -40,21 +40,18 @@ params() {
 
 prep() {
     BRANCH=pasta
-    if repo status | grep missing &>/dev/null; then
+    if [[ ! -d $BTLG_DIR/vendor/bootleggers ]]; then
         [[ -d $BTLG_DIR ]] || mkdir $BTLG_DIR
         cd $BTLG_DIR
         repo init --depth 1 -u https://github.com/BootleggersROM/manifest -b $BRANCH
-        reposync
-        ERR=$?
+        trythree reposync || exit 1
     fi
-    if [[ $ERR = 0 ]]; then
+    if [[ -d $BTLG_DIR/vendor/bootleggers ]]; then
         for i in vendor/google_devices kernel/google/marlin device/google/marlin; do
             if [[ ! -d $BTLG_DIR/$i ]]; then
-                git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $BTLG_DIR/$i
+                git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $BTLG_DIR/$i || exit 1
             fi
         done
-    else
-        exit 1
     fi
 }
 
@@ -67,6 +64,13 @@ build-kernel() {
     CLANG=$(dirname $CLANG)
     CLANG="$CLANG/bin/"
 
+    if [[ -z $CROSS_COMPILE ]]; then
+        CROSS_COMPILE="$BTLG_DIR/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+    fi
+    if [[ -z $CROSS_COMPILE_ARM32 ]]; then
+        CROSS_COMPILE_ARM32="$BTLG_DIR/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-"
+    fi
+
     cd $BTLG_DIR/kernel/google/marlin
 
     [[ -n $CLEAN ]] && make mrproper
@@ -77,10 +81,18 @@ build-kernel() {
 
     make bootleg_defconfig ARCH=arm64 |& tee /tmp/build.log
     BUILDTIME=$(elapsed)
-    make -j $JOBS CC="ccache $CLANG/clang" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
-        CROSS_COMPILE="$BTLG_DIR/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-" \
-        CROSS_COMPILE_ARM32="$BTLG_DIR/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-" \
-        |& tee -a /tmp/build.log
+    if [[ -n $CLANG && -z $NO_CLANG ]]; then
+        make -j $JOBS CC="ccache $CLANG/clang" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
+            CROSS_COMPILE="ccache $CROSS_COMPILE" \
+            CROSS_COMPILE_ARM32="ccache $CROSS_COMPILE_ARM32" \
+            |& tee -a /tmp/build.log
+    else
+        make -j $JOBS ARCH=arm64 \
+            CROSS_COMPILE="ccache $CROSS_COMPILE" \
+            CROSS_COMPILE_ARM32="ccache $CROSS_COMPILE_ARM32" \
+            |& tee -a /tmp/build.log
+        fi
+
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $ERRNO = 130 ]]; then
@@ -169,18 +181,12 @@ pipe_error() {
 
 gdrive-ul() {
     ULTIME=$(elapsed)
-    if gdrive upload --parent $1 $2; then
+    if trythree gdrive upload --parent $1 $2; then
         ULTIME=$(elapsed $ULTIME)
-        DLURL=($(gdrive info $(gdrive list --order "modifiedTime desc" -m 1 \
+        DLURL=($(trythree gdrive info $(gdrive list --order "modifiedTime desc" -m 1 \
             | tail -n 1 | cut -d' ' -f 1) | sed -n 's/DownloadUrl: //p'))
     else
-        FAILCNT=$((FAILCNT+1))
-        if [[ $FAILCNT = 3 ]]; then
-            echo "Upload failed!"
-            return 1
-        else
-            gdrive-ul
-        fi
+        echo "Upload failed!"
     fi
 }
 
@@ -188,7 +194,7 @@ gdrive-ul() {
 tg_notify() {
     [[ -z $NOTIFY ]] && return 0
     for i in $NOTIFY; do
-        tg_bot -m "@$(whoami): $1" -p "$i"
+        tg_bot -m "$1" -p "$i"
     done
 }
 
