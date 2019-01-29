@@ -23,6 +23,7 @@
 	f = fetch
 	ma = merge --abort
 	mc = merge --continue
+	p = push
 	s = status
 [review "review.carbonrom.org"]
 	username = shagbag913
