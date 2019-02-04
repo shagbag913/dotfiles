@@ -22,7 +22,7 @@ alias brc='source ~/.bashrc'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
-alias pgrep='find . -type f -print0  | xargs -0 -P 4 grep'
+alias pgrep='find . -type f -print0  | xargs -0 -P 4 grep -n'
 alias free="free -mt"
 alias la='ls -a'
 alias ll='ls -la'
