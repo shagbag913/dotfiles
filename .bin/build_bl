@@ -83,8 +83,8 @@ build-kernel() {
     BUILDTIME=$(elapsed)
     if [[ -n $CLANG && -z $NO_CLANG ]]; then
         make -j $JOBS CC="ccache $CLANG/clang" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
-            CROSS_COMPILE="ccache $CROSS_COMPILE" \
-            CROSS_COMPILE_ARM32="ccache $CROSS_COMPILE_ARM32" \
+            CROSS_COMPILE="$CROSS_COMPILE" \
+            CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32" \
             |& tee -a /tmp/build.log
     else
         make -j $JOBS ARCH=arm64 \
