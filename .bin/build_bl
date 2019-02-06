@@ -43,7 +43,7 @@ prep() {
     if [[ ! -d $BTLG_DIR/vendor/bootleggers ]]; then
         [[ -d $BTLG_DIR ]] || mkdir $BTLG_DIR
         cd $BTLG_DIR
-        repo init --depth 1 -u https://github.com/BootleggersROM/manifest -b $BRANCH
+        repo init -u https://github.com/BootleggersROM/manifest -b $BRANCH
         trythree reposync || exit 1
     fi
     if [[ -d $BTLG_DIR/vendor/bootleggers ]]; then
@@ -59,8 +59,8 @@ build-kernel() {
     AK2_DIR="$HOME/ak2"
 
     # find clang version
-    CLANG=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/* | cut -d ' ' -f 3)
-    CLANG=$(grep -r $CLANG $BTLG_DIR/prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
+    CLANGV=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/* | cut -d ' ' -f 3)
+    CLANG=$(grep -r $CLANGV $BTLG_DIR/prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
     CLANG=$(dirname $CLANG)
     CLANG="$CLANG/bin/"
 
@@ -73,25 +73,26 @@ build-kernel() {
 
     cd $BTLG_DIR/kernel/google/marlin
 
-    [[ -n $CLEAN ]] && make mrproper
-
     TG_MSG="BootleggersROM kernel build for $DEVICE started."
-    [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0ANotes for this build:%0A$MESSAGE"
-    tg_notify "$TG_MSG"
+    [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0A$MESSAGE"
 
+    make mrproper
     make bootleg_defconfig ARCH=arm64 |& tee /tmp/build.log
     BUILDTIME=$(elapsed)
     if [[ -n $CLANG && -z $NO_CLANG ]]; then
+        tg_notify "$TG_MSG%0A - Built with Clang $CLANGV"
         make -j $JOBS CC="ccache $CLANG/clang" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
             CROSS_COMPILE="$CROSS_COMPILE" \
             CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32" \
             |& tee -a /tmp/build.log
     else
+        GCCV=$("$CROSS_COMPILE"gcc --version | head -n 1 | cut -d ' ' -f 3)
+        tg_notify "$TG_MSG%0A - Built with GCC $GCCV"
         make -j $JOBS ARCH=arm64 \
             CROSS_COMPILE="ccache $CROSS_COMPILE" \
             CROSS_COMPILE_ARM32="ccache $CROSS_COMPILE_ARM32" \
             |& tee -a /tmp/build.log
-        fi
+    fi
 
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
@@ -142,9 +143,7 @@ build-rom() {
 
     # short way to notify of target we are building
     [[ $TARGET = bacon ]] && MSG_TGT=" " || MSG_TGT=" $TARGET "
-    TG_MSG="BootleggersROM${MSG_TGT}build for $DEVICE started"
-    [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0ANotes for this build:%0A$MESSAGE"
-    tg_notify "$TG_MSG"
+    tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE started%0A$MESSAGE"
 
     BUILDTIME=$(elapsed)
     make $TARGET -j$JOBS |& tee /tmp/build.log
@@ -163,8 +162,7 @@ build-rom() {
         fi
         TG_MSG="BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A - Build time: $BUILDTIME"
         if gdrive-ul $BTLG_GDRIVE $OUTPUT; then
-            TG_MSG="$TG_MSG%0A - Upload time: $ULTIME%0A - Download: [gdrive]($DLURL)"
-            [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0ANotes for this build:%0A$MESSAGE"
+            TG_MSG="$TG_MSG%0A - Upload time: $ULTIME%0A - Download: [gdrive]($DLURL)%0A$MESSAGE"
         else
             TG_MSG="$TG_MSG%0A - Upload time: Upload failed!"
         fi
