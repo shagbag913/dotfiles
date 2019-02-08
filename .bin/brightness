@@ -9,7 +9,7 @@ touch ${SCRIPT_TEMP}
 
 FADE=true
 BRIGHTNESS_STEPS="10"
-MINIMUM_BRIGHTNESS="3"
+MINIMUM_BRIGHTNESS="1"
 CURRENT_BRIGHTNESS=$(printf "%.0f\n" $(light))
 
 set_brightness() {
@@ -30,12 +30,20 @@ set_brightness() {
 }
 
 if [[ ${1} = "-inc" ]]; then
-    set_brightness ${BRIGHTNESS_STEPS} +
+    if [[ $CURRENT_BRIGHTNESS -le 10 ]]; then
+        set_brightness 1 +
+    else
+        set_brightness ${BRIGHTNESS_STEPS} +
+    fi
 elif [[ ${1} = "-dec" ]] && [[ ${CURRENT_BRIGHTNESS} -gt $((MINIMUM_BRIGHTNESS + BRIGHTNESS_STEPS)) ]]; then
     set_brightness ${BRIGHTNESS_STEPS} -
 elif [[ -n ${1} ]]; then
     if [[ ${CURRENT_BRIGHTNESS} -gt ${MINIMUM_BRIGHTNESS} ]]; then
-        set_brightness $((CURRENT_BRIGHTNESS - MINIMUM_BRIGHTNESS)) -
+        if [[ $CURRENT_BRIGHTNESS -le 10 ]]; then
+            set_brightness 1 -
+        else
+            set_brightness $((CURRENT_BRIGHTNESS - MINIMUM_BRIGHTNESS)) -
+        fi
     fi
 fi
 
