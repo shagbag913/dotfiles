@@ -137,6 +137,9 @@ build-rom() {
         MESSAGE+=" - ccache cleared! This build will take longer than usual."
     fi
 
+    # perform prebuild stuff on supported device
+    [[ $DEVICE = marlin || $DEVICE = sailfish ]] && prebuild
+
     . build/envsetup.sh
     lunch bootleg_$DEVICE-$BUILDTYPE
     [[ -n $CLEAN ]] && make clobber
@@ -168,6 +171,7 @@ build-rom() {
         fi
     fi
     tg_notify "$TG_MSG"
+    [[ $DEVICE = marlin || $DEVICE = sailfish ]] && postbuild
 }
 
 pipe_error() {
@@ -202,6 +206,19 @@ tg_notify() {
     for i in $NOTIFY; do
         tg_bot -m "$1" -p "$i"
     done
+}
+
+prebuild() {
+    echo "Performing pre-build changes"
+    sed -i 's/TARGET_KERNEL_CLANG/#TARGET_KERNEL_CLANG/g' device/google/marlin/BoardConfigBootleg.mk
+    echo "KERNEL_TOOLCHAIN_PREFIX := aarch64-linux-gnu-" >> device/google/marlin/BoardConfigBootleg.mk
+}
+
+postbuild() {
+    echo "Reverting pre-build changes"
+    sed -i 's/#TARGET_KERNEL_CLANG/TARGET_KERNEL_CLANG/g' device/google/marlin/BoardConfigBootleg.mk
+    sed -i 's/KERNEL_TOOLCHAIN_PREFIX.*//' device/google/marlin/BoardConfigBootleg.mk
+    perl -pi -e 'chomp if eof' device/google/marlin/BoardConfigBootleg.mk
 }
 
 params "${@}"
