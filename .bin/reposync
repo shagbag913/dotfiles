@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-trythree time schedtool -B -n 1 -e ionice -n 1 repo sync -j$MAKEFLAGS \
+trythree schedtool -B -n 1 -e ionice -n 1 repo sync -j$MAKEFLAGS \
     --no-clone-bundle --prune --no-tags -c --optimized-fetch -f "$@"

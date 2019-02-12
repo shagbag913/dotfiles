@@ -59,7 +59,7 @@ build-kernel() {
     AK2_DIR="$HOME/ak2"
 
     # find clang version
-    CLANGV=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/* | cut -d ' ' -f 3)
+    CLANGV=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/*/*.mk | cut -d ' ' -f 3)
     CLANG=$(grep -r $CLANGV $BTLG_DIR/prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
     CLANG=$(dirname $CLANG)
     CLANG="$CLANG/bin/"
