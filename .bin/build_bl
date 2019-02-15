@@ -58,11 +58,13 @@ prep() {
 build-kernel() {
     AK2_DIR="$HOME/ak2"
 
-    # find clang version
-    CLANGV=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/*/*.mk | cut -d ' ' -f 3)
-    CLANG=$(grep -r $CLANGV $BTLG_DIR/prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
-    CLANG=$(dirname $CLANG)
-    CLANG="$CLANG/bin/"
+    if [[ -z $CLANG ]]; then
+        # find clang version
+        CLANGV=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/*/*.mk | cut -d ' ' -f 3)
+        CLANG=$(grep -r $CLANGV $BTLG_DIR/prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
+        CLANG=$(dirname $CLANG)
+        CLANG="$CLANG/bin/"
+    fi
 
     if [[ -z $CROSS_COMPILE ]]; then
         CROSS_COMPILE="$BTLG_DIR/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
@@ -210,15 +212,13 @@ tg_notify() {
 
 prebuild() {
     echo "Performing pre-build changes"
-    sed -i 's/TARGET_KERNEL_CLANG/#TARGET_KERNEL_CLANG/g' device/google/marlin/BoardConfigBootleg.mk
-    echo "KERNEL_TOOLCHAIN_PREFIX := aarch64-linux-gnu-" >> device/google/marlin/BoardConfigBootleg.mk
+    OLDCLANG=$(sed -n 's/TARGET_KERNEL_CLANG_VERSION.* //p' < device/google/marlin/BoardConfigBootleg.mk)
+    sed -i 's/'"$OLDCLANG"'/8.0.8/' device/google/marlin/BoardConfigBootleg.mk
 }
 
 postbuild() {
     echo "Reverting pre-build changes"
-    sed -i 's/#TARGET_KERNEL_CLANG/TARGET_KERNEL_CLANG/g' device/google/marlin/BoardConfigBootleg.mk
-    sed -i 's/KERNEL_TOOLCHAIN_PREFIX.*//' device/google/marlin/BoardConfigBootleg.mk
-    perl -pi -e 'chomp if eof' device/google/marlin/BoardConfigBootleg.mk
+    sed -i 's/8.0.8/'"$OLDCLANG"'/' device/google/marlin/BoardConfigBootleg.mk
 }
 
 params "${@}"
