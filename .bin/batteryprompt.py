@@ -5,7 +5,10 @@ import os
 def secs2hours(secs):
     mm, ss = divmod(secs, 60)
     hh, mm = divmod(mm, 60)
-    return ("%dhr, %dmin" % (hh, mm))
+    if hh != 0:
+        return ("%dhr, %dmin" % (hh, mm))
+    else:
+        return ("%dmin" % mm)
 
 battery = psutil.sensors_battery()
 battery_state = battery.power_plugged
@@ -33,8 +36,8 @@ else:
     else:
         icon = 'battery-full'
 
-    remain = "%s remaining" % (secs2hours(battery_time))
+    remain = "%s remaining" % secs2hours(battery_time)
 
 
-icon = '/usr/share/icons/Numix/48/devices/%s.svg' % (icon)
+icon = '/usr/share/icons/Numix/48/devices/%s.svg' % icon
 os.system('notify-send.sh --app-name=Battery --icon=%s "%i%% charged\n%s"' % (icon, round(battery_pct), remain))
