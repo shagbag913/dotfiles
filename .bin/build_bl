@@ -163,7 +163,7 @@ build-rom() {
         if [[ $TARGET = bacon ]]; then
             OUTPUT=$(ls out/target/product/$DEVICE/BootleggersROM*.zip | sort | tail -n 1)
         else
-            OUTPUT=$(cat /tmp/build.log | sed -n 's/\[.*100%.*\] Install: //p')
+            OUTPUT=$(cat /tmp/build.log | sed -n 's/\[.*%.*\] Install: //p' | tail -n 1)
         fi
         TG_MSG="BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A - Build time: $BUILDTIME"
         if gdrive-ul $BTLG_GDRIVE $OUTPUT; then
