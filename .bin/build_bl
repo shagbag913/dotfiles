@@ -74,22 +74,18 @@ build-kernel() {
     fi
 
     cd $BTLG_DIR/kernel/google/marlin
-
-    TG_MSG="BootleggersROM kernel build for $DEVICE started."
-    [[ -n $MESSAGE ]] && TG_MSG="$TG_MSG%0A$MESSAGE"
+    tg_notify "BootleggersROM kernel build for $DEVICE started.%0A$MESSAGE"
 
     make mrproper
     make bootleg_defconfig ARCH=arm64 |& tee /tmp/build.log
     BUILDTIME=$(elapsed)
     if [[ -n $CLANG && -z $NO_CLANG ]]; then
-        tg_notify "$TG_MSG%0A - Built with Clang $CLANGV"
         make -j $JOBS CC="ccache $CLANG/clang" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
             CROSS_COMPILE="$CROSS_COMPILE" \
             CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32" \
             |& tee -a /tmp/build.log
     else
         GCCV=$("$CROSS_COMPILE"gcc --version | head -n 1 | cut -d ' ' -f 3)
-        tg_notify "$TG_MSG%0A - Built with GCC $GCCV"
         make -j $JOBS ARCH=arm64 \
             CROSS_COMPILE="ccache $CROSS_COMPILE" \
             CROSS_COMPILE_ARM32="ccache $CROSS_COMPILE_ARM32" \
