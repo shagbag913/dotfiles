@@ -227,7 +227,6 @@ params "${@}"
 [[ -z $JOBS ]] && JOBS=$MAKEFLAGS
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
-[[ -z $NOTIFY ]] && NOTIFY=nug
 
 prep
 [[ $TARGET = kernel ]] && build-kernel || build-rom
