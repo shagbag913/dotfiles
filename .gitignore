@@ -19,6 +19,7 @@
 !.bin/apktool.jar
 !.bin/brightness
 !.bin/batteryprompt.py
+!.bin/batteryprompt_wrap.py
 !.bin/build_bl
 !.bin/colors
 !.bin/deldog
