@@ -4,15 +4,20 @@ import os
 import psutil
 import sys
 
-battery = psutil.sensors_battery()
-plugged = battery.power_plugged
-showlow = True
+showlow = 'no u'
+plugged = 'no u'
 
 while True:
     battery = psutil.sensors_battery()
     battery_pct = round(battery.percent)
     battery_state = battery.power_plugged
     battery_time = battery.secsleft
+
+    if plugged == 'no u':
+        plugged = battery_state
+
+    if showlow == 'no u':
+        showlow = True
 
     if plugged != battery_state:
         plugged = battery_state
