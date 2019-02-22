@@ -208,13 +208,15 @@ tg_notify() {
 
 prebuild() {
     echo "Performing pre-build changes"
-    OLDCLANG=$(sed -n 's/TARGET_KERNEL_CLANG_VERSION.* //p' < device/google/marlin/BoardConfigBootleg.mk)
-    sed -i 's/'"$OLDCLANG"'/8.0.8/' device/google/marlin/BoardConfigBootleg.mk
+    sed -i 's/TARGET_KERNEL_CLANG/#TARGET_KERNEL_CLANG/g' device/google/marlin/BoardConfigBootleg.mk
+    echo "KERNEL_TOOLCHAIN_PREFIX := aarch64-linux-gnu-" >> device/google/marlin/BoardConfigBootleg.mk
 }
 
 postbuild() {
     echo "Reverting pre-build changes"
-    sed -i 's/8.0.8/'"$OLDCLANG"'/' device/google/marlin/BoardConfigBootleg.mk
+    sed -i 's/#TARGET_KERNEL_CLANG/TARGET_KERNEL_CLANG/g' device/google/marlin/BoardConfigBootleg.mk
+    sed -i 's/KERNEL_TOOLCHAIN_PREFIX.*//' device/google/marlin/BoardConfigBootleg.mk
+    perl -pi -e 'chomp if eof' device/google/marlin/BoardConfigBootleg.mk
 }
 
 params "${@}"
