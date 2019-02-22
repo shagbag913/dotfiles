@@ -15,7 +15,7 @@ def sendnotif(msg, icon):
 
 def lowprompt(battery_pct):
     icon = '/usr/share/icons/Numix/48/status/gtk-dialog-warning-panel.svg'
-    sendnotif('Warning: battery low.\nCharge: {}'.format(battery_pct), icon)
+    sendnotif('Warning: battery low.\nCharge: {}%'.format(battery_pct), icon)
 
 def statprompt(battery_pct, battery_state, battery_time):
     icon = '/usr/share/icons/Numix/48/devices/'
