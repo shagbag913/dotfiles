@@ -17,6 +17,13 @@ def lowprompt(battery_pct):
     icon = '/usr/share/icons/Numix/48/status/gtk-dialog-warning-panel.svg'
     sendnotif('Warning: battery low.\nCharge: {}%'.format(battery_pct), icon)
 
+def eventprompt(battery_pct, battery_state):
+    if battery_state == True:
+        event = 'Charger connected'
+    else:
+        event = 'Charger disconnected'
+    sendnotif(event, geticon(battery_pct, battery_state))
+
 def geticon(battery_pct, battery_state):
     icon = '/usr/share/icons/Numix/48/devices/'
     if battery_pct < 20:
@@ -30,6 +37,7 @@ def geticon(battery_pct, battery_state):
     if battery_state == True:
         icon += '-charging'
     icon += '.svg'
+    return icon
 
 def statprompt(battery_pct, battery_state, battery_time):
     if battery_state == True:
@@ -37,4 +45,4 @@ def statprompt(battery_pct, battery_state, battery_time):
     else:
         remain = "{} remaining".format(secs2hours(battery_time))
 
-    sendnotif("{}% charged\n{}".format(battery_pct, remain), geticon)
+    sendnotif("{}% charged\n{}".format(battery_pct, remain), geticon(battery_pct, battery_state))

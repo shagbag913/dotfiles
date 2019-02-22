@@ -4,11 +4,18 @@ import os
 import psutil
 import sys
 
+battery = psutil.sensors_battery()
+plugged = battery.power_plugged
+
 while True:
     battery = psutil.sensors_battery()
     battery_pct = round(battery.percent)
     battery_state = battery.power_plugged
     battery_time = battery.secsleft
+
+    if plugged != battery_state:
+        plugged = battery_state
+        batteryprompt.eventprompt(battery_pct, battery_state)
 
     try:
         if sys.argv[1] == 'click':
