@@ -11,7 +11,7 @@ def secs2hours(secs):
         return ("%dmin" % mm)
 
 def sendnotif(msg, icon):
-    subprocess.call(['notify-send.sh', '--icon=' + icon, '--app-name=Battery', msg])
+    subprocess.call(['notify-send.sh', '--icon=' + icon, '--app-name=BatteryPrompt', msg])
 
 def lowprompt(battery_pct):
     icon = '/usr/share/icons/Numix/48/status/gtk-dialog-warning-panel.svg'
