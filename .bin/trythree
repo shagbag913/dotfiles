@@ -8,6 +8,6 @@ while :; do
     RET="$?"
     STAT=$((STAT+1))
     [[ $RET = 0 || $STAT = 3 ]] && exit $RET
-    sleep 1
+    sleep 2
 done
     
