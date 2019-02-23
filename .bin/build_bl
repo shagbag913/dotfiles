@@ -33,6 +33,9 @@ params() {
                     TARGET=$1
                 fi
                 ;;
+            -nu|--no-upload)
+                NO_UPLOAD=true
+                ;;
         esac
     shift
     done
@@ -188,11 +191,16 @@ pipe_error() {
 }
 
 gdrive-ul() {
+    [[ -n $NO_UPLOAD ]] && return 0
     ULTIME=$(elapsed)
     if trythree gdrive upload --parent $1 $2; then
         ULTIME=$(elapsed $ULTIME)
-        DLURL=($(trythree gdrive info $(gdrive list --order "modifiedTime desc" -m 1 \
-            | tail -n 1 | cut -d' ' -f 1) | sed -n 's/DownloadUrl: //p'))
+        for i in $(seq 3); do
+            DLURL=($(trythree gdrive info $(gdrive list --order "modifiedTime desc" -m 1 \
+                | tail -n 1 | cut -d' ' -f 1) | sed -n 's/DownloadUrl: //p'))
+            [[ -n $DLURL ]] && break
+            sleep 2
+        done
     else
         echo "Upload failed!"
     fi

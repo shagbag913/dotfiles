@@ -25,6 +25,7 @@
 	mc = merge --continue
 	p = push
 	s = status
+    r = revert
 [review "review.carbonrom.org"]
 	username = shagbag913
 	email = sh4gbag913@gmail.com
