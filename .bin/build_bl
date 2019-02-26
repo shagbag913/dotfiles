@@ -80,6 +80,7 @@ build-kernel() {
 
     make mrproper
     make bootleg_defconfig ARCH=arm64 |& tee /tmp/build.log
+
     BUILDTIME=$(elapsed)
     if [[ -n $CLANG && -z $NO_CLANG ]]; then
         make -j $JOBS CC="ccache $CLANG" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
@@ -215,15 +216,17 @@ tg_notify() {
 
 prebuild() {
     echo "Performing pre-build changes"
-    sed -i 's/TARGET_KERNEL_CLANG/#TARGET_KERNEL_CLANG/g' device/google/marlin/BoardConfigBootleg.mk
-    echo "KERNEL_TOOLCHAIN_PREFIX := aarch64-linux-gnu-" >> device/google/marlin/BoardConfigBootleg.mk
+    echo "setting clang to DTC 9"
+    sed -i 's/TARGET_KERNEL_CLANG_VERSION/#TARGET_KERNEL_CLANG_VERSION/g' device/google/marlin/BoardConfigBootleg.mk
+    echo "TARGET_KERNEL_CLANG_PATH := /home/shagbag913/kernel/toolchains/dtc9/bin" >> device/google/marlin/BoardConfigBootleg.mk
+    echo "CONFIG_POLLY_CLANG=y" >> kernel/google/marlin/arch/arm64/configs/bootleg_defconfig
 }
 
 postbuild() {
     echo "Reverting pre-build changes"
-    sed -i 's/#TARGET_KERNEL_CLANG/TARGET_KERNEL_CLANG/g' device/google/marlin/BoardConfigBootleg.mk
-    sed -i 's/KERNEL_TOOLCHAIN_PREFIX.*//' device/google/marlin/BoardConfigBootleg.mk
-    perl -pi -e 'chomp if eof' device/google/marlin/BoardConfigBootleg.mk
+    sed -i 's/#TARGET_KERNEL_CLANG_VERSION/TARGET_KERNEL_CLANG_VERSION/g' device/google/marlin/BoardConfigBootleg.mk
+    sed -i '$ d' device/google/marlin/BoardConfigBootleg.mk
+    sed -i '$ d' kernel/google/marlin/arch/arm64/configs/bootleg_defconfig
 }
 
 params "${@}"
