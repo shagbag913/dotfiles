@@ -167,6 +167,8 @@ build-rom() {
         TG_MSG="BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A - Build time: $BUILDTIME"
         if gdrive-ul $BTLG_GDRIVE $OUTPUT; then
             TG_MSG="$TG_MSG%0A - Upload time: $ULTIME%0A - Download: [gdrive]($DLURL)%0A$MESSAGE"
+        elif [[ -n $NO_UPLOAD ]]; then
+            TG_MSG="$TG_MSG%0A - Upload skipped"
         else
             TG_MSG="$TG_MSG%0A - Upload time: Upload failed!"
         fi
