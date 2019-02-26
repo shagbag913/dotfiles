@@ -2,3 +2,4 @@
 
 # startup stuff for ShagBox only
 ngrok tcp 22
+bash $HOME/pnupdates/timer &> /dev/null &
