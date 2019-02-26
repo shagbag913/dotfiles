@@ -6,8 +6,8 @@ BTLG_DIR="$HOME/bootleg"
 params() {
     while [[ $# -ge 1 ]]; do
         case $1 in
-            -c|--clean)
-                CLEAN=true
+            -nc|--no-clean)
+                NOCLEAN=true
                 ;;
             -d|--device)
                 shift
@@ -78,7 +78,7 @@ build-kernel() {
     cd $BTLG_DIR/kernel/google/marlin
     tg_notify "BootleggersROM kernel build for $DEVICE started.%0A$MESSAGE"
 
-    make mrproper
+    [[ -z $NOCLEAN ]] && make mrproper
     make bootleg_defconfig ARCH=arm64 |& tee /tmp/build.log
 
     BUILDTIME=$(elapsed)
@@ -140,7 +140,7 @@ build-rom() {
 
     . build/envsetup.sh
     lunch bootleg_$DEVICE-$BUILDTYPE
-    [[ -n $CLEAN ]] && make clobber
+    [[ -z $NOCLEAN ]] && make clobber
 
     # short way to notify of target we are building
     [[ $TARGET = bacon ]] && MSG_TGT=" " || MSG_TGT=" $TARGET "
