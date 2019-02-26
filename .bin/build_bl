@@ -109,12 +109,9 @@ build-kernel() {
         cd $AK2_DIR
         KERNELZIP="BootleggersROM-kernel-$(date +%m%d-%H%M).zip"
         zip -r9 $KERNELZIP *
-        TG_MSG="BootleggersROM kernel build for $DEVICE successful!%0A - Build time: $BUILDTIME"
-        if gdrive-ul $BTLG_GDRIVE $KERNELZIP; then
-            TG_MSG="$TG_MSG%0A - Upload time: $ULTIME%0A - Download: [gdrive]($DLURL)"
-        else
-            TG_MSG="$TG_MSG%0A - Upload time: Upload failed!"
-        fi
+        gdrive-ul $BTLG_GDRIVE $KERNELZIP
+        TG_MSG=$(echo "BootleggersROM kernel build for $DEVICE successful!%0A$MESSAGE" \
+            "- Build time: $BUILDTIME%0A - $ULSTAT")
     fi
     tg_notify "$TG_MSG"
 }
@@ -164,14 +161,9 @@ build-rom() {
         else
             OUTPUT=$(cat /tmp/build.log | sed -n 's/\[.*%.*\] Install: //p' | tail -n 1)
         fi
-        TG_MSG="BootleggersROM${MSG_TGT}build for $DEVICE successful!%0A - Build time: $BUILDTIME"
-        if gdrive-ul $BTLG_GDRIVE $OUTPUT; then
-            TG_MSG="$TG_MSG%0A - Upload time: $ULTIME%0A - Download: [gdrive]($DLURL)%0A$MESSAGE"
-        elif [[ -n $NO_UPLOAD ]]; then
-            TG_MSG="$TG_MSG%0A - Upload skipped"
-        else
-            TG_MSG="$TG_MSG%0A - Upload time: Upload failed!"
-        fi
+        gdrive-ul $BTLG_GDRIVE $OUTPUT
+        TG_MSG=$(echo "BootleggersROM build for $DEVICE successful!%0A$MESSAGE" \
+            "- Build time: $BUILDTIME%0A - $ULSTAT")
     fi
     tg_notify "$TG_MSG"
     [[ $DEVICE = marlin || $DEVICE = sailfish ]] && postbuild
@@ -193,7 +185,10 @@ pipe_error() {
 }
 
 gdrive-ul() {
-    [[ -n $NO_UPLOAD ]] && return 0
+    if [[ -n $NO_UPLOAD ]]; then
+        ULSTAT="Upload skipped"
+        return 0
+    fi
     ULTIME=$(elapsed)
     if trythree gdrive upload --parent $1 $2; then
         ULTIME=$(elapsed $ULTIME)
@@ -203,8 +198,9 @@ gdrive-ul() {
             [[ -n $DLURL ]] && break
             sleep 2
         done
+        ULSTAT="Upload time: $ULTIME%0A - Download: [gdrive]($DLURL)"
     else
-        echo "Upload failed!"
+        ULSTAT="Upload failed!"
     fi
 }
 
