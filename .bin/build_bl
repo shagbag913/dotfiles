@@ -214,17 +214,12 @@ tg_notify() {
 
 prebuild() {
     echo "Performing pre-build changes"
-    echo "setting clang to DTC 9"
-    sed -i 's/TARGET_KERNEL_CLANG_VERSION/#TARGET_KERNEL_CLANG_VERSION/g' device/google/marlin/BoardConfigBootleg.mk
-    echo "TARGET_KERNEL_CLANG_PATH := /home/shagbag913/kernel/toolchains/dtc9/bin" >> device/google/marlin/BoardConfigBootleg.mk
-    echo "CONFIG_POLLY_CLANG=y" >> kernel/google/marlin/arch/arm64/configs/bootleg_defconfig
+    sed -i 's/6.0.2/8.0.9/' device/google/marlin/BoardConfigBootleg.mk
 }
 
 postbuild() {
     echo "Reverting pre-build changes"
-    sed -i 's/#TARGET_KERNEL_CLANG_VERSION/TARGET_KERNEL_CLANG_VERSION/g' device/google/marlin/BoardConfigBootleg.mk
-    sed -i '$ d' device/google/marlin/BoardConfigBootleg.mk
-    sed -i '$ d' kernel/google/marlin/arch/arm64/configs/bootleg_defconfig
+    sed -i 's/8.0.9/6.0.2/' device/google/marlin/BoardConfigBootleg.mk
 }
 
 params "${@}"
