@@ -7,7 +7,7 @@ while :; do
     "${@}"
     RET="$?"
     STAT=$((STAT+1))
-    [[ $RET = 0 || $STAT = 3 ]] && exit $RET
-    sleep 5
+    [[ $RET = 0 || $STAT = 5 ]] && exit $RET
+    sleep 2
 done
     
