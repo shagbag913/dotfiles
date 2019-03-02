@@ -118,7 +118,7 @@ build-kernel() {
 
 
 build-rom() {
-    BUILDTYPE="user"
+    BUILDTYPE="userdebug"
 
     cd $BTLG_DIR
 
