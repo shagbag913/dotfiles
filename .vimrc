@@ -16,6 +16,11 @@ set lazyredraw
 
 set pastetoggle=<F5>
 
+set foldmethod=indent
+set nofoldenable
+set foldnestmax=10
+nnoremap <Space> zA
+
 execute pathogen#infect()
 
 call plug#begin()
