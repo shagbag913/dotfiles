@@ -101,7 +101,7 @@ build-kernel() {
         TG_MSG="BootleggersROM kernel build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
     elif [[ $ERRNO = 1 ]]; then
         TG_MSG="BootleggersROM kernel build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
-        [[ -n $DDLINK ]] && TG_MSG="%0A - Error: [del.dog]($DDLINK)"
+        [[ -n $DDLINK ]] && TG_MSG+="%0A - Error: [del.dog]($DDLINK)"
     else
         rm -rf $AK2_DIR/kernel/* $AK2_DIR/dtbs/* $AK2_DIR/Bootleg*.zip
         cp arch/arm64/boot/Image.lz4 $AK2_DIR/kernel/.
