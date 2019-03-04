@@ -5,5 +5,5 @@
 xinput set-prop "Elan Touchpad" "libinput Middle Emulation Enabled" 1
 xinput set-prop "Elan Touchpad" "libinput Natural Scrolling Enabled" 1
 xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1
-xrandr --output eDP-1 --mode 1600x900
+xrandr --output eDP1 --mode 1600x900
 python3 $HOME/.bin/batteryprompt_wrap.py
