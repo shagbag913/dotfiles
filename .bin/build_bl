@@ -27,11 +27,7 @@ params() {
                 ;;
             -t|--target)
                 shift
-                if [[ $1 = kernel ]]; then
-                    TARGET=kernel
-                elif [[ -n $1 ]]; then
-                    TARGET=$1
-                fi
+                TARGET=$1
                 ;;
             -nu|--no-upload)
                 NO_UPLOAD=true
