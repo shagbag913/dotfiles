@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BTLG_GDRIVE="1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0"
-BTLG_DIR="$HOME/bootleg"
+BTLG_DIR="$HOME/btlg"
 
 params() {
     while [[ $# -ge 1 ]]; do
@@ -55,6 +55,9 @@ prep() {
                 git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $BTLG_DIR/$i || exit 1
             fi
         done
+        if [[ ! -d $BTLG_DIR/vendor/pixelgapps ]]; then
+            git clone https://gitlab.com/shagbag913/android_vendor_pixelgapps vendor/pixelgapps
+        fi
     fi
 }
 
