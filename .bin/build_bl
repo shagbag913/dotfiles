@@ -131,7 +131,7 @@ build-rom() {
 
     # check if ccache is cleared
     if [[ $(ccache -s | sed -n 's/files in cache.* //p') = 0 ]]; then
-        MESSAGE+=" - ccache cleared! This build will take longer than usual."
+        MESSAGE+=" - ccache cleared! This build will take longer than usual.%0A"
     fi
 
     # perform prebuild stuff on supported device
