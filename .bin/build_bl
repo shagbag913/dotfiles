@@ -77,7 +77,7 @@ build-kernel() {
     cd $BTLG_DIR/kernel/google/marlin
     tg_notify "BootleggersROM kernel build for $DEVICE started.%0A$MESSAGE"
 
-    [[ -z $NOCLEAN ]] && make mrproper
+    make mrproper
     make bootleg_defconfig ARCH=arm64 |& tee /tmp/build.log
 
     BUILDTIME=$(elapsed)
