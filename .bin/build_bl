@@ -213,12 +213,12 @@ tg_notify() {
 
 prebuild() {
     echo "Performing pre-build changes"
-    sed -i 's/6.0.2/8.0.9/' device/google/marlin/BoardConfigBootleg.mk
+    sed -i 's/9.0.1/8.0.9/' device/google/marlin/BoardConfigBootleg.mk
 }
 
 postbuild() {
     echo "Reverting pre-build changes"
-    sed -i 's/8.0.9/6.0.2/' device/google/marlin/BoardConfigBootleg.mk
+    sed -i 's/9.0.1/6.0.2/' device/google/marlin/BoardConfigBootleg.mk
 }
 
 params "${@}"
