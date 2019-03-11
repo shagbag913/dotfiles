@@ -25,6 +25,7 @@
 !.bin/deldog
 !.bin/elapsed
 !.bin/getimages
+!.bin/prompt
 !.bin/reinit_mouse
 !.bin/reposync
 !.bin/rmdl

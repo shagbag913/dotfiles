@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+import sys
+
+
+try:
+    msg = sys.argv[1]
+except:
+    print("You must supply a message.")
+    exit()
+
+try:
+    alert = sys.argv[2]
+except:
+    alert = 'info'
+
+if alert == 'err':
+    color = '\033[0;31m'
+else:
+    color = '\033[0;35m'
+
+rest = '\033[0;39m'
+
+alertlen = len(msg) + 6
+print(color + "#" * alertlen)
+print("## {} ##".format(msg))
+print("#" * alertlen + rest)
