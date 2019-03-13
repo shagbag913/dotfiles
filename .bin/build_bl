@@ -228,5 +228,5 @@ params "${@}"
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
 
-#prep
+prep
 [[ $TARGET = kernel ]] && build-kernel || build-rom
