@@ -10,12 +10,15 @@ def secs2hours(secs):
     else:
         return ("%dmin" % mm)
 
+
 def sendnotif(msg, icon):
     subprocess.call(['notify-send.sh', '--expire-time=3000', '--icon=' + icon, '--app-name=BatteryPrompt', msg])
+
 
 def lowprompt(battery_pct):
     icon = '/usr/share/icons/Numix/48/status/gtk-dialog-warning-panel.svg'
     sendnotif('Warning: battery low.\nCharge: {}%'.format(battery_pct), icon)
+
 
 def eventprompt(battery_pct, battery_state):
     if battery_state == True:
@@ -23,6 +26,7 @@ def eventprompt(battery_pct, battery_state):
     else:
         event = 'Charger disconnected'
     sendnotif(event, geticon(battery_pct, battery_state))
+
 
 def geticon(battery_pct, battery_state):
     icon = '/usr/share/icons/Numix/48/devices/'
@@ -38,6 +42,7 @@ def geticon(battery_pct, battery_state):
         icon += '-charging'
     icon += '.svg'
     return icon
+
 
 def statprompt(battery_pct, battery_state, battery_time):
     if battery_state == True:
