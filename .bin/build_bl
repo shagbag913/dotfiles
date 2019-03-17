@@ -39,19 +39,19 @@ params() {
 
 prep() {
     BRANCH=pasta
-    if [[ ! -d $BTLG_DIR/vendor/bootleggers ]]; then
-        [[ -d $BTLG_DIR ]] || mkdir $BTLG_DIR
-        cd $BTLG_DIR
+    [[ -d $BTLG_DIR ]] || mkdir $BTLG_DIR
+    cd $BTLG_DIR
+    if [[ ! -d vendor/bootleggers ]]; then
         repo init -u https://github.com/BootleggersROM/manifest -b $BRANCH
         trythree reposync || exit 1
     fi
-    if [[ -d $BTLG_DIR/vendor/bootleggers ]]; then
+    if [[ -d vendor/bootleggers ]]; then
         for i in vendor/google_devices kernel/google/marlin device/google/marlin; do
-            if [[ ! -d $BTLG_DIR/$i ]]; then
-                git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $BTLG_DIR/$i || exit 1
+            if [[ ! -d $i ]]; then
+                git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $i || exit 1
             fi
         done
-        if [[ ! -d $BTLG_DIR/vendor/pixelgapps ]]; then
+        if [[ ! -d vendor/pixelgapps ]]; then
             git clone https://gitlab.com/shagbag913/android_vendor_pixelgapps vendor/pixelgapps
         fi
     fi
