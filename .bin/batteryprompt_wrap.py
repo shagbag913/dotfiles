@@ -29,11 +29,17 @@ while True:
     except IndexError:
         None # no argument
 
-    if battery_pct <= 15 and battery_state != True and showlow == True:
+    if battery_pct <= 15 and battery_state != True and showlow == 1:
+        batteryprompt.lowprompt(battery_pct)
+        showlow = 0
+    elif battery_pct <= 5 and battery_state != True and showlow == 0:
         batteryprompt.lowprompt(battery_pct)
         showlow = False
-    elif (battery_pct > 16 or battery_state == True) and showlow == False:
-        showlow = True
+    elif showlow == False:
+        if battery_pct > 15:
+            showlow = 1
+        elif battery_pct > 5:
+            showlow = 0
 
     if battery_pct > 95 and battery_state == True and donechg == True:
         batteryprompt.sendnotif("Battery fully charged", batteryprompt.geticon(battery_pct, battery_state))
