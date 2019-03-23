@@ -200,6 +200,7 @@ postbuild() {
 params "${@}"
 
 # DEFAULTS
+[[ -z $MAKEFLAGS ]] && MAKEFLAGS="$(nproc --all)"
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
 
