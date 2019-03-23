@@ -37,26 +37,6 @@ params() {
     done
 }
 
-prep() {
-    BRANCH=pasta
-    [[ -d $BTLG_DIR ]] || mkdir $BTLG_DIR
-    cd $BTLG_DIR
-    if [[ ! -d vendor/bootleggers ]]; then
-        repo init -u https://github.com/BootleggersROM/manifest -b $BRANCH
-        trythree reposync || exit 1
-    fi
-    if [[ -d vendor/bootleggers ]]; then
-        for i in vendor/google_devices kernel/google/marlin device/google/marlin; do
-            if [[ ! -d $i ]]; then
-                git clone https://github.com/BootleggersROM-devices/$(sed -n 's/\//_/gp' <<< $i) -b $BRANCH $i || exit 1
-            fi
-        done
-        if [[ ! -d vendor/pixelgapps ]]; then
-            git clone https://gitlab.com/shagbag913/android_vendor_pixelgapps vendor/pixelgapps
-        fi
-    fi
-}
-
 build-kernel() {
     AK2_DIR="$HOME/ak2"
 
@@ -228,5 +208,4 @@ params "${@}"
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
 
-prep
 [[ $TARGET = kernel ]] && build-kernel || build-rom
