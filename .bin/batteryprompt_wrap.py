@@ -35,7 +35,7 @@ while True:
     elif battery_pct <= 5 and battery_state != True and showlow == 0:
         batteryprompt.lowprompt(battery_pct)
         showlow = False
-    elif showlow == False or battery_state == True:
+    elif showlow == False:
         if battery_pct > 15:
             showlow = 1
         elif battery_pct > 5:
