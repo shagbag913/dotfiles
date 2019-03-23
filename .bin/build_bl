@@ -13,10 +13,6 @@ params() {
                 shift
                 DEVICE="$1"
                 ;;
-            -j|--jobs)
-                shift
-                JOBS="$1"
-                ;;
             -m|--message)
                 shift
                 MESSAGE+=" - $1%0A"
@@ -62,13 +58,13 @@ build-kernel() {
 
     BUILDTIME=$(elapsed)
     if [[ -n $CLANG && -z $NO_CLANG ]]; then
-        make -j $JOBS CC="ccache $CLANG" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
+        make -j $MAKEFLAGS CC="ccache $CLANG" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
             CROSS_COMPILE="$CROSS_COMPILE" \
             CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32" \
             |& tee -a /tmp/build.log
     else
         GCCV=$("$CROSS_COMPILE"gcc --version | head -n 1 | cut -d ' ' -f 3)
-        make -j $JOBS ARCH=arm64 \
+        make -j $MAKEFLAGS ARCH=arm64 \
             CROSS_COMPILE="ccache $CROSS_COMPILE" \
             CROSS_COMPILE_ARM32="ccache $CROSS_COMPILE_ARM32" \
             |& tee -a /tmp/build.log
@@ -126,7 +122,7 @@ build-rom() {
     tg_notify "BootleggersROM${MSG_TGT}build for $DEVICE started%0A$MESSAGE"
 
     BUILDTIME=$(elapsed)
-    make $TARGET -j$JOBS |& tee /tmp/build.log
+    make $TARGET -j$MAKEFLAGS |& tee /tmp/build.log
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
     if [[ $ERRNO = 130 ]]; then
@@ -204,7 +200,6 @@ postbuild() {
 params "${@}"
 
 # DEFAULTS
-[[ -z $JOBS ]] && JOBS=$MAKEFLAGS
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
 
