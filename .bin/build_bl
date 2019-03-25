@@ -63,7 +63,6 @@ build-kernel() {
             CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32" \
             |& tee -a /tmp/build.log
     else
-        GCCV=$("$CROSS_COMPILE"gcc --version | head -n 1 | cut -d ' ' -f 3)
         make -j $MAKEFLAGS ARCH=arm64 \
             CROSS_COMPILE="ccache $CROSS_COMPILE" \
             CROSS_COMPILE_ARM32="ccache $CROSS_COMPILE_ARM32" \
@@ -110,9 +109,6 @@ build-rom() {
         MESSAGE+=" - ccache cleared! This build will take longer than usual.%0A"
     fi
 
-    # perform prebuild stuff on supported device
-    [[ $DEVICE = marlin || $DEVICE = sailfish ]] && prebuild
-
     . build/envsetup.sh
     lunch bootleg_$DEVICE-$BUILDTYPE
     [[ -z $NOCLEAN ]] && make clobber
@@ -141,7 +137,6 @@ build-rom() {
             "- Build time: $BUILDTIME%0A - $ULSTAT")
     fi
     tg_notify "$TG_MSG"
-    [[ $DEVICE = marlin || $DEVICE = sailfish ]] && postbuild
 }
 
 pipe_error() {
@@ -187,21 +182,10 @@ tg_notify() {
     done
 }
 
-prebuild() {
-    echo "Performing pre-build changes"
-    sed -i 's/6.0.2/9.0.1/' device/google/marlin/BoardConfigBootleg.mk
-}
-
-postbuild() {
-    echo "Reverting pre-build changes"
-    sed -i 's/9.0.1/6.0.2/' device/google/marlin/BoardConfigBootleg.mk
-}
-
 params "${@}"
 
 # DEFAULTS
 [[ -z $MAKEFLAGS ]] && MAKEFLAGS="$(nproc --all)"
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
-
 [[ $TARGET = kernel ]] && build-kernel || build-rom
