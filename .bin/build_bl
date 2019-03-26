@@ -37,10 +37,9 @@ build-kernel() {
     AK2_DIR="$HOME/ak2"
 
     if [[ -z $CLANG ]]; then
-        # find clang version
-        CLANGV=$(grep -r "TARGET_KERNEL_CLANG_VERSION" $BTLG_DIR/device/*/*/*.mk | cut -d ' ' -f 3)
-        CLANG=$(grep -r $CLANGV $BTLG_DIR/prebuilts/clang/host/linux-x86/*/AndroidVersion.txt | cut -d : -f 1)
-        CLANG="$(dirname $CLANG)/bin/clang"
+        # Default to the highest Clang version
+        CLANG="$BTLG/prebuilts/clang/host/linux-x86/$(ls $BLTG_DIR/prebuilts/clang/host/linux-x86 | \
+                grep "clang-r" | sort | tail -n 1)/bin/clang"
     fi
 
     if [[ -z $CROSS_COMPILE ]]; then
