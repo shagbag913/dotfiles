@@ -56,17 +56,10 @@ build-kernel() {
     make bootleg_defconfig ARCH=arm64 |& tee /tmp/build.log
 
     BUILDTIME=$(elapsed)
-    if [[ -n $CLANG && -z $NO_CLANG ]]; then
-        make -j $MAKEFLAGS CC="ccache $CLANG" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
-            CROSS_COMPILE="$CROSS_COMPILE" \
-            CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32" \
-            |& tee -a /tmp/build.log
-    else
-        make -j $MAKEFLAGS ARCH=arm64 \
-            CROSS_COMPILE="ccache $CROSS_COMPILE" \
-            CROSS_COMPILE_ARM32="ccache $CROSS_COMPILE_ARM32" \
-            |& tee -a /tmp/build.log
-    fi
+    make -j $MAKEFLAGS CC="ccache $CLANG" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
+        CROSS_COMPILE="$CROSS_COMPILE" \
+        CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32" \
+        |& tee -a /tmp/build.log
 
     pipe_error
     BUILDTIME=$(elapsed $BUILDTIME)
