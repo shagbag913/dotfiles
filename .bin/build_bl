@@ -90,10 +90,7 @@ build-rom() {
 
     # make sure kernel directory is clean
     if [[ -f kernel/google/marlin/.config ]]; then
-        (
-            cd kernel/google/marlin
-            make mrproper
-        )
+        make -C kernel/google/marlin mrproper
     fi
 
     # check if ccache is cleared
