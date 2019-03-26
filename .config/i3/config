@@ -20,7 +20,6 @@ exec_always --no-startup-id $HOME/.config/i3/exec_compton
 exec_always --no-startup-id $HOME/.config/polybar/launch
 exec --no-startup-id nitrogen --restore
 exec_always --no-startup-id xrdb ${HOME}/.Xresources
-exec --no-startup-id sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
 
 ################################
 ##     KEYBOARD SHORTCUTS     ##
