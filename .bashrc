@@ -1,7 +1,5 @@
 cat ${HOME}/.colors
 
-HOSTNAME=$(uname -n)
-
 ### COLORS ###
 # Text
 RED='\e[31m'
