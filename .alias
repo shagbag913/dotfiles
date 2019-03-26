@@ -12,6 +12,7 @@ alias pgrep='find . -type f -print0  | xargs -0 -P 4 grep -n'
 alias la='ls -a'
 alias l='ls'
 alias mirror="sudo reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist"
+alias trizen='trizen -q --skipinteg --noconfirm'
 alias update-grub="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 alias wget="wget -c"
 alias jd-gui="java -jar $HOME/.bin/jd-gui.jar"
