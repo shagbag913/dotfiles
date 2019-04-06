@@ -5,7 +5,7 @@ if [[ $HOSTNAME = "ShagBox" ]]; then
     export PATH="$HOME/Android/Sdk/build-tools/28.0.3:$PATH"
 fi
 
-export PATH="$HOME/.bin:$PATH"
+export PATH="$HOME/.bin:/opt/android-sdk/build-tools/28.0.3/:$HOME/Android/Sdk/build-tools/28.0.3:$PATH"
 
 # show color with GCC
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
