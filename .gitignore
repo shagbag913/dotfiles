@@ -42,6 +42,9 @@
 !.config/dunst/*
 !.config/polybar
 !.config/polybar/*
+!.config/xfce4/
+!.config/xfce4/terminal
+!.config/xfce4/terminal/terminalrc
 
 !.vim/
 !.vim/**/*
