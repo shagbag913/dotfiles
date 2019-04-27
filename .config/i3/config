@@ -13,8 +13,6 @@ set_from_resource $bg i3wm.background
 
 # startup stuff for shagbook only
 exec --no-startup-id $HOME/.shagbookstart
-# startup stuff for shagbox only
-exec --no-startup-id $HOME/.shagboxstart
 # common
 exec_always --no-startup-id $HOME/.config/i3/exec_compton
 exec_always --no-startup-id $HOME/.config/polybar/launch
