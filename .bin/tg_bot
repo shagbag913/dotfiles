@@ -30,9 +30,6 @@ while [[ $# -gt 1 ]]; do
             shift
             MESSAGE="$1"
             ;;
-        -c)
-            CRABRAVE=true
-            ;;
     esac
 shift
 done
@@ -46,17 +43,6 @@ if [[ -z $CHATID ]]; then
     echo "You must specify where to notify!"
     exit 1
 fi
-
-set -x
-if [[ -n $CRABRAVE ]]; then
-    MESSAGE=$(
-        NUM=${#MESSAGE}
-        printf "%0.s🦀" $(seq $NUM)
-        echo "%0A  $MESSAGE  "
-        printf "%0.s🦀" $(seq $NUM)
-    )
-fi
-set +x
 
 for i in $CHATID; do
     curl -s -X POST $URL -d chat_id=$i -d text="$MESSAGE" -d parse_mode="Markdown" &>/dev/null
