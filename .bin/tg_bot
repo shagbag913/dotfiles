@@ -5,7 +5,6 @@ CHATIDS=(
     '499109275'
     '-1001247942938'
     '-1001424244499'
-    '-345603463'
 )
 
 while [[ $# -gt 1 ]]; do
@@ -24,9 +23,6 @@ while [[ $# -gt 1 ]]; do
                    ;;
                au)
                    CHATID+=" ${CHATIDS[2]}"
-                   ;;
-               logger)
-                   CHATID+=" ${CHATIDS[3]}"
                    ;;
            esac
            ;;
