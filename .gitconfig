@@ -15,17 +15,19 @@
 	aa = add --all
 	c = commit --gpg-sign --signoff
 	ca = commit --gpg-sign --amend --signoff
+	cad = commit --gpg-sign --amend --date=now --signoff
 	cl = clean -fxd
 	cp = cherry-pick --gpg-sign --signoff
 	cpa = cherry-pick --abort
 	cpc = cherry-pick --continue
 	cpe = cherry-pick --edit --signoff
 	f = fetch
+	m = merge --log=1000
 	ma = merge --abort
 	mc = merge --continue
 	p = push
 	s = status
-    r = revert
+	r = revert
 [review "review.carbonrom.org"]
 	username = shagbag913
 	email = sh4gbag913@gmail.com
