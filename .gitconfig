@@ -13,6 +13,7 @@
 	ui = auto
 [alias]
 	aa = add --all
+	ap = add --all --patch
 	c = commit --gpg-sign --signoff
 	ca = commit --gpg-sign --amend --signoff
 	cad = commit --gpg-sign --amend --date=now --signoff
