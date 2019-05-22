@@ -4,7 +4,6 @@ URL="https://api.telegram.org/bot$TGBOTTOKEN/sendMessage"
 CHATIDS=(
     '499109275'
     '-1001247942938'
-    '-1001424244499'
 )
 
 while [[ $# -gt 1 ]]; do
@@ -20,9 +19,6 @@ while [[ $# -gt 1 ]]; do
                    ;;
                nug)
                    CHATID+=" ${CHATIDS[1]}"
-                   ;;
-               au)
-                   CHATID+=" ${CHATIDS[2]}"
                    ;;
            esac
            ;;
