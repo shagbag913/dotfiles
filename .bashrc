@@ -18,6 +18,7 @@ if [[ $HOSTNAME = "ShagBox" ]]; then
     PATH="$HOME/Android/Sdk/build-tools/28.0.3:$PATH"
 fi
 PS1='\[\e[36m\]\u@\[\e[31m\]\h\[\e[36m\] \W \[\e[32m\]$ \[\e[39m\]'
+PS2='\e[31m>\e[39m '
 PATH="$HOME/.bin:$PATH"
 export LC_ALL=C
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
