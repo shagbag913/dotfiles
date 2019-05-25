@@ -4,16 +4,7 @@
 # Terminal color theme
 cat ${HOME}/.colors
 
-### COLORS ###
-RED='\e[31m'
-CYAN='\e[36m'
-GREEN='\e[32m'
-YELLOW='\e[33m'
-REST='\e[39m'
-
-### PS1 ###
-# hostname
-PS1="\[${CYAN}\]\u@\[${RED}\]\h\[${CYAN}\] \W \[${GREEN}\]$ \[${REST}\]"
+PS1="\[\e[36m\]\u@\[\e[31m\]\h\[\e[36m\] \W \[\e[32m\]$ \[\e[39m\]"
 
 # Source outside files for further configuration
 for file in 'alias' 'export' git-completion.bash secret; do
