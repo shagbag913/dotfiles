@@ -11,11 +11,4 @@ export PATH="$HOME/.bin:/opt/android-sdk/build-tools/28.0.3/:$HOME/Android/Sdk/b
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export EDITOR=vim
 
-# cpu sockets
-export SOCKETS=$(lscpu | sed -n 's/Socket(s):.* //p')
-# cpu cores
-export CORES=$((SOCKETS * $(lscpu | sed -n 's/Core(s) per socket:.* //p')))
-# cpu threads
-export THREADS=$((CORES * $(lscpu | sed -n 's/Thread(s) per core:.* //p')))
-
-export MAKEFLAGS=$((THREADS * 150 / 100))
+export MAKEJOBS=$(($(nproc --all) * 175 / 100))
