@@ -13,7 +13,6 @@
 !.vimrc
 
 !.bin/
-!.bin/apktool
 !.bin/apktool.jar
 !.bin/brightness
 !.bin/batteryprompt.py
@@ -30,7 +29,6 @@
 !.bin/rmdl
 !.bin/rmul
 !.bin/shagfetch
-!.bin/temp_repo
 !.bin/tg_bot
 !.bin/trythree
 !.bin/volume
