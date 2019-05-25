@@ -8,7 +8,7 @@ cat $HOME/.colors
 [[ -f $HOME/.secret ]] && . $HOME/.secret
 
 # Source git completion
-. $HOME/.git-completion-bash
+. $HOME/.git-completion.bash
 
 #############
 # VARIABLES #
@@ -32,6 +32,7 @@ else
   alias tm='ssh -t $SSHNAME -p $SSHPORT \
             "if ! tmux -u attach; then tmux -u; fi"'
 fi
+alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
 alias brc='source ~/.bashrc'
 alias grep='grep --color=auto'
 alias pgrep='find . -type f -print0  | xargs -0 -P 4 grep -n'
