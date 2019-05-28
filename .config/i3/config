@@ -27,8 +27,8 @@ set $mod Mod4
 # move floating windows with $mod+mouse
 floating_modifier $mod
 
-# Open Firefox with $mod+Shift+c
-bindsym $mod+c exec firefox-beta
+# Open Chromium with $mod+Shift+c
+bindsym $mod+c exec chromium
 
 bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+q kill
