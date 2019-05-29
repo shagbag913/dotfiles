@@ -138,8 +138,8 @@ battery = BAT0
 adapter = AC
 full-at = 98
 
-format-charging = %{A1:python ~/.bin/batteryprompt_wrap.py click:}<animation-charging> <label-charging>%{A}
-format-discharging = %{A1:python ~/.bin/batteryprompt_wrap.py click:}<ramp-capacity> <label-discharging>%{A}
+format-charging = %{A1:python ~/.bin/batteryprompt.py click:}<animation-charging> <label-charging>%{A}
+format-discharging = %{A1:python ~/.bin/batteryprompt.py click:}<ramp-capacity> <label-discharging>%{A}
 format-full = "Full "
 
 ramp-capacity-0 = 
