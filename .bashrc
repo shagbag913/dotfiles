@@ -43,7 +43,6 @@ alias ls='ls --color=auto'
 alias mirror='sudo reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist'
 alias trizen='trizen --skipinteg --noconfirm'
 alias wget='wget -c'
-alias jd-gui="java -jar $HOME/.bin/jd-gui.jar"
 
 # Show neofetch when opening terminal to look cool
 neofetch
