@@ -1,12 +1,10 @@
 *
-!.alias
 !.bashrc
 !.compton.conf
-!.export
-!.functions
 !.git-completion.bash
 !.gitconfig
 !.gitignore
+!.package-list
 !.shagbookstart
 !.tmux.conf
 !.Xresources
