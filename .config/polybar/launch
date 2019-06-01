@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# Terminate already running bar instances
-killall polybar
-
-sleep 1.5
-
-polybar top &
