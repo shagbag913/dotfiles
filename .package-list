@@ -46,4 +46,6 @@ vim
 vim-plug
 wget
 xfce4-terminal
+xorg-server
+xorg-xinit
 zsh
