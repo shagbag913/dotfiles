@@ -44,5 +44,13 @@ alias mirror='sudo reflector --protocol https --latest 50 --number 20 --sort rat
 alias trizen='trizen --skipinteg --noconfirm'
 alias wget='wget -c'
 
+#############
+# FUNCTIONS #
+#############
+reposync() {
+    repo sync -j$MAKEFLAGS --no-clone-bundle --prune --no-tags -c \
+        --optimized-fetch -f "$@"
+}
+
 # Show neofetch when opening terminal to look cool
 neofetch

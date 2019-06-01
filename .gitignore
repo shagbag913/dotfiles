@@ -23,7 +23,6 @@
 !.bin/ngrok
 !.bin/prompt
 !.bin/reinit_mouse
-!.bin/reposync
 !.bin/rmdl
 !.bin/rmul
 !.bin/shagfetch

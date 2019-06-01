@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-trythree schedtool -B -n 1 -e ionice -n 1 repo sync -j$MAKEFLAGS \
-    --no-clone-bundle --prune --no-tags -c --optimized-fetch -f "$@"
