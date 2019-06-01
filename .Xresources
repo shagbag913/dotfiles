@@ -1,21 +1,21 @@
-*background: #04142D
+*background: #0f2f48
 *background-alt: #024067
 *foreground: #a5d1da
 *foreground-alt: #e5d9bf
 
 *color0:  #04142D
-*color1:  #EAAE78
+*color1:  #e47668
 *color2:  #196C8A
 *color3:  #246E8D
-*color4:  #5F6F88
+*color4:  #35678a
 *color5:  #2D94A9
 *color6:  #5AA5B1
 *color7:  #a5d1da
 *color8:  #739298
-*color9:  #EAAE78
+*color9:  #e25a49
 *color10:  #196C8A
 *color11:  #246E8D
-*color12:  #5F6F88
+*color12:  #4d89a5
 *color13:  #2D94A9
 *color14:  #5AA5B1
 *color15:  #a5d1da
