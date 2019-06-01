@@ -11,7 +11,7 @@ set_from_resource $bg i3wm.background
 ##      AUTOSTART     ##
 ########################
 exec_always --no-startup-id ps -e | grep -v grep | grep compton || compton
-exec_always --no-startup-id killall polybar && polybar top &
+exec_always --no-startup-id killall polybar; sleep 2 && polybar top &
 exec --no-startup-id nitrogen --restore
 exec_always --no-startup-id xrdb $HOME/.Xresources
 
