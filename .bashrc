@@ -73,5 +73,4 @@ rmul() {
     rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2"
 }
 
-# Show neofetch when opening terminal to look cool
-neofetch
+[[ $DISPLAY ]] && neofetch
