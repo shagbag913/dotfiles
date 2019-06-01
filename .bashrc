@@ -73,4 +73,4 @@ rmul() {
     rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2"
 }
 
-[[ $DISPLAY ]] && neofetch
+ps -e | grep Xorg &>/dev/null && neofetch
