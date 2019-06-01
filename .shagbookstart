@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-# startup stuff for ShagBook only
-
-xrandr --output eDP1 --mode 1600x900 &
-xinput set-prop "Elan Touchpad" "libinput Middle Emulation Enabled" 1 &
-xinput set-prop "Elan Touchpad" "libinput Natural Scrolling Enabled" 1 &
-xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1 &
-python3 /home/$USER/.bin/batteryprompt.py
