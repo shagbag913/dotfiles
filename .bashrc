@@ -10,6 +10,9 @@ cat $HOME/.colors
 # Source git completion
 . $HOME/.git-completion.bash
 
+# Amount of jobs for make
+MAKEFLAGS=$(echo "$(nproc --all) * 1.75" | bc -l | sed 's/\..*//')
+
 #############
 # VARIABLES #
 #############
