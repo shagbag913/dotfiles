@@ -23,8 +23,6 @@
 !.bin/ngrok
 !.bin/prompt
 !.bin/reinit_mouse
-!.bin/rmdl
-!.bin/rmul
 !.bin/shagfetch
 !.bin/tg_bot
 !.bin/trythree

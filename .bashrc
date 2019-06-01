@@ -52,5 +52,23 @@ reposync() {
         --optimized-fetch -f "$@"
 }
 
+rmdl() {
+    if [[ $HOSTNAME != "ShagBook" ]]; then
+        echo "$(basename $0) is meant to be run on ShagBook!"
+        exit 1
+    fi
+
+    rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2"
+}
+
+rmul() {
+    if [[ $HOSTNAME != "ShagBook" ]]; then
+        echo "$(basename $0) is meant to be run on ShagBook!"
+        exit 1
+    fi
+
+    rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2"
+}
+
 # Show neofetch when opening terminal to look cool
 neofetch
