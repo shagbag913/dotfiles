@@ -40,6 +40,9 @@
 !.config/xfce4/terminal
 !.config/xfce4/terminal/terminalrc
 
+!.sysd/
+!.sysd/*
+
 !.vim/
 !.vim/**/*
 .vim/.netrwhist
