@@ -28,6 +28,7 @@ nitrogen
 notify-send.sh
 numix-icon-theme-git
 openssh
+pacman-contrib
 pngquant
 polybar
 pulseaudio-alsa
