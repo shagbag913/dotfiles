@@ -33,57 +33,7 @@ params() {
     done
 }
 
-build-kernel() {
-    AK2_DIR="$HOME/ak2"
-
-    if [[ -z $CLANG ]]; then
-        # Default to the highest Clang version
-        CLANG="$BTLG/prebuilts/clang/host/linux-x86/$(ls $BLTG_DIR/prebuilts/clang/host/linux-x86 | \
-                grep "clang-r" | sort | tail -n 1)/bin/clang"
-    fi
-
-    if [[ -z $CROSS_COMPILE ]]; then
-        CROSS_COMPILE="$BTLG_DIR/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
-    fi
-    if [[ -z $CROSS_COMPILE_ARM32 ]]; then
-        CROSS_COMPILE_ARM32="$BTLG_DIR/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-"
-    fi
-
-    cd $BTLG_DIR/kernel/google/marlin
-    tg_notify "BootleggersROM kernel build for $DEVICE started.%0A$MESSAGE"
-
-    make mrproper
-    make bootleg_defconfig ARCH=arm64 |& tee /tmp/build.log
-
-    BUILDTIME=$(elapsed)
-    make -j $MAKEFLAGS CC="ccache $CLANG" ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- \
-        CROSS_COMPILE="$CROSS_COMPILE" \
-        CROSS_COMPILE_ARM32="$CROSS_COMPILE_ARM32" \
-        |& tee -a /tmp/build.log
-
-    pipe_error
-    BUILDTIME=$(elapsed $BUILDTIME)
-    if [[ $ERRNO = 130 ]]; then
-        TG_MSG="BootleggersROM kernel build for $DEVICE aborted!%0A - Elapsed time: $BUILDTIME"
-    elif [[ $ERRNO = 1 ]]; then
-        TG_MSG="BootleggersROM kernel build for $DEVICE failed.%0A - Elapsed time: $BUILDTIME"
-        [[ -n $DDLINK ]] && TG_MSG+="%0A - Error: [del.dog]($DDLINK)"
-    else
-        rm -rf $AK2_DIR/kernel/* $AK2_DIR/dtbs/* $AK2_DIR/Bootleg*.zip
-        cp arch/arm64/boot/Image.lz4 $AK2_DIR/kernel/.
-        cp arch/arm64/boot/dts/htc/*.dtb $AK2_DIR/dtbs/.
-        cd $AK2_DIR
-        KERNELZIP="BootleggersROM-kernel-$(date +%m%d-%H%M).zip"
-        zip -r9 $KERNELZIP *
-        gdrive-ul $BTLG_GDRIVE $KERNELZIP
-        TG_MSG=$(echo "BootleggersROM kernel build for $DEVICE successful!%0A$MESSAGE" \
-            "- Build time: $BUILDTIME%0A - $ULSTAT")
-    fi
-    tg_notify "$TG_MSG"
-}
-
-
-build-rom() {
+build() {
     BUILDTYPE="user"
 
     cd $BTLG_DIR
@@ -177,4 +127,4 @@ params "${@}"
 [[ -z $MAKEFLAGS ]] && MAKEFLAGS="$(nproc --all)"
 [[ -z $DEVICE ]] && DEVICE=sailfish
 [[ -z $TARGET ]] && TARGET=bacon
-[[ $TARGET = kernel ]] && build-kernel || build-rom
+build
