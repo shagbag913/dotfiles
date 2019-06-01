@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-BTLG_GDRIVE="1TZW9mUQus3nvMG90od3Y4zG7htdBOZw0"
-BTLG_DIR="$HOME/btlg"
+BTLG_GDRIVE="11DcIbL3RX1xZH6azqYsoJMs5fqasOn6M"
+BTLG_DIR="$HOME/Android/btlg"
 
 params() {
     while [[ $# -ge 1 ]]; do
