@@ -13,15 +13,13 @@
 
 !.bin/
 !.bin/apktool.jar
-!.bin/brightness
 !.bin/batteryprompt.py
+!.bin/brightness
 !.bin/build_bl
 !.bin/colors
 !.bin/deldog
-!.bin/elapsed
 !.bin/getimages
 !.bin/ngrok
-!.bin/prompt
 !.bin/reinit_mouse
 !.bin/shagfetch
 !.bin/tg_bot
