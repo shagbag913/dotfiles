@@ -9,6 +9,7 @@
 !.shagbookstart
 !.tmux.conf
 !.Xresources
+!.xinitrc
 !.vimrc
 
 !.bin/
