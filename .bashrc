@@ -39,7 +39,6 @@ fi
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
 alias brc='source ~/.bashrc'
 alias grep='grep --color=auto'
-alias pgrep='find . -type f -print0  | xargs -0 -P 4 grep -n'
 alias l='ls'
 alias la='ls -a'
 alias ls='ls --color=auto'
