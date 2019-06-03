@@ -20,6 +20,9 @@ exec_always --no-startup-id xrdb $HOME/.Xresources
 ###############################
 set $mod Mod4
 
+# reset trackpad
+bindsym $mod+z exec sudo /home/$USER/.bin/reinit_mouse
+
 # move floating windows with $mod+mouse
 floating_modifier $mod
 
