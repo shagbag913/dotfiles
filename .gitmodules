@@ -1,3 +1,6 @@
 [submodule ".vim/plugged/papercolor-theme"]
 	path = .vim/plugged/papercolor-theme
 	url = https://github.com/NLKNguyen/papercolor-theme
+[submodule ".vim/pack/vendor/start/VimCompletesMe"]
+	path = .vim/pack/vendor/start/VimCompletesMe
+	url = https://github.com/ajh17/VimCompletesMe
