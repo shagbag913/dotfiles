@@ -23,6 +23,7 @@ nnoremap <silent> <C-t> :ClangFormat<CR>
 call plug#begin()
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'rhysd/vim-clang-format'
+Plug 'vim-airline/vim-airline'
 call plug#end()
 
 colorscheme PaperColor
