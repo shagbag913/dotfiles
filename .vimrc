@@ -1,25 +1,28 @@
 syntax enable
-
 filetype plugin indent on
+set background=dark
 
+"Tab key behavior
 set softtabstop=4
 set shiftwidth=4
 set expandtab
 
+"Indention
 set autoindent
 set smartindent
 
+"Search
 set incsearch
 set hlsearch
-set lazyredraw
 
-set pastetoggle=<F5>
+"Mappings
+set pastetoggle=<C-x>
+nnoremap <silent> <C-t> :ClangFormat<CR>
 
-execute pathogen#infect()
-
+"Plug
 call plug#begin()
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'rhysd/vim-clang-format'
 call plug#end()
 
-set background=dark
 colorscheme PaperColor
