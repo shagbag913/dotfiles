@@ -6,6 +6,7 @@ android-tools
 android-udev
 aosp-devel
 ccache
+clang
 chromium
 cloog-isl15
 compton-tryone-git
