@@ -1,0 +1,3 @@
+[submodule ".vim/plugged/papercolor-theme"]
+	path = .vim/plugged/papercolor-theme
+	url = https://github.com/NLKNguyen/papercolor-theme

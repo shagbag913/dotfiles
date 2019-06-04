@@ -18,4 +18,8 @@ set pastetoggle=<F5>
 execute pathogen#infect()
 
 call plug#begin()
+Plug 'NLKNguyen/papercolor-theme'
 call plug#end()
+
+set background=dark
+colorscheme PaperColor
