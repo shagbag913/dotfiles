@@ -10,13 +10,14 @@
 !.Xresources
 !.xinitrc
 !.vimrc
+!.zshrc
 
 !.bin/
 !.bin/apktool.jar
 !.bin/batteryprompt.py
 !.bin/brightness
 !.bin/build_bl
-!.bin/colors
+!.bin/colgen
 !.bin/deldog
 !.bin/elapsed
 !.bin/getimages
