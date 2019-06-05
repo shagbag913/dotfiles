@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 LOCK=/tmp/volume_notify.lock
 
@@ -13,11 +13,10 @@ if [[ $1 = -mute ]]; then
     if amixer -D pulse sset Master toggle | grep off; then
         NEW_VOLUME=Muted
     else
-        NEW_VOLUME=$(amixer -D pulse get Master | awk -F[][%] '{print $2}'|tail -n 1)
+        NEW_VOLUME=$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2}')
     fi
 else
-    NEW_VOLUME=$(amixer -D pulse sset Master $VOLUME_STEPS%$1 \
-        | awk -F[][%] '{print $2}'|tail -n 1)
+    NEW_VOLUME=$(amixer -D pulse sset Master $VOLUME_STEPS%$1 | awk -F'[][%]' 'END{print $2}')
 fi
 
 if [[ $NEW_VOLUME = Muted || $NEW_VOLUME = 0 ]]; then
