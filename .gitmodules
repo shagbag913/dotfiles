@@ -10,3 +10,6 @@
 [submodule ".vim/plugged/vim-airline"]
 	path = .vim/plugged/vim-airline
 	url = https://github.com/vim-airline/vim-airline
+[submodule ".vim/plugged/vim-lastplace"]
+	path = .vim/plugged/vim-lastplace
+	url = https://github.com/farmergreg/vim-lastplace

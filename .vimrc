@@ -24,6 +24,7 @@ call plug#begin()
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'rhysd/vim-clang-format'
 Plug 'vim-airline/vim-airline'
+Plug 'farmergreg/vim-lastplace'
 call plug#end()
 
 colorscheme PaperColor
