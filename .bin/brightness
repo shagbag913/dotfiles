@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # Temp file to test whether the script is running or not
 SCRIPT_TEMP=/tmp/brightness_lock
