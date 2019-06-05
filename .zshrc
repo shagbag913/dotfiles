@@ -25,7 +25,7 @@ else
             "if ! tmux -u attach; then tmux -u; fi"'
 fi
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
-alias brc='source ~/.bashrc'
+alias zrc='source ~/.zshrc'
 alias grep='grep --color=auto'
 alias l='ls'
 alias la='ls -a'
