@@ -29,3 +29,6 @@ Plug 'farmergreg/vim-lastplace'
 call plug#end()
 
 colorscheme PaperColor
+
+let g:clang_format#style_options = {
+            \ "ColumnLimit" : 100}
