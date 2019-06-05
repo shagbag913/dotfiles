@@ -18,6 +18,7 @@ set hlsearch
 "Mappings
 set pastetoggle=<C-x>
 nnoremap <silent> <C-t> :ClangFormat<CR>
+nnoremap <silent> <C-w> :noh<CR>
 
 "Plug
 call plug#begin()
