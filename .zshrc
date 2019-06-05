@@ -12,6 +12,7 @@ autoload -U colors && colors
 
 cat $HOME/.colors
 [[ -f $HOME/.secret ]] && . $HOME/.secret
+. $HOME/.git-completion.zsh &>/dev/null
 export PATH="$HOME/.bin:$PATH"
 export LC_ALL=C
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'

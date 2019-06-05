@@ -1,8 +1,6 @@
 *
-!.bash_profile
-!.bashrc
 !.compton.conf
-!.git-completion.bash
+!.git-completion.zsh
 !.gitconfig
 !.gitignore
 !.package-list
@@ -11,6 +9,7 @@
 !.xinitrc
 !.vimrc
 !.zshrc
+!.zprofile
 
 !.bin/
 !.bin/apktool.jar
