@@ -12,10 +12,16 @@ autoload -U colors && colors
 
 cat $HOME/.colors
 [[ -f $HOME/.secret ]] && . $HOME/.secret
-PATH="$HOME/.bin:$PATH"
+export PATH="$HOME/.bin:$PATH"
 export LC_ALL=C
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export EDITOR=vim
+
+prompt () {
+    PS1="%F{cyan}%n@%F{red}%m %F{cyan}$(basename "$(dirs)") %F{green}$ %f"
+}
+
+precmd_functions+=(prompt)
 
 if [[ $(uname -n) = ShagBox ]]; then
   alias tm='if ! tmux -u attach; then tmux -u; fi'
@@ -39,7 +45,6 @@ reposync() {
 }
 
 rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
-
 rmul() { rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2" }
 
 ps -e | grep Xorg &>/dev/null && neofetch
