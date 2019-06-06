@@ -49,7 +49,7 @@ prompt_git_branch() {
 }
 
 prompt () {
-    PS1="%F{green}%F{red}%m %F{cyan}$(basename "$(dirs)") $(prompt_git_branch)%F{green}$ %f"
+    PS1=" %F{red}%m%k %F{cyan}$(prompt_git_branch)$(basename "$(dirs)") %F{green}$ %f"
 }
 
 precmd_functions+=(prompt)
