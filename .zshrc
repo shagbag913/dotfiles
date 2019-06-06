@@ -44,7 +44,7 @@ rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
 rmul() { rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2" }
 
 prompt_git_branch() {
-    branch="$(git branch |& grep -v fatal | cut -d ' ' -f 2)"
+    branch="$(git branch |& sed 's|* ||')"
     [[ -n $branch ]] && echo "($branch) "
 }
 
