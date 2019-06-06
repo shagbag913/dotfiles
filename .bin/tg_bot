@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 URL="https://api.telegram.org/bot$TGBOTTOKEN/sendMessage"
 CHATIDS=(
@@ -15,10 +15,10 @@ while [[ $# -gt 1 ]]; do
                    CHATID+=" ${CHATIDS[@]}"
                    ;;
                pm)
-                   CHATID+=" ${CHATIDS[0]}"
+                   CHATID+=" ${CHATIDS[1]}"
                    ;;
                nug)
-                   CHATID+=" ${CHATIDS[1]}"
+                   CHATID+=" ${CHATIDS[2]}"
                    ;;
            esac
            ;;
@@ -41,6 +41,7 @@ if [[ -z $CHATID ]]; then
 fi
 
 for i in $CHATID; do
-    curl -s -X POST $URL -d chat_id=$i -d text="$MESSAGE" -d parse_mode="Markdown" &>/dev/null
-    echo "Notified $i"
+    plc="$(echo $i | tr -d ' ')"
+    curl -s -X POST $URL -d chat_id=$plc -d text="$MESSAGE" -d parse_mode="Markdown" &>/dev/null
+    echo "Notified $plc"
 done
