@@ -24,6 +24,7 @@ else
   alias tm='ssh -t $SSHNAME -p $SSHPORT \
             "if ! tmux -u attach; then tmux -u; fi"'
 fi
+alias .='source'
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
 alias zrc='source ~/.zshrc'
 alias grep='grep --color=auto'
