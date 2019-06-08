@@ -11,7 +11,6 @@ compinit
 autoload -U colors && colors
 
 cat $HOME/.colors
-[[ -f $HOME/.secret ]] && . $HOME/.secret
 . $HOME/.git-completion.zsh &>/dev/null
 export PATH="$HOME/.bin:$PATH"
 export LC_ALL=C
@@ -52,6 +51,11 @@ prompt () {
     PS1=" %F{red}%m%k %F{cyan}$(prompt_git_branch)$(basename "$(dirs)") %F{green}$ %f"
 }
 
-precmd_functions+=(prompt)
+pre_cmd() {
+    prompt
+    [[ -f $HOME/.secret ]] && . $HOME/.secret
+}
+
+precmd_functions+=(pre_cmd)
 
 ps -e | grep Xorg &>/dev/null && neofetch
