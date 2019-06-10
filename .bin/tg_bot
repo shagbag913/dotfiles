@@ -6,6 +6,9 @@ CHATIDS=(
     '-1001247942938'
 )
 
+ARROFFSET=(1 2)
+[[ -n ${ARROFFSET[${#ARROFFSET[@]}]} ]] && ARROFFSET=0 || ARROFFSET=1
+
 while [[ $# -gt 1 ]]; do
     case $1 in
         -p)
@@ -15,10 +18,10 @@ while [[ $# -gt 1 ]]; do
                    CHATID+=" ${CHATIDS[@]}"
                    ;;
                pm)
-                   CHATID+=" ${CHATIDS[1]}"
+                   CHATID+=" ${CHATIDS[1-$ARROFFSET]}"
                    ;;
                nug)
-                   CHATID+=" ${CHATIDS[2]}"
+                   CHATID+=" ${CHATIDS[2-$ARROFFSET]}"
                    ;;
            esac
            ;;
