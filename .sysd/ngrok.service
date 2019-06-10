@@ -1,9 +1,0 @@
-[Unit]
-Description=Ngrok tcp 22
-
-[Service]
-User=shagbag913
-ExecStart=/home/shagbag913/.bin/ngrok tcp 22
-
-[Install]
-WantedBy=multi-user.target

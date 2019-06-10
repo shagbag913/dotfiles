@@ -20,7 +20,6 @@
 !.bin/deldog
 !.bin/elapsed
 !.bin/getimages
-!.bin/ngrok
 !.bin/reinit_mouse
 !.bin/shagfetch
 !.bin/tg_bot
@@ -37,9 +36,6 @@
 !.config/xfce4/
 !.config/xfce4/terminal
 !.config/xfce4/terminal/terminalrc
-
-!.sysd/
-!.sysd/*
 
 !.vim/
 !.vim/**/*

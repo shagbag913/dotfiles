@@ -5,6 +5,9 @@ if [[ $HOSTNAME = ShagBook ]]; then
         xinput set-prop "Elan Touchpad" "libinput $mf Enabled" 1 &
     done &
     python3 /home/$USER/.bin/batteryprompt.py &
+else
+    ngrok tcp 22 &
 fi
 dunst &
+redshift l 40:-86 &
 exec i3
