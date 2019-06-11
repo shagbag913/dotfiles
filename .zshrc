@@ -43,6 +43,16 @@ reposync() {
 rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
 rmul() { rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2" }
 
+device_zip_list() {
+    if [ -n "$1" ]; then
+        curl -s https://developers.google.com/android/images | sed -n 's/<td><a href="//p' \
+            | sed -n 's/[", ]//gp' | grep $1 | sort
+    else
+        curl -s https://developers.google.com/android/images | sed -n 's/<td><a href="//p' \
+            | sed -n 's/[", ]//gp' | sort
+    fi
+}
+
 prompt_git_branch() {
     branch="$(git branch |& grep -v fatal | sed 's/[()]//g; s/^* //')"
     [[ -n $branch ]] && echo "($branch) "

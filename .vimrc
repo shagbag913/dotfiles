@@ -1,6 +1,7 @@
 syntax enable
 filetype plugin indent on
 set background=dark
+set number
 
 "Tab key behavior
 set softtabstop=4
