@@ -36,7 +36,7 @@ alias trizen='trizen --skipinteg --noconfirm'
 alias wget='wget -c'
 
 reposync() {
-    repo sync -j$MAKEFLAGS --no-clone-bundle --prune --no-tags -c \
+    repo sync -j$(($(nproc --all)*2)) --no-clone-bundle --prune --no-tags -c \
         --optimized-fetch -f "$@"
 }
 
