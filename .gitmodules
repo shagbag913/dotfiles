@@ -4,9 +4,6 @@
 [submodule ".vim/pack/vendor/start/VimCompletesMe"]
 	path = .vim/pack/vendor/start/VimCompletesMe
 	url = https://github.com/ajh17/VimCompletesMe
-[submodule ".vim/plugged/vim-clang-format"]
-	path = .vim/plugged/vim-clang-format
-	url = https://github.com/rhysd/vim-clang-format
 [submodule ".vim/plugged/vim-airline"]
 	path = .vim/plugged/vim-airline
 	url = https://github.com/vim-airline/vim-airline

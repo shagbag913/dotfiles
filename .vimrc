@@ -17,18 +17,13 @@ set hlsearch
 
 "Mappings
 set pastetoggle=<C-x>
-nnoremap <silent> <C-t> :ClangFormat<CR>
 nnoremap <silent> <C-w> :noh<CR>
 
 "Plug
 call plug#begin()
 Plug 'NLKNguyen/papercolor-theme'
-Plug 'rhysd/vim-clang-format'
 Plug 'vim-airline/vim-airline'
 Plug 'farmergreg/vim-lastplace'
 call plug#end()
 
 colorscheme PaperColor
-
-let g:clang_format#style_options = {
-            \ "ColumnLimit" : 100}
