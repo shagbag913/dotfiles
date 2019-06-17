@@ -16,6 +16,7 @@
 !.bin/deldog
 !.bin/elapsed
 !.bin/getimages
+!.bin/nfetch
 !.bin/reinit_mouse
 !.bin/shagfetch
 !.bin/tg_bot

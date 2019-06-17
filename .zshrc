@@ -69,4 +69,4 @@ pre_cmd() {
 
 precmd_functions+=(pre_cmd)
 
-ps -e | grep Xorg &>/dev/null && neofetch
+ps -e | grep Xorg &>/dev/null && $HOME/.bin/nfetch
