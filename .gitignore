@@ -2,6 +2,7 @@
 !.compton.conf
 !.gitconfig
 !.gitignore
+!lemon
 !.tmux.conf
 !.xinitrc
 !.vimrc
