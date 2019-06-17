@@ -1,0 +1,12 @@
+# NOTE: is meant to only be installed as a __user__ service!
+
+[Unit]
+Description=Ngrok tcp 22
+
+[Service]
+Type=simple
+ExecStart=ngrok tcp 22
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
