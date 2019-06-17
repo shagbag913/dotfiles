@@ -1,9 +1,9 @@
 #!/usr/bin/env zsh
-DISTRO=$(cat /etc/os-release | awk -F'"' '/^NAME/{print $2}')
-MODEL=$(cat /sys/devices/virtual/dmi/id/product_name)
-KERNEL=$(uname -r)
-PACKAGES=$(pacman -Qsq | wc -l)
-SHEL=$($SHELL --version | awk '{print $1,$2}')
+OS=$(cat /etc/os-release | awk -F'"' '/^NAME/{print $2}')
+Host=$(cat /sys/devices/virtual/dmi/id/product_name)
+Kernel=$(uname -r)
+Packages=$(pacman -Qsq | wc -l)
+Shell=$($SHELL --version | awk '{print $1,$2}')
 
 # Copied and pasted from the original neofetch, full credit to the neofetch author
 ID="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK 2>/dev/null)"
@@ -13,36 +13,40 @@ WM="${WM/*WM_NAME = }"
 WM="${WM/\"}"
 WM="${WM/\"*}"
 
-TERMINAL=$(ps -p $(ps -p $$ -o ppid=) o args=)
+Terminal=$(ps -p $(ps -p $$ -o ppid=) o args=)
 
 MAX_GHZ=$(echo "$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq) / 1000000" \
     | bc -l | sed -n 's/00000000\+//p')
 CPU="$(cat /proc/cpuinfo | awk -F': ' '/model name/{print $2}' | head -n 1 | sed 's/ @.*/@ '"$MAX_GHZ"'GHz/; s/  / /')"
 GPU="$(lspci | sed -n 's/.*VGA compatible controller: //p' | sed -n 's/ (.*//p' | sed 's/ Integrated Graphics Controller//')"
-FREEMEM="$(free -h | awk '/Mem:/{print $3,"/",$2}')"
-UPTIME="$(uptime | awk -F' ' '{print $3}' | sed 's/:/h /; s/,/m/')"
+Memory="$(free -h | awk '/Mem:/{print $3,"/",$2}')"
+Uptime="$(uptime | awk -F' ' '{print $3}' | sed 's/:/h /; s/,/m/')"
+
+for i in OS Host Kernel Packages Shell WM Terminal CPU GPU Memory Uptime; do
+    eval tmp="\${$i}"
+    if [[ $i == Host ]]; then
+        if [[ $tmp = 'System Product Name' ]]; then
+            continue
+        fi
+    elif [[ -z "$tmp" ]]; then
+        continue
+    fi
+    LIST+=("\e[96m$i: \e[39m$tmp")
+done
 
 echo -e "                                     \e[96m$(whoami)\e[39m@\e[96m$(hostname)"
 echo -e "\e[96m               -@                    -------------------"
-echo -e "\e[96m              .##@"
-echo -e "\e[96m            .####@                   OS:\e[39m $DISTRO"
-if [[ "$MODEL" != "System Product Name" ]]; then
-    echo -e "\e[96m             @#####@                 Host:\e[39m $MODEL"
-else
-    echo -e "\e[96m             @#####@"
-fi
-echo -e "\e[96m           . *######@                Kernel:\e[39m $KERNEL"
-echo -e "\e[96m          .##@o@#####@               Uptime:\e[39m $UPTIME"
-echo -e "\e[96m         /############@              Packages:\e[39m $PACKAGES"
-echo -e "\e[96m        /##############@             Shell:\e[39m $SHEL"
-if [[ -n "$WM" ]]; then
-    echo -e "\e[96m       @######@**%######@            WM:\e[39m $WM"
-else
-    echo -e "\e[96m      @######\`     %#####o"
-fi
-echo -e "\e[96m      @######\`     %#####o           Terminal:\e[39m $TERMINAL"
-echo -e "\e[96m     @######@       ######%          CPU:\e[39m $CPU"
-echo -e "\e[96m   -@#######h       ######@.\`        GPU:\e[39m $GPU"
-echo -e "\e[96m  /#####h**\`\`       \`**%@####@       Memory:\e[39m $FREEMEM"
-echo -e "\e[96m @H@*\`                    \`*%#@"
-echo -e "\e[96m*\`                            \`*"
+echo -e "\e[96m              .##@                   $LIST[1]"
+echo -e "\e[96m            .####@                   $LIST[2]"
+echo -e "\e[96m             @#####@                 $LIST[3]"
+echo -e "\e[96m           . *######@                $LIST[4]"
+echo -e "\e[96m          .##@o@#####@               $LIST[5]"
+echo -e "\e[96m         /############@              $LIST[6]"
+echo -e "\e[96m        /##############@             $LIST[7]"
+echo -e "\e[96m      @######\`     %#####o           $LIST[8]"
+echo -e "\e[96m      @######\`     %#####o           $LIST[9]"
+echo -e "\e[96m     @######@       ######%          $LIST[10]"
+echo -e "\e[96m   -@#######h       ######@.\`        $LIST[11]"
+echo -e "\e[96m  /#####h**\`\`       \`**%@####@       $LIST[12]"
+echo -e "\e[96m @H@*\`                    \`*%#@      $LIST[13]"
+echo -e "\e[96m*\`                            \`*     $LIST[14]"
