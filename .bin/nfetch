@@ -17,7 +17,7 @@ Terminal=$(ps -p $(ps -p $$ -o ppid=) o args=)
 
 MAX_GHZ=$(echo "$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq) / 1000000" \
     | bc -l | sed -n 's/00000000\+//p')
-CPU="$(cat /proc/cpuinfo | awk -F': ' '/model name/{print $2}' | head -n 1 | sed 's/ @.*/@ '"$MAX_GHZ"'GHz/; s/  / /')"
+CPU="$(echo "$(cat /proc/cpuinfo | awk -F': ' '/model name/{print $2}' | head -n 1 | sed 's/  / /g; s/ @.*//') @ ${MAX_GHZ}GHz")"
 GPU="$(lspci | sed -n 's/.*VGA compatible controller: //p' | sed -n 's/ (.*//p' | sed 's/ Integrated Graphics Controller//')"
 Memory="$(free -h | awk '/Mem:/{print $3,"/",$2}')"
 Uptime="$(uptime | awk -F' ' '{print $3}' | sed 's/:/h /; s/,/m/')"
