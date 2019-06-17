@@ -1,7 +1,8 @@
 [Configuration]
+FontName=Noto Sans Mono Medium 12
 MiscAlwaysShowTabs=FALSE
-MiscBell=TRUE
-MiscBellUrgent=TRUE
+MiscBell=FALSE
+MiscBellUrgent=FALSE
 MiscBordersDefault=FALSE
 MiscCursorBlinks=FALSE
 MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
@@ -11,7 +12,7 @@ MiscMenubarDefault=FALSE
 MiscMouseAutohide=FALSE
 MiscMouseWheelZoom=TRUE
 MiscToolbarDefault=FALSE
-MiscConfirmClose=FALSE
+MiscConfirmClose=TRUE
 MiscCycleTabs=TRUE
 MiscTabCloseButtons=TRUE
 MiscTabCloseMiddleClick=TRUE
@@ -24,11 +25,7 @@ MiscRewrapOnResize=TRUE
 MiscUseShiftArrowsToScroll=FALSE
 MiscSlimTabs=FALSE
 MiscNewTabAdjacent=FALSE
-ScrollingUnlimited=TRUE
-BackgroundMode=TERMINAL_BACKGROUND_TRANSPARENT
-ColorBackground=#2e2e34343636
-TitleMode=TERMINAL_TITLE_HIDE
+BackgroundDarkness=1.000000
 ScrollingBar=TERMINAL_SCROLLBAR_NONE
-BackgroundDarkness=0.850000
-FontName=Noto Sans Mono Bold 12
+BackgroundMode=TERMINAL_BACKGROUND_TRANSPARENT
 

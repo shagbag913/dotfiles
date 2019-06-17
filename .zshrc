@@ -10,7 +10,7 @@ compinit
 
 autoload -U colors && colors
 
-cat $HOME/.colors
+[[ -f $HOME/.cache/wal/sequences ]] && cat $HOME/.cache/wal/sequences
 . $HOME/.git-completion.zsh &>/dev/null
 export PATH="$HOME/.bin:$PATH"
 export LC_ALL=C
