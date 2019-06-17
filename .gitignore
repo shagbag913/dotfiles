@@ -30,3 +30,6 @@
 !.vim/
 !.vim/**/*
 .vim/.netrwhist
+
+!Walls/
+!Walls/*
