@@ -26,7 +26,7 @@ echo -e "                                     \e[96m$(whoami)\e[39m@\e[96m$(host
 echo -e "\e[96m               -@                    -------------------"
 echo -e "\e[96m              .##@"
 echo -e "\e[96m            .####@                   OS:\e[39m $DISTRO"
-if [[ "$HOST" != "System Product Name" ]]; then
+if [[ "$MODEL" != "System Product Name" ]]; then
     echo -e "\e[96m             @#####@                 Host:\e[39m $MODEL"
 else
     echo -e "\e[96m             @#####@"
