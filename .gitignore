@@ -23,6 +23,8 @@
 !.bin/volume
 
 !.config/
+!.config/gtk-3.0
+!.config/gtk-3.0/*
 !.config/xfce4/
 !.config/xfce4/terminal
 !.config/xfce4/terminal/terminalrc
