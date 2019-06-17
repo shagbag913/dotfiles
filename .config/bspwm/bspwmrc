@@ -14,3 +14,4 @@ bspc config borderless_monocle   true
 bspc config gapless_monocle      true
 
 bspc rule -a Google-chrome-unstable desktop='^2'
+bspc rule -a Xfce4-terminal desktop='^1'
