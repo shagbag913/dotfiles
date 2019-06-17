@@ -5,4 +5,5 @@ if [[ $(hostname) == ShagBook ]]; then
     done &
 fi
 redshift l 40:-86 &
+xsetroot -cursor_name top_left_arrow
 exec bspwm
