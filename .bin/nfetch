@@ -1,4 +1,6 @@
 #!/usr/bin/env zsh
+LC_ALL=C
+LANG=C
 OS=$(cat /etc/os-release | awk -F'"' '/^NAME/{print $2}')
 Host=$(cat /sys/devices/virtual/dmi/id/product_name)
 Kernel=$(uname -r)
