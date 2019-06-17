@@ -2,6 +2,7 @@
 
 sudo modprobe -r elan_i2c
 sudo modprobe elan_i2c
-sudo xinput set-prop "Elan Touchpad" "libinput Middle Emulation Enabled" 1
-sudo xinput set-prop "Elan Touchpad" "libinput Natural Scrolling Enabled" 1
-sudo xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1
+sleep .5
+xinput set-prop "Elan Touchpad" "libinput Middle Emulation Enabled" 1
+xinput set-prop "Elan Touchpad" "libinput Natural Scrolling Enabled" 1
+xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1
