@@ -19,7 +19,7 @@ MAX_GHZ=$(echo "$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq) / 1
     | bc -l | sed -n 's/00000000\+//p')
 CPU="$(echo "$(cat /proc/cpuinfo | awk -F': ' '/model name/{print $2}' | head -n 1 | sed 's/  / /g; s/(R)//g; s/ @.*//') @ ${MAX_GHZ}GHz")"
 GPU="$(lspci | sed -n 's/.*VGA compatible controller: //p' | sed -n 's/ (.*//p' | sed 's/ Integrated Graphics Controller//')"
-if [[ $(echo "$GPU" | wc -c) -gt 50 ]] && echo "$GPU" | grep -i processor | grep -i intel; then
+if [[ $(echo "$GPU" | wc -c) -gt 50 ]] && echo "$GPU" | grep -i processor | grep -i intel &>/dev/null; then
     GPU="Intel Integrated Graphics"
 fi
 Memory="$(free -h | awk '/Mem:/{print $3,"/",$2}')"
