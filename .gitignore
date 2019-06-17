@@ -23,8 +23,12 @@
 !.bin/volume
 
 !.config/
+!.config/bspwm/
+!.config/bspwm/*
 !.config/gtk-3.0
 !.config/gtk-3.0/*
+!.config/sxhkd/
+!.config/sxhkd/*
 !.config/xfce4/
 !.config/xfce4/terminal
 !.config/xfce4/terminal/terminalrc
