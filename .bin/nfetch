@@ -6,9 +6,9 @@ PACKAGES=$(pacman -Qsq | wc -l)
 SHEL=$($SHELL --version | awk '{print $1,$2}')
 
 # Copied and pasted from the original neofetch, full credit to the neofetch author
-ID="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+ID="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK 2>/dev/null)"
 ID="${ID##* }"
-WM="$(xprop -id "$ID" -notype -len 100 -f _NET_WM_NAME 8t)"
+WM="$(xprop -id "$ID" -notype -len 100 -f _NET_WM_NAME 8t 2>/dev/null)"
 WM="${WM/*WM_NAME = }"
 WM="${WM/\"}"
 WM="${WM/\"*}"
@@ -26,12 +26,20 @@ echo -e "                                     \e[96m$(whoami)\e[39m@\e[96m$(host
 echo -e "\e[96m               -@                    -------------------"
 echo -e "\e[96m              .##@"
 echo -e "\e[96m            .####@                   OS:\e[39m $DISTRO"
-echo -e "\e[96m             @#####@                 Host:\e[39m $MODEL"
+if [[ "$HOST" != "System Product Name" ]]; then
+    echo -e "\e[96m             @#####@                 Host:\e[39m $MODEL"
+else
+    echo -e "\e[96m             @#####@"
+fi
 echo -e "\e[96m           . *######@                Kernel:\e[39m $KERNEL"
 echo -e "\e[96m          .##@o@#####@               Uptime:\e[39m $UPTIME"
 echo -e "\e[96m         /############@              Packages:\e[39m $PACKAGES"
 echo -e "\e[96m        /##############@             Shell:\e[39m $SHEL"
-echo -e "\e[96m       @######@**%######@            WM:\e[39m $WM"
+if [[ -n "$WM" ]]; then
+    echo -e "\e[96m       @######@**%######@            WM:\e[39m $WM"
+else
+    echo -e "\e[96m      @######\`     %#####o"
+fi
 echo -e "\e[96m      @######\`     %#####o           Terminal:\e[39m $TERMINAL"
 echo -e "\e[96m     @######@       ######%          CPU:\e[39m $CPU"
 echo -e "\e[96m   -@#######h       ######@.\`        GPU:\e[39m $GPU"
