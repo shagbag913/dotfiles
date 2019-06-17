@@ -33,10 +33,10 @@ bar_date() {
 
 bar_battery() {
     local charge_array=('' '' '' '' '')
-    local charge=$(cat /sys/class/power_supply/BAT0/capacity)
     local glyph
 
     if ! is_charging; then
+        local charge=$(cat /sys/class/power_supply/BAT0/capacity)
         if [[ $charge < 15 ]]; then
             glyph=${charge_array[1]}
         elif [[ $charge < 40 ]]; then
