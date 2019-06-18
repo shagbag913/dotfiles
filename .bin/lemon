@@ -60,7 +60,7 @@ bar_battery() {
         glyph=${charge_array[glyph]}
     fi
 
-    BATTERY_PERCENTAGE="$glyph $charge%"
+    BATTERY_PERCENTAGE="$glyph  $charge%"
 }
 
 bar_bspwm_windows() {
