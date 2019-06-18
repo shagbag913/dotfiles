@@ -2,7 +2,6 @@
 !.compton.conf
 !.gitconfig
 !.gitignore
-!lemon
 !.tmux.conf
 !.xinitrc
 !.vimrc
@@ -17,6 +16,7 @@
 !.bin/deldog
 !.bin/elapsed
 !.bin/getimages
+!.bin/lemon
 !.bin/nfetch
 !.bin/reinit_mouse
 !.bin/shagfetch
