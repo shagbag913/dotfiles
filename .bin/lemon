@@ -60,7 +60,7 @@ bar_battery() {
         glyph=${charge_array[glyph]}
     fi
 
-    BATTERY_PERCENTAGE="$glyph  $charge%"
+    BATTERY_PERCENTAGE="  $glyph  $charge%  "
 }
 
 bar_bspwm_windows() {
@@ -81,6 +81,10 @@ bar_bspwm_windows() {
     WINDOW_LIST="$windows"
 }
 
+bar_memory_usage() {
+    MEMORY_USAGE="  $(free | awk -F' ' '/Mem/{printf "%3.0f\n",$3/$2*100}' | tr -d ' ')%  "
+}
+
 while :; do
     UPTIME=$(cat /proc/uptime | awk -F'.' '{print $1}')
     if [[ $RAN = true ]]; then
@@ -99,9 +103,12 @@ while :; do
     if [[ $REFRESH = true || -z "$BATTERY_PERCENTAGE" ]]; then
         bar_battery
     fi
+    if [[ $REFRESH = true || -z "$MEMORY_USAGE" ]]; then
+        bar_memory_usage
+    fi
     bar_bspwm_windows
-    BAR="%{l}$WINDOW_LIST%{c}$TIME"
-    [[ -n "$BATTERY_PERCENTAGE" ]] && BAR="$BAR%{r}$BATTERY_PERCENTAGE"
+    BAR="%{l}$WINDOW_LIST%{c}$TIME%{r}$MEMORY_USAGE"
+    [[ -n "$BATTERY_PERCENTAGE" ]] && BAR="$BAR | $BATTERY_PERCENTAGE"
     echo "  $BAR  "
 done | lemonbar \
             -o -1 \
