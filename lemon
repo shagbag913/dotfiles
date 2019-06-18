@@ -34,7 +34,6 @@ bar_battery() {
     local charge_array=('' '' '' '' '')
     local glyph
     local charge=$(cat /sys/class/power_supply/BAT0/capacity)
-    charge=39
 
     if [[ $charge < 15 ]]; then
         glyph=1
