@@ -18,12 +18,12 @@ BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//
 
 CHARGING_INDEX=1
 
+has_battery() {
+    return $(ls /sys/class/power_supply/BAT0/status &>/dev/null; echo $?)
+}
+
 is_charging() {
-    if cat /sys/class/power_supply/BAT0/status | grep Discharging &>/dev/null; then
-        return 1
-    else
-        return 0
-    fi
+    return $(cat /sys/class/power_supply/BAT0/status | grep Charging &>/dev/null; echo $?)
 }
 
 bar_date() {
@@ -31,6 +31,7 @@ bar_date() {
 }
 
 bar_battery() {
+    has_battery || return
     local charge_array=('' '' '' '' '')
     local glyph
     local charge=$(cat /sys/class/power_supply/BAT0/capacity)
@@ -92,7 +93,9 @@ while :; do
         bar_battery
     fi
     bar_active_nodes
-    echo " %{l}$CURRENT_WINDOW%{c}$TIME%{r}$BATTERY_PERCENTAGE "
+    BAR="%{l}$CURRENT_WINDOW%{c}$TIME"
+    has_battery && BAR="$BAR%{r}$BATTERY_PERCENTAGE "
+    echo "$BAR"
 done | lemonbar \
             -o -1 \
             -f '-misc-font awesome 5 free solid-black-r-normal--0-0-0-0-p-0-iso10646-1' \
