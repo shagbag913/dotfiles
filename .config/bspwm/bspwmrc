@@ -2,7 +2,7 @@
 
 sxhkd &
 compton &
-$HOME/.bin/lemon &
+killall lemonbar && $HOME/.bin/lemon &
 nitrogen --restore
 
 bspc monitor -d I II III IV V VI VII VIII IX X
@@ -16,3 +16,4 @@ bspc config gapless_monocle      true
 
 bspc rule -a Google-chrome-unstable desktop='^2'
 bspc rule -a Xfce4-terminal desktop='^1'
+bspc rule -a TelegramDesktop desktop='^3'
