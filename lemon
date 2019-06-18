@@ -27,43 +27,51 @@ is_charging() {
 }
 
 bar_date() {
-    date '+%I:%M %p' | sed 's/^0//'
+    TIME=$(date '+%I:%M %p' | sed 's/^0//')
 }
 
 bar_battery() {
     local charge_array=('' '' '' '' '')
     local glyph
     local charge=$(cat /sys/class/power_supply/BAT0/capacity)
+    charge=39
 
-    if ! is_charging; then
-        if [[ $charge < 15 ]]; then
-            glyph=${charge_array[1]}
-        elif [[ $charge < 40 ]]; then
-            glyph=${charge_array[2]}
-        elif [[ $charge < 70 ]]; then
-            glyph=${charge_array[3]}
-        elif [[ $charge < 90 ]]; then
-            glyph=${charge_array[4]}
-        else
-            glyph=${charge_array[5]}
-        fi
+    if [[ $charge < 15 ]]; then
+        glyph=1
+    elif [[ $charge < 40 ]]; then
+        glyph=2
+    elif [[ $charge < 70 ]]; then
+        glyph=3
+    elif [[ $charge < 90 ]]; then
+        glyph=4
     else
-        glyph=${charge_array[$CHARGING_INDEX]}
+        glyph=5
     fi
 
-    echo -e "$glyph $charge%"
+    if is_charging; then
+        if [[ $CHARGING_INDEX = 5 || -z "$CHARGING_INDEX" ]]; then
+            CHARGING_INDEX=$glyph
+        else
+            CHARGING_INDEX=$((CHARGING_INDEX + 1))
+        fi
+
+        glyph=${charge_array[$CHARGING_INDEX]}
+    else
+        glyph=${charge_array[glyph]}
+    fi
+
+    BATTERY_PERCENTAGE="$glyph $charge%"
 }
 
 bar_active_nodes() {
-    local current_window
     local tmp
     for i in {2..11}; do
         tmp=$(bspc wm --get-status | awk -F':' -v i="$i" '{print $i}')
         if [[ $tmp =~ ^O || $tmp =~ ^F ]]; then
-            current_window=$((i-1))
+            CURRENT_WINDOW=$((i-1))
+            break
         fi
     done
-    echo $current_window
 }
 
 while :; do
@@ -71,7 +79,7 @@ while :; do
     if [[ $RAN = true ]]; then
         REFRESH=false
     fi
-    if [[ $((UPTIME % 5)) != 0 ]]; then
+    if [[ $((UPTIME % 2)) != 0 ]]; then
         RAN=false
         REFRESH=false
     elif [[ $RAN != true ]]; then
@@ -79,19 +87,13 @@ while :; do
         RAN=true
     fi
     if [[ $REFRESH = true || -z "$TIME" ]]; then
-        TIME=$(bar_date)
+        bar_date
     fi
-    if [[ $REFRESH = true || -z "$BATTERY" ]]; then
-        BATTERY=$(bar_battery)
-        if is_charging; then
-            if [[ $CHARGING_INDEX = 5 ]]; then
-                CHARGING_INDEX=1
-            else
-                CHARGING_INDEX=$((CHARGING_INDEX + 1))
-            fi
-        fi
+    if [[ $REFRESH = true || -z "$BATTERY_PERCENTAGE" ]]; then
+        bar_battery
     fi
-    echo " %{l}$(bar_active_nodes)%{c}$TIME%{r}$BATTERY "
+    bar_active_nodes
+    echo " %{l}$CURRENT_WINDOW%{c}$TIME%{r}$BATTERY_PERCENTAGE "
 done | lemonbar \
             -o -1 \
             -f '-misc-font awesome 5 free solid-black-r-normal--0-0-0-0-p-0-iso10646-1' \
