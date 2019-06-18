@@ -2,7 +2,7 @@
 
 sxhkd &
 compton &
-killall lemonbar && $HOME/.bin/lemon &
+killall lemonbar; $HOME/.bin/lemon &
 nitrogen --restore
 
 bspc monitor -d I II III IV V VI VII VIII IX X
