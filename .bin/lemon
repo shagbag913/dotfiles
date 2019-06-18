@@ -116,5 +116,4 @@ done | lemonbar \
             -o 1 \
             -f 'Noto Sans Medium-11' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
-            -B '#141b35' \
-            -p
+            -B '#141b35'
