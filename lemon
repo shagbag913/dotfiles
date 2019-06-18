@@ -1,5 +1,4 @@
 #!/usr/bin/env zsh
-set -x
 #
 # My lemonbar setup.
 # IMPORTANT:  This configuration is only compatible with
@@ -34,9 +33,9 @@ bar_date() {
 bar_battery() {
     local charge_array=('' '' '' '' '')
     local glyph
+    local charge=$(cat /sys/class/power_supply/BAT0/capacity)
 
     if ! is_charging; then
-        local charge=$(cat /sys/class/power_supply/BAT0/capacity)
         if [[ $charge < 15 ]]; then
             glyph=${charge_array[1]}
         elif [[ $charge < 40 ]]; then
@@ -55,16 +54,44 @@ bar_battery() {
     echo -e "$glyph $charge%"
 }
 
+bar_active_nodes() {
+    local current_window
+    local tmp
+    for i in {2..11}; do
+        tmp=$(bspc wm --get-status | awk -F':' -v i="$i" '{print $i}')
+        if [[ $tmp =~ ^O || $tmp =~ ^F ]]; then
+            current_window=$((i-1))
+        fi
+    done
+    echo $current_window
+}
+
 while :; do
-    echo " %{c}$(bar_date)%{r}$(bar_battery) "
-    if is_charging; then
-        if [[ $CHARGING_INDEX = 5 ]]; then
-            CHARGING_INDEX=1
-        else
-            CHARGING_INDEX=$((CHARGING_INDEX + 1))
+    UPTIME=$(cat /proc/uptime | awk -F'.' '{print $1}')
+    if [[ $RAN = true ]]; then
+        REFRESH=false
+    fi
+    if [[ $((UPTIME % 5)) != 0 ]]; then
+        RAN=false
+        REFRESH=false
+    elif [[ $RAN != true ]]; then
+        REFRESH=true
+        RAN=true
+    fi
+    if [[ $REFRESH = true || -z "$TIME" ]]; then
+        TIME=$(bar_date)
+    fi
+    if [[ $REFRESH = true || -z "$BATTERY" ]]; then
+        BATTERY=$(bar_battery)
+        if is_charging; then
+            if [[ $CHARGING_INDEX = 5 ]]; then
+                CHARGING_INDEX=1
+            else
+                CHARGING_INDEX=$((CHARGING_INDEX + 1))
+            fi
         fi
     fi
-    sleep 1
+    echo " %{l}$(bar_active_nodes)%{c}$TIME%{r}$BATTERY "
 done | lemonbar \
             -o -1 \
             -f '-misc-font awesome 5 free solid-black-r-normal--0-0-0-0-p-0-iso10646-1' \
