@@ -63,15 +63,19 @@ bar_battery() {
     BATTERY_PERCENTAGE="$glyph $charge%"
 }
 
-bar_current_window() {
-    local tmp
+bar_bspwm_windows() {
+    local rn_window
+    local windows
     for i in {2..11}; do
-        tmp=$(bspc wm --get-status | awk -F':' -v i="$i" '{print $i}')
-        if [[ $tmp =~ ^O || $tmp =~ ^F ]]; then
-            CURRENT_WINDOW=$((i-1))
-            break
+        rn_window=$(bspc wm --get-status | awk -F':' -v i="$i" '{print $i}')
+        if [[ $rn_window =~ ^O || $rn_window =~ ^F ]]; then
+            windows="$windows%{B#222e59}%{F#d7fdff}    $((i-1))    %{B#141b35}%{F#ffffff}"
+        fi
+        if [[ $rn_window =~ ^o ]]; then
+            windows="$windows    $((i-1))    "
         fi
     done
+    WINDOW_LIST="$windows"
 }
 
 while :; do
@@ -92,8 +96,8 @@ while :; do
     if [[ $REFRESH = true || -z "$BATTERY_PERCENTAGE" ]]; then
         bar_battery
     fi
-    bar_current_window
-    BAR="%{l}$CURRENT_WINDOW%{c}$TIME"
+    bar_bspwm_windows
+    BAR="%{l}$WINDOW_LIST%{c}$TIME"
     [[ -n "$BATTERY_PERCENTAGE" ]] && BAR="$BAR%{r}$BATTERY_PERCENTAGE "
     echo "$BAR"
 done | lemonbar \
