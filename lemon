@@ -31,7 +31,7 @@ bar_date() {
 }
 
 bar_battery() {
-    has_battery || return
+    has_battery || { BATTERY_PERCENTAGE=""; return; }
     local charge_array=('' '' '' '' '')
     local glyph
     local charge=$(cat /sys/class/power_supply/BAT0/capacity)
@@ -94,7 +94,7 @@ while :; do
     fi
     bar_active_nodes
     BAR="%{l}$CURRENT_WINDOW%{c}$TIME"
-    has_battery && BAR="$BAR%{r}$BATTERY_PERCENTAGE "
+    [[ -n "$BATTERY_PERCENTAGE" ]] && BAR="$BAR%{r}$BATTERY_PERCENTAGE "
     echo "$BAR"
 done | lemonbar \
             -o -1 \
