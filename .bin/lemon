@@ -66,13 +66,16 @@ bar_battery() {
 bar_bspwm_windows() {
     local rn_window
     local windows
+    local index
+    local wm_status=$(bspc wm --get-status)
     for i in {2..11}; do
-        rn_window=$(bspc wm --get-status | awk -F':' -v i="$i" '{print $i}')
+        index=$((i-1))
+        rn_window=$(awk -F':' -v i="$i" '{print $i}' <<< $wm_status)
         if [[ $rn_window =~ ^O || $rn_window =~ ^F ]]; then
-            windows="$windows%{B#222e59}%{F#d7fdff}    $((i-1))    %{B#141b35}%{F#ffffff}"
+            windows="$windows%{B#222e59}%{F#d7fdff}    $index    %{B#141b35}%{F#ffffff}"
         fi
         if [[ $rn_window =~ ^o ]]; then
-            windows="$windows    $((i-1))    "
+            windows="$windows    $index    "
         fi
     done
     WINDOW_LIST="$windows"
