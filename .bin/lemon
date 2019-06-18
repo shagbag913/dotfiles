@@ -87,9 +87,7 @@ bar_memory_usage() {
 
 while :; do
     UPTIME=$(cat /proc/uptime | awk -F'.' '{print $1}')
-    if [[ $RAN = true ]]; then
-        REFRESH=false
-    fi
+    [[ $RAN = true ]] && REFRESH=false
     if [[ $((UPTIME % 2)) != 0 ]]; then
         RAN=false
         REFRESH=false
@@ -97,15 +95,9 @@ while :; do
         REFRESH=true
         RAN=true
     fi
-    if [[ $REFRESH = true || -z "$TIME" ]]; then
-        bar_date
-    fi
-    if [[ $REFRESH = true || -z "$BATTERY_PERCENTAGE" ]]; then
-        bar_battery
-    fi
-    if [[ $REFRESH = true || -z "$MEMORY_USAGE" ]]; then
-        bar_memory_usage
-    fi
+    [[ $REFRESH = true || -z "$TIME" ]] && bar_date
+    [[ $REFRESH = true || -z "$BATTERY_PERCENTAGE" ]] && bar_battery
+    [[ $REFRESH = true || -z "$MEMORY_USAGE" ]] && bar_memory_usage
     bar_bspwm_windows
     BAR="%{l}$WINDOW_LIST%{c}$TIME%{r}$MEMORY_USAGE"
     [[ -n "$BATTERY_PERCENTAGE" ]] && BAR="$BAR | $BATTERY_PERCENTAGE"
