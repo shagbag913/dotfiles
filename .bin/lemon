@@ -98,8 +98,8 @@ while :; do
     fi
     bar_bspwm_windows
     BAR="%{l}$WINDOW_LIST%{c}$TIME"
-    [[ -n "$BATTERY_PERCENTAGE" ]] && BAR="$BAR%{r}$BATTERY_PERCENTAGE "
-    echo "$BAR"
+    [[ -n "$BATTERY_PERCENTAGE" ]] && BAR="$BAR%{r}$BATTERY_PERCENTAGE"
+    echo "  $BAR  "
 done | lemonbar \
             -o -1 \
             -f '-misc-font awesome 5 free solid-black-r-normal--0-0-0-0-p-0-iso10646-1' \
