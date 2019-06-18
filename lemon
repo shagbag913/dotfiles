@@ -63,7 +63,7 @@ bar_battery() {
     BATTERY_PERCENTAGE="$glyph $charge%"
 }
 
-bar_active_nodes() {
+bar_current_window() {
     local tmp
     for i in {2..11}; do
         tmp=$(bspc wm --get-status | awk -F':' -v i="$i" '{print $i}')
@@ -92,7 +92,7 @@ while :; do
     if [[ $REFRESH = true || -z "$BATTERY_PERCENTAGE" ]]; then
         bar_battery
     fi
-    bar_active_nodes
+    bar_current_window
     BAR="%{l}$CURRENT_WINDOW%{c}$TIME"
     [[ -n "$BATTERY_PERCENTAGE" ]] && BAR="$BAR%{r}$BATTERY_PERCENTAGE "
     echo "$BAR"
