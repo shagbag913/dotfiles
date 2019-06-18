@@ -62,7 +62,6 @@ bar_battery() {
 }
 
 bar_bspwm_windows() {
-    local rn_window
     local windows
     local index=0
     local IFS=":"
