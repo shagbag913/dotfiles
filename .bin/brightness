@@ -4,22 +4,17 @@ SCRIPT=$(realpath $0)
 exec 6< $SCRIPT
 flock -n 6 || exit
 
-FADE=true
-BRIGHTNESS_STEPS=10
+BRIGHTNESS_STEPS=15
 MINIMUM_BRIGHTNESS=1
 CURRENT_BRIGHTNESS=$(printf "%.0f\n" $(light))
 
 set_brightness() {
-    [ $2 = + ] && local light_cmd=-A || local light_cmd=-U
-    if [[ $FADE = true ]]; then
-        for steps in $(seq $1); do
-            light -S $((CURRENT_BRIGHTNESS $2 1))
-            sleep .002
-            CURRENT_BRIGHTNESS=$(printf "%.0f\n" $(light))
-        done
-    else
-        light $light_cmd $1
-    fi
+    for steps in $(seq $1); do
+        [[ $CURRENT_BRIGHTNESS = 100 && $2 != - ]] && break
+        light -S $((CURRENT_BRIGHTNESS $2 1))
+        sleep .002
+        CURRENT_BRIGHTNESS=$((CURRENT_BRIGHTNESS $2 1))
+    done
 }
 
 if [[ $1 = -inc ]]; then
@@ -40,7 +35,7 @@ elif [[ -n $1 ]]; then
     fi
 fi
 
-NEW_BRIGHTNESS=$(printf "%.0f\n" $(light))
+NEW_BRIGHTNESS=$CURRENT_BRIGHTNESS
 
 if [[ $NEW_BRIGHTNESS = 100 ]]; then
     NEW_BRIGHTNESS=Max
@@ -50,21 +45,17 @@ else
     PERCENT=%
 fi
 
-# determine which icon to use based on the brightness
-BRIGHTNESS_RANGE=$((100 + MINIMUM_BRIGHTNESS))
-brightness_range_icon() {
-    printf "%.0f\n" $(echo "$BRIGHTNESS_RANGE * $1" | bc -l)
-}
+BRIGHTNESS_ICON=$(printf "%.0f\n" $(echo "$((100 + MINIMUM_BRIGHTNESS)) * .5" | bc -l))
 
 if [[ $NEW_BRIGHTNESS = Max ]]; then
     ICON=full
 elif [[ $NEW_BRIGHTNESS =~ Min ]]; then
     ICON=off
-elif [[ $NEW_BRIGHTNESS -ge $(brightness_range_icon .5) ]]; then
+elif [[ $NEW_BRIGHTNESS -ge $BRIGHTNESS_ICON ]]; then
     ICON=medium
-elif [[ $NEW_BRIGHTNESS -lt $(brightness_range_icon .5) ]]; then
+elif [[ $NEW_BRIGHTNESS -lt $BRIGHTNESS_ICON ]]; then
     ICON=low
 fi
 
 notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/notification-display-brightness-$ICON.svg \
-        -R /tmp/brightness_notifyd_id "Brightness: $NEW_BRIGHTNESS$PERCENT"
+        -R /tmp/brightness_notifyd_id "$NEW_BRIGHTNESS$PERCENT"
