@@ -75,8 +75,6 @@ bar_bspwm_windows() {
         case $i in
             o*)
                 windows="$windows    $index    "
-                index=$((index+1))
-                continue
             ;;
             O*|F*)
                 windows="$windows%{B#222e59}%{F#d7fdff}    $index    %{B#141b35}%{F#ffffff}"
