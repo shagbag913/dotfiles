@@ -11,7 +11,10 @@ compinit
 autoload -U colors && colors
 
 [[ -f $HOME/.cache/wal/sequences ]] && cat $HOME/.cache/wal/sequences
-. $HOME/.git-completion.zsh &>/dev/null
+. /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+ZSH_AUTOSUGGEST_STRATEGY=completion
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 export PATH="$HOME/.bin:$PATH"
 export LC_ALL=C
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
