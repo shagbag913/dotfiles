@@ -6,7 +6,7 @@
 #
 
 # Kill all background jobs on exit
-trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
+#trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 BAR_HEIGHT_RATIO=04
 
@@ -32,7 +32,7 @@ bar_date() {
     echo "bar_date$(date '+%I:%M %p' | sed 's/^0//')"
 }
 
-bar_battery() {
+battery() {
     local charge=$(cat /sys/class/power_supply/BAT0/capacity 2>/dev/null)
     [ -n "$charge" ] || { BATTERY_PERCENTAGE=""; return; }
     local charge_array='    '
@@ -53,7 +53,7 @@ bar_battery() {
     set -- $charge_array
 
     if is_charging; then
-        if [ $CHARGING_INDEX = 5 ] || [ -z "$CHARGING_INDEX" ]; then
+        if [ "$CHARGING_INDEX" = 5 ] || [ -z "$CHARGING_INDEX" ]; then
             CHARGING_INDEX=$glyph
         else
             CHARGING_INDEX=$((CHARGING_INDEX + 1))
@@ -64,10 +64,10 @@ bar_battery() {
         eval glyph="\${$glyph}"
     fi
 
-    echo "bar_battery$glyph  $charge%"
+    echo "battery$glyph  $charge%"
 }
 
-bar_bspwm_windows() {
+bspwm_windows() {
     local windows
     local index=0
     local IFS=":"
@@ -82,38 +82,50 @@ bar_bspwm_windows() {
         esac
         index=$((index+1))
     done
-    echo "bar_bspwm_windows$windows"
+    echo "bspwm_windows$windows"
 }
 
-bar_memory_usage() {
-    echo "bar_memory_usage  $(free | awk -F' ' '/Mem/{printf "%3.0f\n",$3/$2*100}' | tr -d ' ')%"
+memory_usage() {
+    echo "memory_usage  $(free | awk -F' ' '/Mem/{printf "%3.0f\n",$3/$2*100}' | tr -d ' ')%"
+}
+
+network_status() {
+    # WiFi or Ethernet?
+    if awk '{if(NR==3) {rc=1; print $0}}; END {exit !rc}' /proc/net/wireless &>/dev/null; then
+        echo "network_status   $(iwgetid -r)"
+    else
+        echo 'network_status'
+    fi
 }
 
 while :; do bar_date; sleep 10; done > $FIFO &
-while :; do bar_memory_usage; sleep 5; done > $FIFO &
-while :; do bar_battery; sleep 1; done > $FIFO &
-while :; do bar_bspwm_windows; sleep .15; done > $FIFO &
+while :; do memory_usage; sleep 5; done > $FIFO &
+while :; do battery; sleep 1; done > $FIFO &
+while :; do bspwm_windows; sleep .15; done > $FIFO &
+while :; do network_status; sleep 15; done > $FIFO &
 
 while read -r line; do
     case $line in
-        bar_memory_usage*)
-            bar_memory_usage=${line:16}
+        memory_usage*)
+            MEMORY_USAGE=${line:12}
             ;;
         bar_date*)
-            bar_date=${line:8}
+            DATE=${line:8}
             ;;
-        bar_battery*)
-            bar_battery=${line:11}
+        battery*)
+            BATTERY=${line:7}
             ;;
-        bar_bspwm_windows*)
-            bar_bspwm_windows=${line:17}
+        bspwm_windows*)
+            BSPWM_WINDOWS=${line:13}
+            ;;
+        network_status*)
+            NETWORK_STATUS=${line:14}
             ;;
     esac
-    echo "%{l}${bar_bspwm_windows}%{c}${bar_date}%{r}${bar_memory_usage}    |    ${bar_battery}    "
+    echo "%{l}$BSPWM_WINDOWS%{c}$DATE%{r}$NETWORK_STATUS    |    $MEMORY_USAGE    |    $BATTERY    "
 done < $FIFO | lemonbar \
-            -o -1 \
-            -f '-misc-font awesome 5 free solid-black-r-normal--0-0-0-0-p-0-iso10646-1' \
+            -f 'Font Awesome 5 Free Solid:style=Solid' \
             -o 1 \
-            -f 'Google Sans:style=Bold:size=11' \
+            -f 'Google Sans:style=Bold:size=10' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
             -B '#141b35'
