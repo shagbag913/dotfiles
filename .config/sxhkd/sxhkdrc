@@ -115,3 +115,18 @@ super + alt + {h,j,k,l}
 # move a floating window
 super + shift + alt + {Left,Down,Up,Right}
 	bspc node -v {-20 0,0 20,0 -20,20 0}
+
+XF86MonBrightnessUp
+	$HOME/.bin/brightness -inc
+
+XF86MonBrightnessDown
+	$HOME/.bin/brightness -dec
+
+XF86AudioRaiseVolume
+	$HOME/.bin/volume +
+
+XF86AudioLowerVolume
+	$HOME/.bin/volume -
+
+XF86AudioMute
+	$HOME/.bin/volume -mute

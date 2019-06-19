@@ -1,25 +1,22 @@
 #!/usr/bin/env zsh
 
-LOCK=/tmp/volume_notify.lock
-
-if [[ -f $LOCK ]]; then
-    exit
-fi
-touch $LOCK
+SCRIPT=$(realpath $0)
+exec 6< $SCRIPT
+flock -n 6 || exit
 
 VOLUME_STEPS=5
 
+
 if [[ $1 = -mute ]]; then
-    if amixer -D pulse sset Master toggle | grep off; then
-        NEW_VOLUME=Muted
-    else
-        NEW_VOLUME=$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2}')
-    fi
+    amixer -D pulse sset Master toggle
+    NEW_VOLUME=$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2}')
 else
     NEW_VOLUME=$(amixer -D pulse sset Master $VOLUME_STEPS%$1 | awk -F'[][%]' 'END{print $2}')
 fi
 
-if [[ $NEW_VOLUME = Muted || $NEW_VOLUME = 0 ]]; then
+amixer -D pulse get Master | grep -q off && MUTED=true
+
+if [[ -n $MUTED || $NEW_VOLUME = 0 ]]; then
     ICON=notification-audio-volume-muted.svg
 elif [[ $NEW_VOLUME -le 33 ]]; then
     ICON=notification-audio-volume-low.svg
@@ -29,11 +26,7 @@ else
     ICON=notification-audio-volume-high.svg
 fi
 
-if [[ $NEW_VOLUME != Muted ]]; then
-    NEW_VOLUME+=%
-fi
+[[ -z "$MUTED" ]] && NEW_VOLUME+=% || NEW_VOLUME+="% (muted)"
 
-notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/$ICON \
-                --app-name="Volume Script" -R /tmp/volume_notify "Volume: $NEW_VOLUME"
-
-rm $LOCK
+notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/$ICON "$NEW_VOLUME" \
+        -R /tmp/volume_notify

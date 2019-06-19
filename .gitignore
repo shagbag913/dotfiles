@@ -27,6 +27,8 @@
 !.config/
 !.config/bspwm/
 !.config/bspwm/*
+!.config/dunst/
+!.config/dunst/*
 !.config/fontconfig/
 !.config/fontconfig/*
 !.config/gtk-3.0

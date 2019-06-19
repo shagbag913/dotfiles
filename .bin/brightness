@@ -1,11 +1,8 @@
 #!/usr/bin/env zsh
 
-# Temp file to test whether the script is running or not
-SCRIPT_TEMP=/tmp/brightness_lock
-if [[ -f $SCRIPT_TEMP ]]; then
-    exit 0
-fi
-touch $SCRIPT_TEMP
+SCRIPT=$(realpath $0)
+exec 6< $SCRIPT
+flock -n 6 || exit
 
 FADE=true
 BRIGHTNESS_STEPS=10
@@ -13,11 +10,7 @@ MINIMUM_BRIGHTNESS=1
 CURRENT_BRIGHTNESS=$(printf "%.0f\n" $(light))
 
 set_brightness() {
-    if [[ $2 = "+" ]]; then
-        LIGHT_CMD=-A
-    elif [[ $2 = - ]]; then
-        LIGHT_CMD=-U
-    fi
+    [ $2 = + ] && local light_cmd=-A || local light_cmd=-U
     if [[ $FADE = true ]]; then
         for steps in $(seq $1); do
             light -S $((CURRENT_BRIGHTNESS $2 1))
@@ -25,7 +18,7 @@ set_brightness() {
             CURRENT_BRIGHTNESS=$(printf "%.0f\n" $(light))
         done
     else
-        light $LIGHT_CMD $1
+        light $light_cmd $1
     fi
 }
 
@@ -73,7 +66,5 @@ elif [[ $NEW_BRIGHTNESS -lt $(brightness_range_icon .5) ]]; then
     ICON=low
 fi
 
-notify-send.sh --app-name="Brightness Script" --icon=/usr/share/icons/Numix/48/notifications/notification-display-brightness-$ICON.svg \
+notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/notification-display-brightness-$ICON.svg \
         -R /tmp/brightness_notifyd_id "Brightness: $NEW_BRIGHTNESS$PERCENT"
-
-rm $SCRIPT_TEMP
