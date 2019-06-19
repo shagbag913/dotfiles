@@ -78,10 +78,10 @@ bspwm_windows() {
     for i in $(bspc wm --get-status); do
         case $i in
             o*)
-                windows="$windows      $index      "
+                windows="$windows%{A:bspc desktop -f ^$index:}      $index      %{A}"
             ;;
             O*|F*)
-                windows="$windows%{B#222e59}%{F#d7fdff}      $index      %{B#141b35}%{F#ffffff}"
+                windows="$windows%{B#222e59}%{F#d7fdff}%{A:bspc desktop -f ^$index:}      $index      %{A}%{B#141b35}%{F#ffffff}"
             ;;
         esac
         index=$((index+1))
@@ -141,4 +141,5 @@ done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
-            -B '#141b35'
+            -B '#141b35' \
+            -p | sh
