@@ -91,10 +91,16 @@ memory_usage() {
 
 network_status() {
     # WiFi or Ethernet?
-    if awk '{if(NR==3) {rc=1; print $0}}; END {exit !rc}' /proc/net/wireless &>/dev/null; then
+    local wifi=$(cat /sys/class/net/w*/operstate)
+    local eth=$(cat /sys/class/net/e*/operstate)
+    if [[ $wifi = up ]]; then
         echo "network_status   $(iwgetid -r)"
-    else
+    elif [[ $wifi = down ]]; then
+        echo "network_status   Disconnected"
+    elif [[ $eth = up ]]; then
         echo 'network_status'
+    else
+        echo ''
     fi
 }
 
