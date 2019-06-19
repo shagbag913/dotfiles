@@ -6,15 +6,14 @@ flock -n 6 || exit
 
 VOLUME_STEPS=5
 
-
 if [[ $1 = -mute ]]; then
-    amixer -D pulse sset Master toggle
-    NEW_VOLUME=$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2}')
+    NEW_VOLUME=$(amixer -D pulse sset Master toggle)
 else
-    NEW_VOLUME=$(amixer -D pulse sset Master $VOLUME_STEPS%$1 | awk -F'[][%]' 'END{print $2}')
+    NEW_VOLUME=$(amixer -D pulse sset Master $VOLUME_STEPS%$1)
 fi
 
-amixer -D pulse get Master | grep -q off && MUTED=true
+echo "$NEW_VOLUME" | grep -q off && MUTED=true
+NEW_VOLUME=$(awk -F'[][%]' 'END{print $2}' <<< $NEW_VOLUME)
 
 if [[ -n $MUTED || $NEW_VOLUME = 0 ]]; then
     ICON=notification-audio-volume-muted.svg
