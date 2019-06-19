@@ -125,7 +125,6 @@ while read -r line; do
     echo "%{l}$BSPWM_WINDOWS%{c}$DATE%{r}$NETWORK_STATUS    |    $MEMORY_USAGE    |    $BATTERY    "
 done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
-            -o 1 \
-            -f 'Google Sans:style=Bold:size=10' \
+            -f 'SF Pro Display:style=Bold:size=10' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
             -B '#141b35'
