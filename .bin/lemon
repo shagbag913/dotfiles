@@ -23,6 +23,10 @@ FIFO=/tmp/lemonfifo
 [ -e $FIFO ] && rm $FIFO
 mkfifo $FIFO
 
+# Check if Wi-Fi/Ethernet is available
+find /sys/class/net/e* -maxdepth 1 &>/dev/null && ETHERNET_AVAILABLE=true
+find /sys/class/net/w* -maxdepth 1 &>/dev/null && WIFI_AVAILABLE=true
+
 is_charging() {
     grep -q Charging /sys/class/power_supply/BAT0/status
     return $?
@@ -91,16 +95,20 @@ memory_usage() {
 
 network_status() {
     # WiFi or Ethernet?
-    local wifi=$(cat /sys/class/net/w*/operstate)
-    local eth=$(cat /sys/class/net/e*/operstate)
-    if [[ $wifi = up ]]; then
-        echo "network_status   $(iwgetid -r)"
-    elif [[ $wifi = down ]]; then
-        echo "network_status   Disconnected"
-    elif [[ $eth = up ]]; then
-        echo 'network_status'
-    else
-        echo ''
+    if [[ -n $WIFI_AVAILABLE ]]; then
+        wifi=$(cat /sys/class/net/w*/operstate)
+        if [[ $wifi = up ]]; then
+            echo "network_status   $(iwgetid -r)"
+        elif [[ $wifi = down ]]; then
+            echo "network_status   Disconnected"
+        fi
+    elif [[ -n $ETHERNET_AVAILABLE ]]; then
+        eth=$(cat /sys/class/net/e*/operstate)
+        if [[ $eth = up ]]; then
+            echo 'network_status'
+        else
+            echo ''
+        fi
     fi
 }
 
