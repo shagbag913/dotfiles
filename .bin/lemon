@@ -27,11 +27,6 @@ mkfifo $FIFO
 find /sys/class/net/e* -maxdepth 1 &>/dev/null && ETHERNET_AVAILABLE=true
 find /sys/class/net/w* -maxdepth 1 &>/dev/null && WIFI_AVAILABLE=true
 
-is_charging() {
-    grep -q Charging /sys/class/power_supply/BAT0/status
-    return $?
-}
-
 bar_date() {
     echo "bar_date$(date '+%I:%M %p' | sed 's/^0//')"
 }
@@ -56,7 +51,7 @@ battery() {
 
     set -- $charge_array
 
-    if is_charging; then
+    if grep -q Charging /sys/class/power_supply/BAT0/status; then
         if [ "$CHARGING_INDEX" = 5 ] || [ -z "$CHARGING_INDEX" ]; then
             CHARGING_INDEX=$glyph
         else
