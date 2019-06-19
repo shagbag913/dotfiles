@@ -92,7 +92,7 @@ bar_memory_usage() {
 while :; do bar_date; sleep 10; done > $FIFO &
 while :; do bar_memory_usage; sleep 5; done > $FIFO &
 while :; do bar_battery; sleep 1; done > $FIFO &
-while :; do bar_bspwm_windows; sleep .2; done > $FIFO &
+while :; do bar_bspwm_windows; sleep .15; done > $FIFO &
 
 while read -r line; do
     case $line in
