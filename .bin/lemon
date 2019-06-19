@@ -4,6 +4,10 @@
 # IMPORTANT:  This configuration is only compatible with
 #             a lemonbar fork with xft font compatibility.
 #
+
+# Kill all background jobs on exit
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
+
 BAR_HEIGHT_RATIO=04
 
 # Find BSPWM gap ratio
