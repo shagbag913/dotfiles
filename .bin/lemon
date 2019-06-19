@@ -74,10 +74,10 @@ bar_bspwm_windows() {
     for i in $(bspc wm --get-status); do
         case $i in
             o*)
-                windows="$windows    $index    "
+                windows="$windows      $index      "
             ;;
             O*|F*)
-                windows="$windows%{B#222e59}%{F#d7fdff}    $index    %{B#141b35}%{F#ffffff}"
+                windows="$windows%{B#222e59}%{F#d7fdff}      $index      %{B#141b35}%{F#ffffff}"
             ;;
         esac
         index=$((index+1))
