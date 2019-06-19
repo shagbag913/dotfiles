@@ -1,4 +1,4 @@
-#!/usr/bin/env dash
+#!/usr/bin/env sh
 #
 # My lemonbar setup.
 # IMPORTANT:  This configuration is only compatible with
@@ -7,23 +7,25 @@
 BAR_HEIGHT_RATIO=04
 
 # Find BSPWM gap ratio
-BSPWM_GAP=$(cat $HOME/.config/bspwm/bspwmrc | awk '/window_gap/{print $4}')
-if [ $(echo $BSPWM_GAP | wc -l) -gt 1 ]; then BSPWM_GAP=0$BSPWM_GAP; fi
+BSPWM_GAP=$(awk '/window_gap/{print $4}' $HOME/.config/bspwm/bspwmrc)
+if [ $(wc -l <<< $BSPWM_GAP) -gt 1 ]; then BSPWM_GAP=0$BSPWM_GAP; fi
 
 MONITOR_WIDTH=$(xrandr --query | awk -F '[ x+]' '/\<connected\>/{print $4}')
 MONITOR_HEIGHT=$(xrandr --query | awk -F '[ x+]' '/\<connected\>/{print $5}')
 BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
 BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
 
-CHARGING_INDEX=1
+FIFO=/tmp/lemonfifo
+[ -e $FIFO ] && rm $FIFO
+mkfifo $FIFO
 
 is_charging() {
-    cat /sys/class/power_supply/BAT0/status | grep -q Charging
+    grep -q Charging /sys/class/power_supply/BAT0/status
     return $?
 }
 
 bar_date() {
-    TIME=$(date '+%I:%M %p' | sed 's/^0//')
+    echo "bar_date$(date '+%I:%M %p' | sed 's/^0//')"
 }
 
 bar_battery() {
@@ -58,7 +60,7 @@ bar_battery() {
         eval glyph="\${$glyph}"
     fi
 
-    BATTERY_PERCENTAGE="  $glyph  $charge%  "
+    echo "bar_battery$glyph  $charge%"
 }
 
 bar_bspwm_windows() {
@@ -78,38 +80,38 @@ bar_bspwm_windows() {
         esac
         index=$((index+1))
     done
-    WINDOW_LIST="$windows"
+    echo "bar_bspwm_windows$windows"
 }
 
 bar_memory_usage() {
-    MEMORY_USAGE="  $(free | awk -F' ' '/Mem/{printf "%3.0f\n",$3/$2*100}' | tr -d ' ')%  "
+    echo "bar_memory_usage  $(free | awk -F' ' '/Mem/{printf "%3.0f\n",$3/$2*100}' | tr -d ' ')%"
 }
 
-while :; do
-    UPTIME=$(cat /proc/uptime | awk -F'.' '{print $1}')
+while :; do bar_date; sleep 10; done > $FIFO &
+while :; do bar_memory_usage; sleep 5; done > $FIFO &
+while :; do bar_battery; sleep 1; done > $FIFO &
+while :; do bar_bspwm_windows; sleep .2; done > $FIFO &
 
-    if [ "$RAN" = true ]; then REFRESH=false; fi
-    if [ "$((UPTIME % 2))" -ne 0 ]; then
-        RAN=false
-        REFRESH=false
-    elif [ "$RAN" != true ]; then
-        REFRESH=true
-        RAN=true
-    fi
-
-    [ $REFRESH = true ] || [ -z "$TIME" ] && bar_date
-    [ $REFRESH = true ] || [ -z "$BATTERY_PERCENTAGE" ] && bar_battery
-    [ $REFRESH = true ] || [ -z "$MEMORY_USAGE" ] && bar_memory_usage
-
-    bar_bspwm_windows
-
-    BAR="%{l}$WINDOW_LIST%{c}$TIME%{r}$MEMORY_USAGE"
-    [ -n "$BATTERY_PERCENTAGE" ] && BAR="$BAR | $BATTERY_PERCENTAGE"
-    echo "  $BAR  "
-done | lemonbar \
+while read -r line; do
+    case $line in
+        bar_memory_usage*)
+            bar_memory_usage=${line:16}
+            ;;
+        bar_date*)
+            bar_date=${line:8}
+            ;;
+        bar_battery*)
+            bar_battery=${line:11}
+            ;;
+        bar_bspwm_windows*)
+            bar_bspwm_windows=${line:17}
+            ;;
+    esac
+    echo "%{l}${bar_bspwm_windows}%{c}${bar_date}%{r}${bar_memory_usage}    |    ${bar_battery}    "
+done < $FIFO | lemonbar \
             -o -1 \
             -f '-misc-font awesome 5 free solid-black-r-normal--0-0-0-0-p-0-iso10646-1' \
             -o 1 \
-            -f 'Noto Sans Medium-11' \
+            -f 'Google Sans:style=Bold:size=11' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
             -B '#141b35'
