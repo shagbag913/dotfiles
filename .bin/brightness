@@ -6,56 +6,54 @@ flock -n 6 || exit
 
 BRIGHTNESS_STEPS=15
 MINIMUM_BRIGHTNESS=1
-CURRENT_BRIGHTNESS=$(printf "%.0f\n" $(light))
+BRIGHTNESS=$(printf "%.0f\n" $(light))
 
 set_brightness() {
     for steps in $(seq $1); do
-        [[ $CURRENT_BRIGHTNESS = 100 && $2 != - ]] && break
-        light -S $((CURRENT_BRIGHTNESS $2 1))
+        [[ $BRIGHTNESS = 100 && $2 != - ]] && break
+        light -S $((BRIGHTNESS $2 1))
         sleep .002
-        CURRENT_BRIGHTNESS=$((CURRENT_BRIGHTNESS $2 1))
+        BRIGHTNESS=$((BRIGHTNESS $2 1))
     done
 }
 
 if [[ $1 = -inc ]]; then
-    if [[ $CURRENT_BRIGHTNESS -le 10 ]]; then
+    if [[ $BRIGHTNESS -le 10 ]]; then
         set_brightness 1 +
     else
         set_brightness $BRIGHTNESS_STEPS +
     fi
-elif [[ $1 = -dec && $CURRENT_BRIGHTNESS -gt $((MINIMUM_BRIGHTNESS + BRIGHTNESS_STEPS)) ]]; then
+elif [[ $1 = -dec && $BRIGHTNESS -gt $((MINIMUM_BRIGHTNESS + BRIGHTNESS_STEPS)) ]]; then
     set_brightness $BRIGHTNESS_STEPS -
 elif [[ -n $1 ]]; then
-    if [[ $CURRENT_BRIGHTNESS -gt $MINIMUM_BRIGHTNESS ]]; then
-        if [[ $CURRENT_BRIGHTNESS -le 10 ]]; then
+    if [[ $BRIGHTNESS -gt $MINIMUM_BRIGHTNESS ]]; then
+        if [[ $BRIGHTNESS -le 10 ]]; then
             set_brightness 1 -
         else
-            set_brightness $((CURRENT_BRIGHTNESS - MINIMUM_BRIGHTNESS)) -
+            set_brightness $((BRIGHTNESS - MINIMUM_BRIGHTNESS)) -
         fi
     fi
 fi
 
-NEW_BRIGHTNESS=$CURRENT_BRIGHTNESS
-
-if [[ $NEW_BRIGHTNESS = 100 ]]; then
-    NEW_BRIGHTNESS=Max
-elif [[ $NEW_BRIGHTNESS = $MINIMUM_BRIGHTNESS ]]; then
-    NEW_BRIGHTNESS="Min ($MINIMUM_BRIGHTNESS)"
+if [[ $BRIGHTNESS = 100 ]]; then
+    BRIGHTNESS=Max
+elif [[ $BRIGHTNESS = $MINIMUM_BRIGHTNESS ]]; then
+    BRIGHTNESS="Min ($MINIMUM_BRIGHTNESS)"
 else
     PERCENT=%
 fi
 
 BRIGHTNESS_ICON=$(printf "%.0f\n" $(echo "$((100 + MINIMUM_BRIGHTNESS)) * .5" | bc -l))
 
-if [[ $NEW_BRIGHTNESS = Max ]]; then
+if [[ $BRIGHTNESS = Max ]]; then
     ICON=full
-elif [[ $NEW_BRIGHTNESS =~ Min ]]; then
+elif [[ $BRIGHTNESS =~ Min ]]; then
     ICON=off
-elif [[ $NEW_BRIGHTNESS -ge $BRIGHTNESS_ICON ]]; then
+elif [[ $BRIGHTNESS -ge $BRIGHTNESS_ICON ]]; then
     ICON=medium
-elif [[ $NEW_BRIGHTNESS -lt $BRIGHTNESS_ICON ]]; then
+elif [[ $BRIGHTNESS -lt $BRIGHTNESS_ICON ]]; then
     ICON=low
 fi
 
 notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/notification-display-brightness-$ICON.svg \
-        -R /tmp/brightness_notifyd_id "$NEW_BRIGHTNESS$PERCENT"
+        -R /tmp/brightness_notifyd_id "$BRIGHTNESS$PERCENT"
