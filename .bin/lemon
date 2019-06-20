@@ -25,6 +25,12 @@ mkfifo $FIFO
 find /sys/class/net/e* -maxdepth 1 &>/dev/null && ETHERNET_AVAILABLE=true
 find /sys/class/net/w* -maxdepth 1 &>/dev/null && WIFI_AVAILABLE=true
 
+# Check if Intel backlight is in use
+find /sys/class/backlight/intel_backlight -maxdepth 1 &>/dev/null && INTEL_BACKLIGHT=true
+if [ $INTEL_BACKLIGHT = true ]; then
+    INTEL_MAX_BRIGHTNESS=$(cat /sys/class/backlight/intel_backlight/max_brightness)
+fi
+
 # Check if a battery is present
 find /sys/class/power_supply/BAT* -maxdepth 1 &>/dev/null && BATTERY_AVAILABLE=true
 
@@ -108,6 +114,11 @@ network_status() {
     fi
 }
 
+get_intel_brightness() {
+    local brightness=$(cat /sys/class/backlight/intel_backlight/brightness)
+    echo "get_intel_brightness  $(printf "%.0f\n" $(light))"
+}
+
 seperate() {
     local items
     for i in "$@"; do
@@ -118,9 +129,14 @@ seperate() {
 }
 
 while :; do bar_date; sleep 10; done > $FIFO &
-while :; do memory_usage; sleep 5; done > $FIFO &
-while :; do bspwm_windows; sleep .15; done > $FIFO &
+while :; do memory_usage; sleep 10; done > $FIFO &
+while :; do bspwm_windows; sleep .2; done > $FIFO &
 while :; do network_status; sleep 15; done > $FIFO &
+
+# Only run this if intel backlight is in use
+if [ $INTEL_BACKLIGHT = true ]; then
+    while :; do get_intel_brightness; sleep .6; done > $FIFO &
+fi
 
 # Only run this if the device has a battery
 if [ $BATTERY_AVAILABLE = true ]; then
@@ -144,8 +160,11 @@ while read -r line; do
         network_status*)
             NETWORK_STATUS=$(echo "$line" | tail -c+15)
             ;;
+        get_intel_brightness*)
+            INTEL_BRIGHTNESS=$(echo "$line" | tail -c+21)
+            ;;
     esac
-    echo "%{l}$BSPWM_WINDOWS%{c}$DATE%{r}$(seperate "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
+    echo "%{l}$BSPWM_WINDOWS%{c}$(seperate "$DATE" "$INTEL_BRIGHTNESS")%{r}$(seperate "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
 done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
