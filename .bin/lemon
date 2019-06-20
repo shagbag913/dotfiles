@@ -117,8 +117,7 @@ seperate() {
         [[ -z "$i" ]] && continue
         items="$items    |    $i"
     done
-    items=$(sed 's/ \+|//' <<< $items)
-    echo "$items"
+    sed 's/ \+|//' <<< $items
 }
 
 
