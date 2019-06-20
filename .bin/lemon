@@ -91,7 +91,6 @@ memory_usage() {
 }
 
 network_status() {
-    # WiFi or Ethernet?
     if [[ -n $WIFI_AVAILABLE ]]; then
         local wifi=$(cat /sys/class/net/w*/operstate)
         if [[ $wifi = up ]]; then
