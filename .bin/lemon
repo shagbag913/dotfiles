@@ -1,19 +1,16 @@
-#!/usr/bin/env sh
+#!/usr/bin/env dash
 #
 # My lemonbar setup.
 # IMPORTANT:  This configuration is only compatible with
 #             a lemonbar fork with xft font compatibility.
 #
 
-# Kill all background jobs on exit
-trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
-
 # Vertical size in percentage of the bar
 BAR_HEIGHT_RATIO=04
 
 # Find bspwm gap ratio
 BSPWM_GAP=$(awk '/window_gap/{print $4}' $HOME/.config/bspwm/bspwmrc)
-if [[ $(wc -l <<< $BSPWM_GAP) -gt 1 ]]; then BSPWM_GAP=0$BSPWM_GAP; fi
+if [ $(echo $BSPWM | wc -l) -gt 1 ]; then BSPWM_GAP=0$BSPWM_GAP; fi
 
 MONITOR_WIDTH=$(xrandr --query | awk -F '[ x+]' '/\<connected\>/{print $4}')
 MONITOR_HEIGHT=$(xrandr --query | awk -F '[ x+]' '/\<connected\>/{print $5}')
@@ -21,7 +18,7 @@ BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
 BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
 
 FIFO=/tmp/lemonfifo
-[[ -e $FIFO ]] && rm $FIFO
+[ -e $FIFO ] && rm $FIFO
 mkfifo $FIFO
 
 # Check if Wi-Fi/Ethernet is available
@@ -74,7 +71,7 @@ bspwm_windows() {
     local index=0
     local IFS=":"
     for i in $(bspc wm --get-status); do
-        if [[ $index -ge 1 && $index -le 10 ]]; then
+        if [ $index -ge 1 ] && [ $index -le 10 ]; then
             case $i in
                 o*)
                     windows="$windows%{A:bspc desktop -f ^$index:}      $index      %{A}"
@@ -94,16 +91,16 @@ memory_usage() {
 }
 
 network_status() {
-    if [[ -n $WIFI_AVAILABLE ]]; then
+    if [ -n $WIFI_AVAILABLE ]; then
         local wifi=$(cat /sys/class/net/w*/operstate)
-        if [[ $wifi = up ]]; then
+        if [ $wifi = up ]; then
             echo "network_status   $(iwgetid -r)"
-        elif [[ $wifi = down ]]; then
+        elif [ $wifi = down ]; then
             echo "network_status   Disconnected"
         fi
-    elif [[ -n $ETHERNET_AVAILABLE ]]; then
+    elif [ -n $ETHERNET_AVAILABLE ]; then
         local eth=$(cat /sys/class/net/e*/operstate)
-        if [[ $eth = up ]]; then
+        if [ $eth = up ]; then
             echo 'network_status'
         else
             echo ''
@@ -114,12 +111,11 @@ network_status() {
 seperate() {
     local items
     for i in "$@"; do
-        [[ -z "$i" ]] && continue
+        [ -z "$i" ] && continue
         items="$items    |    $i"
     done
-    sed 's/ \+|//' <<< $items
+    echo "$items" | sed 's/ \+|//'
 }
-
 
 while :; do bar_date; sleep 10; done > $FIFO &
 while :; do memory_usage; sleep 5; done > $FIFO &
@@ -127,26 +123,26 @@ while :; do bspwm_windows; sleep .15; done > $FIFO &
 while :; do network_status; sleep 15; done > $FIFO &
 
 # Only run this if the device has a battery
-if [[ $BATTERY_AVAILABLE = true ]]; then
+if [ $BATTERY_AVAILABLE = true ]; then
     while :; do battery; sleep 1; done > $FIFO &
 fi
 
 while read -r line; do
     case $line in
         memory_usage*)
-            MEMORY_USAGE=${line:12}
+            MEMORY_USAGE=$(echo "$line" | tail -c+13)
             ;;
         bar_date*)
-            DATE=${line:8}
+            DATE=$(echo "$line" | tail -c+9)
             ;;
         battery*)
-            BATTERY=${line:7}
+            BATTERY=$(echo "$line" | tail -c+8)
             ;;
         bspwm_windows*)
-            BSPWM_WINDOWS=${line:13}
+            BSPWM_WINDOWS=$(echo "$line" | tail -c+14)
             ;;
         network_status*)
-            NETWORK_STATUS=${line:14}
+            NETWORK_STATUS=$(echo "$line" | tail -c+15)
             ;;
     esac
     echo "%{l}$BSPWM_WINDOWS%{c}$DATE%{r}$(seperate "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
