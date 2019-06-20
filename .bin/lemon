@@ -34,6 +34,9 @@ fi
 # Check if a battery is present
 find /sys/class/power_supply/BAT* -maxdepth 1 &>/dev/null && BATTERY_AVAILABLE=true
 
+# Check if `amixer` is available
+command -v amixer && VOLUME_AVAILABLE=true
+
 bar_date() {
     echo "bar_date$(date '+%I:%M %p' | sed 's/^0//')"
 }
@@ -119,6 +122,25 @@ get_intel_brightness() {
     echo "get_intel_brightness  $(printf "%.0f\n" $(light))%"
 }
 
+get_volume() {
+    local current_volume="$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2,$5}')"
+    local is_muted=$(echo "$current_volume" | grep off)
+    current_volume=$(echo $current_volume | tr -dc '0-9')
+    icon_array='  '
+
+    set -- $icon_array
+
+    if [ -n "$is_muted" ] || [ $current_volume = 0 ]; then
+        glyph=$1
+    elif [ $current_volume -le 50 ]; then
+        glyph=$2
+    else
+        glyph=$3
+    fi
+
+    echo "get_volume$glyph  $current_volume"
+}
+
 seperate() {
     local items
     for i in "$@"; do
@@ -133,9 +155,14 @@ while :; do memory_usage; sleep 10; done > $FIFO &
 while :; do bspwm_windows; sleep .15; done > $FIFO &
 while :; do network_status; sleep 15; done > $FIFO &
 
+# Only run if amixer is available
+if [ $VOLUME_AVAILABLE = true ]; then
+    while :; do get_volume; sleep .3; done > $FIFO &
+fi
+
 # Only run this if intel backlight is in use
 if [ $INTEL_BACKLIGHT = true ]; then
-    while :; do get_intel_brightness; sleep .6; done > $FIFO &
+    while :; do get_intel_brightness; sleep .3; done > $FIFO &
 fi
 
 # Only run this if the device has a battery
@@ -163,8 +190,11 @@ while read -r line; do
         get_intel_brightness*)
             INTEL_BRIGHTNESS=$(echo "$line" | tail -c+21)
             ;;
+        get_volume*)
+            VOLUME=$(echo "$line" | tail -c+11)
+            ;;
     esac
-    echo "%{l}$BSPWM_WINDOWS%{c}$(seperate "$DATE" "$INTEL_BRIGHTNESS")%{r}$(seperate "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
+    echo "%{l}$BSPWM_WINDOWS%{c}$(seperate "$VOLUME" "$DATE" "$INTEL_BRIGHTNESS")%{r}$(seperate "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
 done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
