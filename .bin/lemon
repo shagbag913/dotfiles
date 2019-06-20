@@ -111,6 +111,17 @@ network_status() {
     fi
 }
 
+seperate() {
+    local items
+    for i in "$@"; do
+        [[ -z "$i" ]] && continue
+        items="$items    |    $i"
+    done
+    items=$(sed 's/ \+|//' <<< $items)
+    echo "$items"
+}
+
+
 while :; do bar_date; sleep 10; done > $FIFO &
 while :; do memory_usage; sleep 5; done > $FIFO &
 while :; do bspwm_windows; sleep .15; done > $FIFO &
@@ -139,7 +150,7 @@ while read -r line; do
             NETWORK_STATUS=${line:14}
             ;;
     esac
-    echo "%{l}$BSPWM_WINDOWS%{c}$DATE%{r}$NETWORK_STATUS    |    $MEMORY_USAGE    |    $BATTERY    "
+    echo "%{l}$BSPWM_WINDOWS%{c}$DATE%{r}$(seperate "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
 done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
