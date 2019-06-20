@@ -93,14 +93,14 @@ memory_usage() {
 network_status() {
     # WiFi or Ethernet?
     if [[ -n $WIFI_AVAILABLE ]]; then
-        wifi=$(cat /sys/class/net/w*/operstate)
+        local wifi=$(cat /sys/class/net/w*/operstate)
         if [[ $wifi = up ]]; then
             echo "network_status   $(iwgetid -r)"
         elif [[ $wifi = down ]]; then
             echo "network_status   Disconnected"
         fi
     elif [[ -n $ETHERNET_AVAILABLE ]]; then
-        eth=$(cat /sys/class/net/e*/operstate)
+        local eth=$(cat /sys/class/net/e*/operstate)
         if [[ $eth = up ]]; then
             echo 'network_status'
         else
