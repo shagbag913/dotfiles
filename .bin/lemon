@@ -116,7 +116,7 @@ network_status() {
 
 get_intel_brightness() {
     local brightness=$(cat /sys/class/backlight/intel_backlight/brightness)
-    echo "get_intel_brightness  $(printf "%.0f\n" $(light))"
+    echo "get_intel_brightness  $(printf "%.0f\n" $(light))%"
 }
 
 seperate() {
