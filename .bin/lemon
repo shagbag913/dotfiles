@@ -71,14 +71,16 @@ bspwm_windows() {
     local index=0
     local IFS=":"
     for i in $(bspc wm --get-status); do
-        case $i in
-            o*)
-                windows="$windows%{A:bspc desktop -f ^$index:}      $index      %{A}"
-            ;;
-            O*|F*)
-                windows="$windows%{B#222e59}%{F#d7fdff}%{A:bspc desktop -f ^$index:}      $index      %{A}%{B#141b35}%{F#ffffff}"
-            ;;
-        esac
+        if [[ $index -ge 1 && $index -le 10 ]]; then
+            case $i in
+                o*)
+                    windows="$windows%{A:bspc desktop -f ^$index:}      $index      %{A}"
+                ;;
+                O*|F*)
+                    windows="$windows%{B#222e59}%{F#d7fdff}%{A:bspc desktop -f ^$index:}      $index      %{A}%{B#141b35}%{F#ffffff}"
+                ;;
+            esac
+        fi
         index=$((index+1))
     done
     echo "bspwm_windows$windows"
