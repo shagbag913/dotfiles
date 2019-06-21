@@ -103,18 +103,17 @@ network_status() {
     if [ -n $WIFI_AVAILABLE ]; then
         local wifi=$(cat /sys/class/net/w*/operstate)
         if [ $wifi = up ]; then
-            echo "network_status   $(iwgetid -r)"
-        elif [ $wifi = down ]; then
-            echo "network_status   Disconnected"
+            echo "network_status"
+            return
         fi
     elif [ -n $ETHERNET_AVAILABLE ]; then
         local eth=$(cat /sys/class/net/e*/operstate)
         if [ $eth = up ]; then
             echo 'network_status'
-        else
-            echo ''
+            return
         fi
     fi
+    echo ''
 }
 
 get_intel_brightness() {
