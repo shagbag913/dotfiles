@@ -109,6 +109,8 @@ network_status() {
         if [ $wifi = up ]; then
             echo "network_status"
             return
+        elif [ $wifi = down ]; then
+            echo "network_status%{F#99FFFFFF}%{F-}"
         fi
     elif [ -n $ETHERNET_AVAILABLE ]; then
         local eth=$(cat /sys/class/net/e*/operstate)
