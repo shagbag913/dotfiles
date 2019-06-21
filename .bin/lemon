@@ -46,8 +46,12 @@ battery() {
     local charge_array='    '
     local glyph
 
-    if [ "$charge" -lt 15 ]; then
+    if [ "$charge" -le 10 ]; then
         glyph=1
+        color='#ff0400'
+    elif [ "$charge" -lt 20 ]; then
+        glyph=1
+        color='#ffaead'
     elif [ "$charge" -lt 40 ]; then
         glyph=2
     elif [ "$charge" -lt 70 ]; then
@@ -69,10 +73,10 @@ battery() {
 
         eval glyph="\${$CHARGING_INDEX}"
     else
-        eval glyph="\${$glyph}"
+        [ -n "$color" ] && eval glyph="%{F$color}\${$glyph}%{F-}" || eval glyph="\${$glyph}"
     fi
 
-    echo "battery$glyph  $charge%"
+    echo "battery$glyph"
 }
 
 bspwm_windows() {
@@ -83,10 +87,10 @@ bspwm_windows() {
         if [ $index -ge 1 ] && [ $index -le 10 ]; then
             case $i in
                 o*)
-                    windows="$windows%{A:bspc desktop -f ^$index:}      $index      %{A}"
+                    windows="$windows%{A:bspc desktop -f ^$index:}   %{F#80FFFFFF}%{F-}   %{A}"
                 ;;
                 O*|F*)
-                    windows="$windows%{B#222e59}%{F#d7fdff}%{A:bspc desktop -f ^$index:}      $index      %{A}%{B#141b35}%{F#ffffff}"
+                    windows="$windows%{A:bspc desktop -f ^$index:}      %{A}"
                 ;;
             esac
         fi
@@ -117,26 +121,45 @@ network_status() {
 }
 
 get_intel_brightness() {
-    echo "get_intel_brightness  $(printf "%.0f\n" $(light))%"
+    local brightness=$(printf "%.0f\n" $(echo "$(light) / 20" | bc -l))
+    local slider
+    for i in $(seq $brightness); do
+        slider="$slider—"
+    done
+    slider="$slider|"
+    for i in $(seq $((5 - brightness))); do
+        slider="$slider—"
+    done
+    echo "get_intel_brightness  $slider"
 }
 
 get_volume() {
+    local slider
     local current_volume="$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2,$5}')"
     local is_muted=$(echo "$current_volume" | grep off)
     current_volume=$(echo $current_volume | tr -dc '0-9')
+    current_volume=$(printf "%.0f\n" $(echo "$current_volume / 20" | bc -l))
     local icon_array='  '
 
     set -- $icon_array
 
     if [ -n "$is_muted" ] || [ $current_volume = 0 ]; then
         glyph=$1
-    elif [ $current_volume -le 50 ]; then
+    elif [ $current_volume -le 2 ]; then
         glyph=$2
     else
         glyph=$3
     fi
 
-    echo "get_volume$glyph  $current_volume"
+    for i in $(seq $current_volume); do
+        slider="$slider—"
+    done
+    slider="$slider|"
+    for i in $(seq $((5 - $current_volume))); do
+        slider="$slider—"
+    done
+
+    echo "get_volume$glyph  $slider"
 }
 
 seperate() {
@@ -192,7 +215,7 @@ while read -r line; do
             VOLUME=$(echo "$line" | tail -c+11)
             ;;
     esac
-    echo "%{l}$BSPWM_WINDOWS%{c}$(seperate "$VOLUME" "$DATE" "$INTEL_BRIGHTNESS")%{r}$(seperate "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
+    echo "%{l}$(seperate "$DATE")%{c}$BSPWM_WINDOWS%{r}$(seperate "$VOLUME" "$INTEL_BRIGHTNESS" "$MEMORY_USAGE" "$NETWORK_STATUS" "$BATTERY")    "
 done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
