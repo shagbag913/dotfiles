@@ -125,7 +125,7 @@ get_volume() {
     local current_volume="$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2,$5}')"
     local is_muted=$(echo "$current_volume" | grep off)
     current_volume=$(echo $current_volume | tr -dc '0-9')
-    icon_array='  '
+    local icon_array='  '
 
     set -- $icon_array
 
