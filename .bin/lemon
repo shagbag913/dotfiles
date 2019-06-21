@@ -178,12 +178,12 @@ while :; do network_status; sleep 15; done > $FIFO &
 
 # Only run if amixer is available
 if [ $VOLUME_AVAILABLE = true ]; then
-    while :; do get_volume; sleep .3; done > $FIFO &
+    while :; do get_volume; sleep .6; done > $FIFO &
 fi
 
 # Only run this if intel backlight is in use
 if [ $INTEL_BACKLIGHT = true ]; then
-    while :; do get_intel_brightness; sleep .3; done > $FIFO &
+    while :; do get_intel_brightness; sleep .6; done > $FIFO &
 fi
 
 # Only run this if the device has a battery
