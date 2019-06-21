@@ -25,6 +25,8 @@
 !.bin/volume
 
 !.config/
+!.config/alacritty/
+!.config/alacritty/*
 !.config/bspwm/
 !.config/bspwm/*
 !.config/dunst/
