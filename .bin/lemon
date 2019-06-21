@@ -76,7 +76,7 @@ battery() {
         [ -n "$color" ] && eval glyph="%{F$color}\${$glyph}%{F-}" || eval glyph="\${$glyph}"
     fi
 
-    echo "battery$glyph"
+    echo "battery%{A:$HOME/.bin/batteryprompt.py click:}$glyph%{A}"
 }
 
 bspwm_windows() {
