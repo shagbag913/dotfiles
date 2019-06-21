@@ -151,7 +151,7 @@ seperate() {
 while :; do bar_date; sleep 10; done > $FIFO &
 while :; do memory_usage; sleep 10; done > $FIFO &
 while :; do bspwm_windows; sleep .15; done > $FIFO &
-while :; do network_status; sleep 15; done > $FIFO &
+while :; do network_status; sleep 1; done > $FIFO &
 
 # Only run if amixer is available
 if [ $VOLUME_AVAILABLE = true ]; then
