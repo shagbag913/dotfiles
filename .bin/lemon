@@ -124,15 +124,7 @@ network_status() {
 
 get_intel_brightness() {
     local brightness=$(printf "%.0f\n" $(echo "$(light) / 20" | bc -l))
-    local slider
-    for i in $(seq $brightness); do
-        slider="$slider—"
-    done
-    slider="$slider|"
-    for i in $(seq $((5 - brightness))); do
-        slider="$slider—"
-    done
-    echo "get_intel_brightness  $slider"
+    echo "get_intel_brightness  $(build_slider $brightness 5)"
 }
 
 get_volume() {
@@ -153,15 +145,17 @@ get_volume() {
         glyph=$3
     fi
 
-    for i in $(seq $current_volume); do
-        slider="$slider—"
-    done
-    slider="$slider|"
-    for i in $(seq $((5 - $current_volume))); do
-        slider="$slider—"
-    done
+    echo "get_volume$glyph  $(build_slider $current_volume 5)"
+}
 
-    echo "get_volume$glyph  $slider"
+build_slider() {
+    for i in $(seq $1); do
+        printf "%s" "—"
+    done
+    printf "%s" "|"
+    for i in $(seq $(($2 - $1))); do
+        printf "%s" "—"
+    done
 }
 
 seperate() {
