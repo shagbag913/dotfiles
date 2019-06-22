@@ -6,8 +6,8 @@ Description=redshift
 [Service]
 Type=simple
 Environment=DISPLAY=:0
-ExecStart=redshift -l 40:-86
+ExecStart=/usr/bin/redshift -l 40:-86
 Restart=on-failure
 
 [Install]
-WantedBy=graphical.target
+WantedBy=default.target
