@@ -44,6 +44,7 @@ bar_date() {
 battery() {
     local charge=$(cat /sys/class/power_supply/BAT0/capacity)
     local charge_array='    '
+    local color
     local glyph
 
     if [ "$charge" -le 10 ]; then
