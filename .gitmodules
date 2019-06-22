@@ -1,3 +1,0 @@
-[submodule ".vim/plugged/vim-lastplace"]
-	path = .vim/plugged/vim-lastplace
-	url = https://github.com/farmergreg/vim-lastplace

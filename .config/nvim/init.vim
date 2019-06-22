@@ -1,10 +1,6 @@
 syntax enable
 filetype plugin indent on
 
-"Powerline
-let g:powerline_pycmd="py3"
-set laststatus=2
-
 "Tab key behavior
 set softtabstop=4
 set shiftwidth=4

@@ -18,6 +18,7 @@
 !.bin/getimages
 !.bin/lemon
 !.bin/nfetch
+!.bin/vim
 !.bin/reinit_mouse
 !.bin/shagfetch
 !.bin/tg_bot
@@ -35,6 +36,9 @@
 !.config/fontconfig/*
 !.config/gtk-3.0
 !.config/gtk-3.0/*
+!.config/nvim/
+!.config/nvim/init.vim
+!.config/nvim/indent/
 !.config/sxhkd/
 !.config/sxhkd/*
 !.config/xfce4/
@@ -43,10 +47,6 @@
 
 !.sysd/
 !.sysd/*
-
-!.vim/
-!.vim/**/*
-.vim/.netrwhist
 
 !Walls/
 !Walls/*
