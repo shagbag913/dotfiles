@@ -45,6 +45,10 @@
 !.config/xfce4/terminal
 !.config/xfce4/terminal/terminalrc
 
+!.icons/
+!.icons/default/
+!.icons/default/index.theme
+
 !.sysd/
 !.sysd/*
 
