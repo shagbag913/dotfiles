@@ -1,0 +1,13 @@
+# NOTE: is meant to only be installed as a __user__ service!
+
+[Unit]
+Description=redshift
+
+[Service]
+Type=simple
+Environment=DISPLAY=:0
+ExecStart=redshift -l 40:-86
+Restart=on-failure
+
+[Install]
+WantedBy=graphical.target

@@ -12,8 +12,8 @@ BAR_HEIGHT_RATIO=04
 BSPWM_GAP=$(awk '/window_gap/{print $4}' $HOME/.config/bspwm/bspwmrc)
 if [ $(echo $BSPWM | wc -l) -gt 1 ]; then BSPWM_GAP=0$BSPWM_GAP; fi
 
-MONITOR_WIDTH=$(xrandr --query | awk -F '[ x+]' '/\<connected\>/{print $4}')
-MONITOR_HEIGHT=$(xrandr --query | awk -F '[ x+]' '/\<connected\>/{print $5}')
+MONITOR_WIDTH=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 1p)
+MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)
 BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
 BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
 
@@ -22,17 +22,17 @@ FIFO=/tmp/lemonfifo
 mkfifo $FIFO
 
 # Check if Wi-Fi/Ethernet is available
-find /sys/class/net/e* -maxdepth 1 &>/dev/null && ETHERNET_AVAILABLE=true
-find /sys/class/net/w* -maxdepth 1 &>/dev/null && WIFI_AVAILABLE=true
+find /sys/class/net/e* -maxdepth 1 >/dev/null && ETHERNET_AVAILABLE=true
+find /sys/class/net/w* -maxdepth 1 >/dev/null && WIFI_AVAILABLE=true
 
 # Check if Intel backlight is in use
-find /sys/class/backlight/intel_backlight -maxdepth 1 &>/dev/null && INTEL_BACKLIGHT=true
-if [ $INTEL_BACKLIGHT = true ]; then
+find /sys/class/backlight/intel_backlight -maxdepth 1 >/dev/null && INTEL_BACKLIGHT=true
+if [ "$INTEL_BACKLIGHT" = true ]; then
     INTEL_MAX_BRIGHTNESS=$(cat /sys/class/backlight/intel_backlight/max_brightness)
 fi
 
 # Check if a battery is present
-find /sys/class/power_supply/BAT* -maxdepth 1 &>/dev/null && BATTERY_AVAILABLE=true
+find /sys/class/power_supply/BAT* -maxdepth 1 >/dev/null && BATTERY_AVAILABLE=true
 
 # Check if `amixer` is available
 command -v amixer && VOLUME_AVAILABLE=true
@@ -104,17 +104,17 @@ memory_usage() {
 }
 
 network_status() {
-    if [ -n $WIFI_AVAILABLE ]; then
+    if [ -n "$WIFI_AVAILABLE" ]; then
         local wifi=$(cat /sys/class/net/w*/operstate)
-        if [ $wifi = up ]; then
+        if [ "$wifi" = up ]; then
             echo "network_status"
             return
-        elif [ $wifi = down ]; then
+        elif [ "$wifi" = down ]; then
             echo "network_status%{F#99FFFFFF}%{F-}"
         fi
-    elif [ -n $ETHERNET_AVAILABLE ]; then
+    elif [ -n "$ETHERNET_AVAILABLE" ]; then
         local eth=$(cat /sys/class/net/e*/operstate)
-        if [ $eth = up ]; then
+        if [ "$eth" = up ]; then
             echo 'network_status'
             return
         fi
@@ -173,17 +173,17 @@ while :; do bspwm_windows; sleep .15; done > $FIFO &
 while :; do network_status; sleep 15; done > $FIFO &
 
 # Only run if amixer is available
-if [ $VOLUME_AVAILABLE = true ]; then
+if [ "$VOLUME_AVAILABLE" = true ]; then
     while :; do get_volume; sleep .6; done > $FIFO &
 fi
 
 # Only run this if intel backlight is in use
-if [ $INTEL_BACKLIGHT = true ]; then
+if [ "$INTEL_BACKLIGHT" = true ]; then
     while :; do get_intel_brightness; sleep .6; done > $FIFO &
 fi
 
 # Only run this if the device has a battery
-if [ $BATTERY_AVAILABLE = true ]; then
+if [ "$BATTERY_AVAILABLE" = true ]; then
     while :; do battery; sleep 1; done > $FIFO &
 fi
 
