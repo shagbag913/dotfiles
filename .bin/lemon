@@ -184,7 +184,7 @@ fi
 
 # Only run this if the device has a battery
 if [ "$BATTERY_AVAILABLE" = true ]; then
-    while :; do battery; sleep 1; done > $FIFO &
+    while :; do battery; sleep 2; done > $FIFO &
 fi
 
 while read -r line; do
