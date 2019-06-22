@@ -16,5 +16,5 @@ bspc config split_ratio          0.52
 bspc config gapless_monocle      false
 
 bspc rule -a Google-chrome-unstable desktop='^2'
-bspc rule -a Xfce4-terminal desktop='^1'
+bspc rule -a Alacritty desktop='^1'
 bspc rule -a TelegramDesktop desktop='^3'
