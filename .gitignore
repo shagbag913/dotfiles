@@ -17,6 +17,7 @@
 !.bin/elapsed
 !.bin/getimages
 !.bin/lemon
+!.bin/lemonbar_wrapper.c
 !.bin/nfetch
 !.bin/vim
 !.bin/reinit_mouse

@@ -5,6 +5,11 @@
 #             a lemonbar fork with xft font compatibility.
 #
 
+# Check if the wrapper for this is compiled
+if [ ! -f $HOME/.bin/lemonbar_wrapper ]; then
+    gcc -lm -o lemonbar_wrapper lemonbar_wrapper.c
+fi
+
 # Vertical size in percentage of the bar
 BAR_HEIGHT_RATIO=04
 
@@ -37,12 +42,8 @@ find /sys/class/power_supply/BAT* -maxdepth 1 >/dev/null && BATTERY_AVAILABLE=tr
 # Check if `amixer` is available
 command -v amixer && VOLUME_AVAILABLE=true
 
-bar_date() {
-    echo "bar_date$(date '+%I:%M %p' | sed 's/^0//')"
-}
-
 battery() {
-    local charge=$(cat /sys/class/power_supply/BAT0/capacity)
+    local charge=$(lemonbar_wrapper --charge)
     local charge_array='    '
     local color
     local glyph
@@ -65,7 +66,7 @@ battery() {
 
     set -- $charge_array
 
-    if grep -q Charging /sys/class/power_supply/BAT0/status; then
+    if [ $(lemonbar_wrapper --is-charging) = 0 ]; then
         if [ "$CHARGING_INDEX" = 5 ] || [ -z "$CHARGING_INDEX" ]; then
             CHARGING_INDEX=$glyph
         else
@@ -100,10 +101,6 @@ bspwm_windows() {
     echo "bspwm_windows$windows"
 }
 
-memory_usage() {
-    echo "memory_usage  $(free | awk -F' ' '/Mem/{printf "%3.0f\n",$3/$2*100}' | tr -d ' ')%"
-}
-
 network_status() {
     if [ -n "$WIFI_AVAILABLE" ]; then
         local wifi=$(cat /sys/class/net/w*/operstate)
@@ -124,7 +121,7 @@ network_status() {
 }
 
 get_intel_brightness() {
-    local brightness=$(printf "%.0f\n" $(echo "$(light) / 20" | bc -l))
+    local brightness=$(lemonbar_wrapper --intel-brightness)
     echo "get_intel_brightness  $(build_slider $brightness 5)"
 }
 
@@ -133,14 +130,14 @@ get_volume() {
     local current_volume="$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2,$5}')"
     local is_muted=$(echo "$current_volume" | grep off)
     set -- $current_volume
-    current_volume=$(printf "%.0f\n" $(echo "$1 / 20" | bc -l))
+    current_volume=$1
     local icon_array='  '
 
     set -- $icon_array
 
     if [ -n "$is_muted" ] || [ $current_volume = 0 ]; then
         glyph=$1
-    elif [ $current_volume -le 2 ]; then
+    elif [ $current_volume -le 40 ]; then
         glyph=$2
     else
         glyph=$3
@@ -150,11 +147,12 @@ get_volume() {
 }
 
 build_slider() {
-    for i in $(seq $1); do
+    local tmp=$(printf "%.0f\n" $(echo "$1 / 20" | bc -l))
+    for i in $(seq $tmp); do
         printf "%s" "—"
     done
     printf "%s" "|"
-    for i in $(seq $(($2 - $1))); do
+    for i in $(seq $(($2 - $tmp))); do
         printf "%s" "—"
     done
 }
@@ -168,9 +166,9 @@ seperate() {
     echo "$items" | sed 's/ \+|//'
 }
 
-while :; do bar_date; sleep 10; done > $FIFO &
-while :; do memory_usage; sleep 10; done > $FIFO &
-while :; do bspwm_windows; sleep .15; done > $FIFO &
+while :; do lemonbar_wrapper --time; sleep 10; done > $FIFO &
+while :; do lemonbar_wrapper --used-memory-percentage; sleep 10; done > $FIFO &
+while :; do lemonbar_wrapper --bspwm-status; sleep .15; done > $FIFO &
 while :; do network_status; sleep 15; done > $FIFO &
 
 # Only run if amixer is available
@@ -190,17 +188,17 @@ fi
 
 while read -r line; do
     case $line in
-        memory_usage*)
-            MEMORY_USAGE=$(echo "$line" | tail -c+13)
+        used-memory-percentage*)
+            MEMORY_USAGE=$(echo "$line" | tail -c+23)
             ;;
-        bar_date*)
-            DATE=$(echo "$line" | tail -c+9)
+        time*)
+            TIME=$(echo "$line" | tail -c+5)
             ;;
         battery*)
             BATTERY=$(echo "$line" | tail -c+8)
             ;;
-        bspwm_windows*)
-            BSPWM_WINDOWS=$(echo "$line" | tail -c+14)
+        bspwm-status*)
+            BSPWM_STATUS=$(echo "$line" | tail -c+13)
             ;;
         network_status*)
             NETWORK_STATUS=$(echo "$line" | tail -c+15)
@@ -212,7 +210,7 @@ while read -r line; do
             VOLUME=$(echo "$line" | tail -c+11)
             ;;
     esac
-    echo "%{l}$(seperate "$DATE")%{c}$BSPWM_WINDOWS%{r}$(seperate "$VOLUME" "$INTEL_BRIGHTNESS" "$MEMORY_USAGE" "$NETWORK_STATUS" "$BATTERY")    "
+    echo "%{l}$(seperate "$TIME")%{c}$BSPWM_STATUS%{r}$(seperate "$VOLUME" "$INTEL_BRIGHTNESS" "$MEMORY_USAGE" "$NETWORK_STATUS" "$BATTERY")    "
 done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
