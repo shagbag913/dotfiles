@@ -141,7 +141,7 @@ get_volume() {
 
     if [ -n "$is_muted" ] || [ $current_volume = 0 ]; then
         glyph=$1
-    elif [ $current_volume -le 40 ]; then
+    elif [ $current_volume -le 50 ]; then
         glyph=$2
     else
         glyph=$3
