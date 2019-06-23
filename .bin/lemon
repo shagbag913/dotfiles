@@ -5,9 +5,13 @@
 #             a lemonbar fork with xft font compatibility.
 #
 
+WRAPPER=$HOME/.bin/lemonbar_wrapper
+
 # Check if the wrapper for this is compiled
-if [ ! -f $HOME/.bin/lemonbar_wrapper ]; then
+if [ ! -f "$WRAPPER" ]; then
+    cd $HOME/.bin
     gcc -lm -o lemonbar_wrapper lemonbar_wrapper.c
+    cd -
 fi
 
 # Vertical size in percentage of the bar
@@ -43,7 +47,7 @@ find /sys/class/power_supply/BAT* -maxdepth 1 >/dev/null && BATTERY_AVAILABLE=tr
 command -v amixer && VOLUME_AVAILABLE=true
 
 battery() {
-    local charge=$(lemonbar_wrapper --charge)
+    local charge=$($WRAPPER --charge)
     local charge_array='    '
     local color
     local glyph
@@ -66,7 +70,7 @@ battery() {
 
     set -- $charge_array
 
-    if [ $(lemonbar_wrapper --is-charging) = 0 ]; then
+    if [ $($WRAPPER --is-charging) = 0 ]; then
         if [ "$CHARGING_INDEX" = 5 ] || [ -z "$CHARGING_INDEX" ]; then
             CHARGING_INDEX=$glyph
         else
@@ -121,7 +125,7 @@ network_status() {
 }
 
 get_intel_brightness() {
-    local brightness=$(lemonbar_wrapper --intel-brightness)
+    local brightness=$($WRAPPER --intel-brightness)
     echo "get_intel_brightness  $(build_slider $brightness 5)"
 }
 
@@ -166,9 +170,9 @@ seperate() {
     echo "$items" | sed 's/ \+|//'
 }
 
-while :; do lemonbar_wrapper --time; sleep 10; done > $FIFO &
-while :; do lemonbar_wrapper --used-memory-percentage; sleep 10; done > $FIFO &
-while :; do lemonbar_wrapper --bspwm-status; sleep .15; done > $FIFO &
+while :; do $WRAPPER --time; sleep 10; done > $FIFO &
+while :; do $WRAPPER --used-memory-percentage; sleep 10; done > $FIFO &
+while :; do $WRAPPER --bspwm-status; sleep .15; done > $FIFO &
 while :; do network_status; sleep 15; done > $FIFO &
 
 # Only run if amixer is available
