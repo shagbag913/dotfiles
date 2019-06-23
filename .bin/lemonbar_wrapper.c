@@ -90,7 +90,7 @@ char *get_formatted_time() {
  * Retrieves BSPWM active/inactive desktops and sorts them into glyphs.
  */
 char *build_bspwm_status() {
-	int active_window, bg_window, rs_empty, index = 1;
+	int active_window, bg_window, rs_empty, index = 0;
 	char *delim_ptr, wm_status[90], glyph[] = "";
 	char grey_glyph[] = "%{F#a5a5a5}%{F-}", space[] = "    ";
 	static char return_window_status[545] = "\0", *click_command;
@@ -117,14 +117,13 @@ char *build_bspwm_status() {
 		else if (bg_window)
 			strcat(return_window_status, grey_glyph);
 
-		delim_ptr = strtok(NULL, ":");
-
 		if (active_window || bg_window) {
 			strcat(return_window_status, space);
 			strcat(return_window_status, "%{A}");
 		}
 
 		++index;
+		delim_ptr = strtok(NULL, ":");
 	}
 
 	return return_window_status;
