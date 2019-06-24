@@ -82,26 +82,6 @@ battery() {
     echo "battery%{A:$HOME/.bin/batteryprompt.py click:}$glyph%{A}"
 }
 
-bspwm_windows() {
-    local windows
-    local index=0
-    local IFS=":"
-    for i in $(bspc wm --get-status); do
-        if [ $index -ge 1 ] && [ $index -le 10 ]; then
-            case $i in
-                o*)
-                    windows="$windows%{A:bspc desktop -f ^$index:}   %{F#80FFFFFF}%{F-}   %{A}"
-                ;;
-                O*|F*)
-                    windows="$windows%{A:bspc desktop -f ^$index:}      %{A}"
-                ;;
-            esac
-        fi
-        index=$((index+1))
-    done
-    echo "bspwm_windows$windows"
-}
-
 network_status() {
     if [ -n "$WIFI_AVAILABLE" ]; then
         local wifi=$(cat /sys/class/net/w*/operstate)
