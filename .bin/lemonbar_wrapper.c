@@ -137,7 +137,7 @@ char *build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
-			click_command = malloc(30);
+			click_command = malloc(25 + index < 10 ? 1 : 2);
 			sprintf(click_command, "%%{A:bspc desktop -f ^%i:}", index);
 			strcat(return_window_status, click_command);
 			free(click_command);
