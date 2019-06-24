@@ -171,7 +171,10 @@ int get_charge() {
 	cap_file = fopen("/sys/class/power_supply/BAT0/capacity", "r");
 
 	/* return -1 if the file couldn't be opened (battery not available) */
-	if (cap_file == NULL) return -1;
+	if (cap_file == NULL) {
+		fclose(cap_file);
+		return -1;
+	}
 
 	fscanf(cap_file, "%i", &charge);
 	fclose(cap_file);
@@ -190,7 +193,10 @@ int is_charging() {
 	status_file = fopen("/sys/class/power_supply/BAT0/status", "r");
 
 	/* return -1 if the file couldn't be opened (battery not available) */
-	if (status_file == NULL) return -1;
+	if (status_file == NULL) {
+		fclose(status_file);
+		return -1;
+	}
 
 	fscanf(status_file, "%s", status);
 	fclose(status_file);
@@ -210,10 +216,16 @@ char *get_brightness_slider() {
 	max_brightness_file = fopen("/sys/class/backlight/intel_backlight/max_brightness", "r");
 
 	/* return empty array if the file couldn't be opened (Intel backlight not available) */
-	if (brightness_file == NULL || max_brightness_file == NULL) return "";
+	if (brightness_file == NULL || max_brightness_file == NULL) {
+		fclose(brightness_file);
+		fclose(max_brightness_file);
+		return "";
+	}
 
 	fscanf(brightness_file, "%i", &brightness);
 	fscanf(max_brightness_file, "%i", &max_brightness);
+	fclose(brightness_file);
+	fclose(max_brightness_file);
 
 	percent_brightness = round((float) brightness / (float) max_brightness * 100);
 	strcpy(slider, build_slider(percent_brightness));
@@ -269,6 +281,8 @@ void mem_stats(struct meminfo *mi) {
 
 		loc = 0;
 	}
+
+	fclose(meminfo);
 
 	mi->used = mi->total + mi->shmem - mi->free - mi->buffers - mi->cached - mi->sreclaimable;
 	mi->percentage_used = (float) mi->used / (float) mi->total * 100;
