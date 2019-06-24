@@ -125,8 +125,7 @@ network_status() {
 }
 
 get_intel_brightness() {
-    local brightness=$($WRAPPER --intel-brightness)
-    echo "get_intel_brightness  $(build_slider $brightness 5)"
+    echo "get_intel_brightness  $($WRAPPER --build-slider $($WRAPPER --intel-brightness))"
 }
 
 get_volume() {
@@ -147,18 +146,7 @@ get_volume() {
         glyph=$3
     fi
 
-    echo "get_volume$glyph  $(build_slider $current_volume 5)"
-}
-
-build_slider() {
-    local tmp=$(printf "%.0f\n" $(echo "$1 / 20" | bc -l))
-    for i in $(seq $tmp); do
-        printf "%s" "—"
-    done
-    printf "%s" "|"
-    for i in $(seq $(($2 - $tmp))); do
-        printf "%s" "—"
-    done
+    echo "get_volume$glyph  $($WRAPPER --build-slider $current_volume)"
 }
 
 seperate() {
