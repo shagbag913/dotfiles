@@ -20,7 +20,7 @@ struct meminfo {
 
 int get_charge();
 int is_charging();
-int get_brightness();
+char *get_brightness_slider();
 void mem_stats(struct meminfo *mi);
 char *build_bspwm_status();
 char *get_formatted_time();
@@ -55,8 +55,6 @@ int main(int argc, char *argv[]) {
 		struct meminfo mi;
 		mem_stats(&mi);
 		printf("used-memory-percentage  %i%%\n", mi.percentage_used);
-	} else if (strcmp(argv[1], "--intel-brightness") == 0) {
-		printf("%i\n", get_brightness());
 	} else if (strcmp(argv[1], "--time") == 0) {
 		printf("time%s\n", get_formatted_time());
 	} else if (strcmp(argv[1], "--bspwm-status") == 0) {
@@ -67,6 +65,8 @@ int main(int argc, char *argv[]) {
 		printf("%i\n", is_charging());
 	} else if (strcmp(argv[1], "--build-slider") == 0) {
 		printf("%s\n", build_slider(atoi(argv[2])));
+	} else if (strcmp(argv[1], "--brightness-slider") == 0) {
+		printf("brightness-slider  %s\n", get_brightness_slider());
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
@@ -199,24 +199,26 @@ int is_charging() {
 }
 
 /*
- * Returns brightness for Intel drivers in a range from 0-100.
+ * Returns a brightness slider for Intel drivers.
  */
-int get_brightness() {
+char *get_brightness_slider() {
 	FILE *brightness_file, *max_brightness_file;
 	int brightness, max_brightness, percent_brightness;
+	static char slider[5];
 
 	brightness_file = fopen("/sys/class/backlight/intel_backlight/brightness", "r");
 	max_brightness_file = fopen("/sys/class/backlight/intel_backlight/max_brightness", "r");
 
-	/* return -1 if the file couldn't be opened (Intel backlight not available) */
-	if (brightness_file == NULL || max_brightness_file == NULL) return -1;
+	/* return empty array if the file couldn't be opened (Intel backlight not available) */
+	if (brightness_file == NULL || max_brightness_file == NULL) return "";
 
 	fscanf(brightness_file, "%i", &brightness);
 	fscanf(max_brightness_file, "%i", &max_brightness);
 
 	percent_brightness = round((float) brightness / (float) max_brightness * 100);
+	strcpy(slider, build_slider(percent_brightness));
 
-	return percent_brightness;
+	return slider;
 }
 
 /*
