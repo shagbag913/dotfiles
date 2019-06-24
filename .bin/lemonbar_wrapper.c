@@ -24,20 +24,32 @@ int get_brightness();
 void mem_stats(struct meminfo *mi);
 char *build_bspwm_status();
 char *get_formatted_time();
+char *build_slider(int current_place);
 
 int main(int argc, char *argv[]) {
+	int max_args = 2, min_args = 2;
+
 	/*
 	 * Handle command line arguments.
-	 *
-	 * Don't allow more or less than one argument.
 	 */
-	if (argc > 2) {
-		printf("Too many arguments specified. Only specify one argument.\n");
-		return 1;
-	} else if (argc < 2) {
+	if (argc >= min_args) {
+		if (strcmp(argv[1], "--build-slider") == 0) {
+			++max_args;
+			++min_args;
+		}
+
+		if (argc < min_args) {
+			printf("Not enough arguments specified. You must specify one argument.\n");
+			return 1;
+		} else if (argc > max_args) {
+			printf("Too many arguments specified. Only specify one argument.\n");
+			return 1;
+		}
+	} else {
 		printf("Not enough arguments specified. You must specify one argument.\n");
 		return 1;
 	}
+
 
 	if (strcmp(argv[1], "--used-memory-percentage") == 0) {
 		struct meminfo mi;
@@ -53,10 +65,29 @@ int main(int argc, char *argv[]) {
 		printf("%i\n", get_charge());
 	} else if (strcmp(argv[1], "--is-charging") == 0) {
 		printf("%i\n", is_charging());
+	} else if (strcmp(argv[1], "--build-slider") == 0) {
+		printf("%s\n", build_slider(atoi(argv[2])));
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
 	}
+}
+
+/*
+ * Builds a visual slider representing something on a scale of 100.
+ */
+char *build_slider(int current_place) {
+	static char final_slider[5] = "\0";
+	int net_length = 5, plc;
+	int current_small_place = (float) current_place / (float) (100 / net_length);
+
+	for (plc = 0; plc < current_small_place; plc++)
+		strcat(final_slider, "—");
+	strcat(final_slider, "|");
+	for (; plc < net_length; ++plc)
+		strcat(final_slider, "—");
+
+	return final_slider;
 }
 
 /*
