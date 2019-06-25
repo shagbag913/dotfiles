@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 	} else if (strcmp(argv[1], "--brightness-slider") == 0) {
 		printf("brightness-slider  %s\n", get_brightness_slider());
 	} else if (strcmp(argv[1], "--network-status") == 0) {
-		printf("%s\n", get_network_status());
+		printf("network-status%s\n", get_network_status());
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;

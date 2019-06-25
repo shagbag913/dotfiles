@@ -30,10 +30,6 @@ FIFO=/tmp/lemonfifo
 [ -e $FIFO ] && rm $FIFO
 mkfifo $FIFO
 
-# Check if Wi-Fi/Ethernet is available
-find /sys/class/net/e* -maxdepth 1 >/dev/null && ETHERNET_AVAILABLE=true
-find /sys/class/net/w* -maxdepth 1 >/dev/null && WIFI_AVAILABLE=true
-
 # Check if Intel backlight is in use
 find /sys/class/backlight/intel_backlight -maxdepth 1 >/dev/null && INTEL_BACKLIGHT=true
 
@@ -82,25 +78,6 @@ battery() {
     echo "battery%{A:$HOME/.bin/batteryprompt.py click:}$glyph%{A}"
 }
 
-network_status() {
-    if [ -n "$WIFI_AVAILABLE" ]; then
-        local wifi=$(cat /sys/class/net/w*/operstate)
-        if [ "$wifi" = up ]; then
-            echo "network_status"
-            return
-        elif [ "$wifi" = down ]; then
-            echo "network_status%{F#99FFFFFF}%{F-}"
-        fi
-    elif [ -n "$ETHERNET_AVAILABLE" ]; then
-        local eth=$(cat /sys/class/net/e*/operstate)
-        if [ "$eth" = up ]; then
-            echo 'network_status'
-            return
-        fi
-    fi
-    echo ''
-}
-
 get_volume() {
     local slider
     local current_volume="$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2,$5}')"
@@ -134,7 +111,7 @@ seperate() {
 while :; do $WRAPPER --time; sleep 10; done > $FIFO &
 while :; do $WRAPPER --used-memory-percentage; sleep 10; done > $FIFO &
 while :; do $WRAPPER --bspwm-status; sleep .15; done > $FIFO &
-while :; do network_status; sleep 15; done > $FIFO &
+while :; do $WRAPPER --network-status; sleep 10; done > $FIFO &
 
 # Only run if amixer is available
 if [ "$VOLUME_AVAILABLE" = true ]; then
@@ -165,7 +142,7 @@ while read -r line; do
         bspwm-status*)
             BSPWM_STATUS=$(echo "$line" | tail -c+13)
             ;;
-        network_status*)
+        network-status*)
             NETWORK_STATUS=$(echo "$line" | tail -c+15)
             ;;
         brightness-slider*)
