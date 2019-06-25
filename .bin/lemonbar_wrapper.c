@@ -25,6 +25,7 @@ void mem_stats(struct meminfo *mi);
 char *build_bspwm_status();
 char *get_formatted_time();
 char *build_slider(int current_place);
+char *get_network_status();
 
 int main(int argc, char *argv[]) {
 	int max_args = 2, min_args = 2;
@@ -69,6 +70,8 @@ int main(int argc, char *argv[]) {
 		printf("%s\n", build_slider(atoi(argv[2])));
 	} else if (strcmp(argv[1], "--brightness-slider") == 0) {
 		printf("brightness-slider  %s\n", get_brightness_slider());
+	} else if (strcmp(argv[1], "--network-status") == 0) {
+		printf("%s\n", get_network_status());
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
@@ -315,4 +318,41 @@ void mem_stats(struct meminfo *mi) {
 
 	mi->used = mi->total + mi->shmem - mi->free - mi->buffers - mi->cached - mi->sreclaimable;
 	mi->percentage_used = (float) mi->used / (float) mi->total * 100;
+}
+
+/* Returns network status like so:
+ * - WiFi available and connected: white WiFi glyph
+ * - WiFi available but not connected: greyed out WiFi glyph
+ * - Connected to Ethernet: Wired connection glyph
+ * - Else: no output
+ */
+char *get_network_status() {
+	FILE *wifi_operstate, *ethernet_operstate;
+	static char wstate[5], estate[5];
+
+	wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
+
+	if (wifi_operstate != NULL) {
+		fscanf(wifi_operstate, "%s", wstate);
+		fclose(wifi_operstate);
+
+		if (strcmp(wstate, "up") == 0) {
+			return "";
+		} else {
+			ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
+
+			if (ethernet_operstate != NULL) {
+				fscanf(ethernet_operstate, "%s", estate);
+				fclose(ethernet_operstate);
+			}
+
+			if (strcmp(estate, "up") != 0)
+				return "%{F#99FFFFFF}%{F-}";
+		}
+	}
+
+	if (strcmp(estate, "up") == 0)
+		return "";
+
+	return "";
 }
