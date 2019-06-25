@@ -331,25 +331,22 @@ char *get_network_status() {
 	static char wstate[5], estate[5];
 
 	wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
+	ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
 
 	if (wifi_operstate != NULL) {
 		fscanf(wifi_operstate, "%s", wstate);
 		fclose(wifi_operstate);
+        }
 
-		if (strcmp(wstate, "up") == 0) {
-			return "";
-		} else {
-			ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
-
-			if (ethernet_operstate != NULL) {
-				fscanf(ethernet_operstate, "%s", estate);
-				fclose(ethernet_operstate);
-			}
-
-			if (strcmp(estate, "up") != 0)
-				return "%{F#99FFFFFF}%{F-}";
-		}
+        if (ethernet_operstate != NULL) {
+		fscanf(ethernet_operstate, "%s", estate);
+		fclose(ethernet_operstate);
 	}
+
+	if (strcmp(wstate, "up") == 0)
+		return "";
+	else if (strcmp(estate, "up") != 0)
+		return "%{F#99FFFFFF}%{F-}";
 
 	if (strcmp(estate, "up") == 0)
 		return "";
