@@ -124,7 +124,7 @@ char *build_bspwm_status() {
 	int active_window, bg_window, rs_empty, index = 0;
 	char *delim_ptr, wm_status[90], glyph[] = "";
 	char grey_glyph[] = "%{F#a5a5a5}%{F-}", space[] = "    ";
-	static char return_window_status[545] = "\0", *click_command;
+	static char return_window_status[545] = "\0", click_command[27];
 	FILE *bspwm_status;
 
 	bspwm_status = popen("bspc wm --get-status", "r");
@@ -137,10 +137,8 @@ char *build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
-			click_command = malloc(25 + index < 10 ? 1 : 2);
 			sprintf(click_command, "%%{A:bspc desktop -f ^%i:}", index);
 			strcat(return_window_status, click_command);
-			free(click_command);
 		}
 
 		if (active_window)
