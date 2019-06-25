@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
  * Builds a visual slider representing something on a scale of 100.
  */
 char *build_slider(int current_place) {
-	static char final_slider[5] = "\0";
+	static char final_slider[6] = "\0";
 	int net_length = 5, plc;
 	int current_small_place = (float) current_place / (float) (100 / net_length);
 
