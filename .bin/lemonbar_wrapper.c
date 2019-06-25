@@ -58,7 +58,9 @@ int main(int argc, char *argv[]) {
 	} else if (strcmp(argv[1], "--time") == 0) {
 		printf("time%s\n", get_formatted_time());
 	} else if (strcmp(argv[1], "--bspwm-status") == 0) {
-		printf("bspwm-status%s\n", build_bspwm_status());
+		char *bspwm_status = build_bspwm_status();
+		printf("bspwm-status%s\n", bspwm_status);
+		free(bspwm_status);
 	} else if (strcmp(argv[1], "--charge") == 0) {
 		printf("%i\n", get_charge());
 	} else if (strcmp(argv[1], "--is-charging") == 0) {
@@ -124,8 +126,14 @@ char *build_bspwm_status() {
 	int active_window, bg_window, rs_empty, index = 0;
 	char *delim_ptr, wm_status[90], glyph[] = "";
 	char grey_glyph[] = "%{F#a5a5a5}%{F-}", space[] = "    ";
-	static char return_window_status[545] = "\0", click_command[27];
+	char *return_window_status, click_command[27];
 	FILE *bspwm_status;
+
+	return_window_status = malloc(2);
+	if (return_window_status == NULL)
+		goto failed_alloc;
+
+	strcpy(return_window_status, "\0");
 
 	bspwm_status = popen("bspc wm --get-status", "r");
 	fscanf(bspwm_status, "%s", wm_status);
@@ -137,16 +145,33 @@ char *build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
+			return_window_status = realloc(return_window_status, strlen(return_window_status) + 28);
+			if (return_window_status == NULL)
+				goto failed_alloc;
+
 			sprintf(click_command, "%%{A:bspc desktop -f ^%i:}", index);
 			strcat(return_window_status, click_command);
 		}
 
-		if (active_window)
+		if (active_window) {
+			return_window_status = realloc(return_window_status, strlen(return_window_status) + strlen(glyph) + 2);
+			if (return_window_status == NULL)
+				goto failed_alloc;
+
 			strcat(return_window_status, glyph);
-		else if (bg_window)
+		} else if (bg_window) {
+			return_window_status = realloc(return_window_status, strlen(return_window_status) + strlen(grey_glyph) + 2);
+			if (return_window_status == NULL)
+				goto failed_alloc;
+
 			strcat(return_window_status, grey_glyph);
+		}
 
 		if (active_window || bg_window) {
+			return_window_status = realloc(return_window_status, strlen(return_window_status) + strlen(space) + 7);
+			if (return_window_status == NULL)
+				goto failed_alloc;
+
 			strcat(return_window_status, space);
 			strcat(return_window_status, "%{A}");
 		}
@@ -156,6 +181,10 @@ char *build_bspwm_status() {
 	}
 
 	return return_window_status;
+
+failed_alloc:
+	printf("Failed to allocate memory for return_window_status.\n");
+	free(return_window_status);
 }
 
 /*
