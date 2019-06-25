@@ -145,30 +145,32 @@ char *build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
-			return_window_status = realloc(return_window_status, strlen(return_window_status) + 28);
+			return_window_status = realloc(return_window_status,
+					strlen(return_window_status) + 28);
 			if (return_window_status == NULL)
 				goto failed_alloc;
 
 			sprintf(click_command, "%%{A:bspc desktop -f ^%i:}", index);
 			strcat(return_window_status, click_command);
-		}
 
-		if (active_window) {
-			return_window_status = realloc(return_window_status, strlen(return_window_status) + strlen(glyph) + 2);
-			if (return_window_status == NULL)
-				goto failed_alloc;
+			if (active_window) {
+				return_window_status = realloc(return_window_status,
+						strlen(return_window_status) + strlen(glyph) + 2);
+				if (return_window_status == NULL)
+					goto failed_alloc;
 
-			strcat(return_window_status, glyph);
-		} else if (bg_window) {
-			return_window_status = realloc(return_window_status, strlen(return_window_status) + strlen(grey_glyph) + 2);
-			if (return_window_status == NULL)
-				goto failed_alloc;
+				strcat(return_window_status, glyph);
+			} else if (bg_window) {
+				return_window_status = realloc(return_window_status,
+						strlen(return_window_status) + strlen(grey_glyph) + 2);
+				if (return_window_status == NULL)
+					goto failed_alloc;
 
-			strcat(return_window_status, grey_glyph);
-		}
+				strcat(return_window_status, grey_glyph);
+			}
 
-		if (active_window || bg_window) {
-			return_window_status = realloc(return_window_status, strlen(return_window_status) + strlen(space) + 7);
+			return_window_status = realloc(return_window_status,
+					strlen(return_window_status) + strlen(space) + 7);
 			if (return_window_status == NULL)
 				goto failed_alloc;
 
