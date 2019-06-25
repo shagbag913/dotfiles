@@ -322,8 +322,9 @@ void mem_stats(struct meminfo *mi) {
 
 /* Returns network status like so:
  * - WiFi available and connected: white WiFi glyph
- * - WiFi available but not connected: greyed out WiFi glyph
- * - Connected to Ethernet: Wired connection glyph
+ * - WiFi available but not connected and no ethernet available: greyed out WiFi glyph
+ * - WiFi available but not connected but ethernet available: wired connection glyph
+ * - Connected to Ethernet: wired connection glyph
  * - Else: no output
  */
 char *get_network_status() {
