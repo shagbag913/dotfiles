@@ -18,14 +18,14 @@ struct meminfo {
 	int sreclaimable;
 };
 
+char *build_bspwm_status();
+char *build_slider(int current_place);
+char *get_brightness_slider();
+char *get_formatted_time();
+char *get_network_status();
 int get_charge();
 int is_charging();
-char *get_brightness_slider();
 void mem_stats(struct meminfo *mi);
-char *build_bspwm_status();
-char *get_formatted_time();
-char *build_slider(int current_place);
-char *get_network_status();
 
 int main(int argc, char *argv[]) {
 	int max_args = 2, min_args = 2;
