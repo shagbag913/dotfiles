@@ -18,6 +18,10 @@ struct meminfo {
 	int sreclaimable;
 };
 
+enum {
+	UNAVAILABLE = -1
+};
+
 char *build_bspwm_status();
 char *build_slider(int current_place);
 char *get_brightness_slider();
@@ -204,7 +208,7 @@ int get_charge() {
 
 	/* return -1 if the file couldn't be opened (battery not available) */
 	if (cap_file == NULL)
-		return -1;
+		return UNAVAILABLE;
 
 	fscanf(cap_file, "%i", &charge);
 	fclose(cap_file);
@@ -224,7 +228,7 @@ int is_charging() {
 
 	/* return -1 if the file couldn't be opened (battery not available) */
 	if (status_file == NULL)
-		return -1;
+		return UNAVAILABLE;
 
 	fscanf(status_file, "%s", status);
 	fclose(status_file);
