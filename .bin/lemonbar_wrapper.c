@@ -348,8 +348,7 @@ char *get_network_status() {
 		return "";
 	else if (strcmp(estate, "up") != 0)
 		return "%{F#99FFFFFF}%{F-}";
-
-	if (strcmp(estate, "up") == 0)
+	else if (strcmp(estate, "up") == 0)
 		return "";
 
 	return "";
