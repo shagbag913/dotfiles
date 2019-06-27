@@ -30,9 +30,6 @@ FIFO=/tmp/lemonfifo
 [ -e $FIFO ] && rm $FIFO
 mkfifo $FIFO
 
-# Check if Intel backlight is in use
-find /sys/class/backlight/intel_backlight -maxdepth 1 >/dev/null && INTEL_BACKLIGHT=true
-
 # Check if `amixer` is available
 command -v amixer && VOLUME_AVAILABLE=true
 
@@ -70,19 +67,13 @@ while :; do $WRAPPER --time; sleep 10; done > $FIFO &
 while :; do $WRAPPER --used-memory-percentage; sleep 10; done > $FIFO &
 while :; do $WRAPPER --bspwm-status; sleep .15; done > $FIFO &
 while :; do $WRAPPER --network-status; sleep 10; done > $FIFO &
+while :; do $WRAPPER --brightness-slider; sleep .6; done > $FIFO &
+while :; do $WRAPPER --charge-glyph; sleep 2; done > $FIFO &
 
 # Only run if amixer is available
 if [ "$VOLUME_AVAILABLE" = true ]; then
     while :; do get_volume; sleep .6; done > $FIFO &
 fi
-
-# Only run this if intel backlight is in use
-if [ "$INTEL_BACKLIGHT" = true ]; then
-    while :; do $WRAPPER --brightness-slider; sleep .6; done > $FIFO &
-fi
-
-# Only run this if the device has a battery
-while :; do $WRAPPER --charge-glyph; sleep 2; done > $FIFO &
 
 while read -r line; do
     case $line in
