@@ -196,7 +196,6 @@ char *build_bspwm_status() {
 
 failed_alloc:
 	printf("Failed to allocate memory for return_window_status.\n");
-	free(return_window_status);
 	return "";
 }
 
