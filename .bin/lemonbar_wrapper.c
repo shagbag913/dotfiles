@@ -24,6 +24,7 @@ enum {
 
 char *build_bspwm_status();
 char *build_slider(int current_place);
+char *get_battery_glyph();
 char *get_brightness_slider();
 char *get_formatted_time();
 char *get_network_status();
@@ -68,6 +69,8 @@ int main(int argc, char *argv[]) {
 		free(bspwm_status);
 	} else if (strcmp(argv[1], "--charge") == 0) {
 		printf("%i\n", get_charge());
+	} else if (strcmp(argv[1], "--charge-glyph") == 0) {
+		printf("charge-glyph%s\n", get_battery_glyph());
 	} else if (strcmp(argv[1], "--is-charging") == 0) {
 		printf("%i\n", is_charging());
 	} else if (strcmp(argv[1], "--build-slider") == 0) {
@@ -194,6 +197,36 @@ char *build_bspwm_status() {
 failed_alloc:
 	printf("Failed to allocate memory for return_window_status.\n");
 	free(return_window_status);
+}
+
+/*
+ * Returns a glyph showing current battery charge status.
+ */
+char *get_battery_glyph() {
+	int charging = is_charging(), charge = get_charge();
+	static char glyph[20] = "\0";
+
+	if (charge == -1)
+		return "";
+
+	if (charging == 0)
+		strcat(glyph, "%{F#A1FFA2}");
+
+	if (charge >= 90)
+		strcat(glyph, "");
+	else if (charge >= 70)
+		strcat(glyph, "");
+	else if (charge >= 45)
+		strcat(glyph, "");
+	else if (charge >= 20)
+		strcat(glyph, "");
+	else
+		strcat(glyph, "");
+
+	if (charging == 0)
+		strcat(glyph, "%{F-}");
+
+	return glyph;
 }
 
 /*

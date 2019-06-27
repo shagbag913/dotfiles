@@ -33,50 +33,8 @@ mkfifo $FIFO
 # Check if Intel backlight is in use
 find /sys/class/backlight/intel_backlight -maxdepth 1 >/dev/null && INTEL_BACKLIGHT=true
 
-# Check if a battery is present
-find /sys/class/power_supply/BAT* -maxdepth 1 >/dev/null && BATTERY_AVAILABLE=true
-
 # Check if `amixer` is available
 command -v amixer && VOLUME_AVAILABLE=true
-
-battery() {
-    local charge=$($WRAPPER --charge)
-    local charge_array='    '
-    local color
-    local glyph
-
-    if [ "$charge" -le 10 ]; then
-        glyph=1
-        color='#ff0400'
-    elif [ "$charge" -lt 20 ]; then
-        glyph=1
-        color='#ffaead'
-    elif [ "$charge" -lt 40 ]; then
-        glyph=2
-    elif [ "$charge" -lt 70 ]; then
-        glyph=3
-    elif [ "$charge" -lt 90 ]; then
-        glyph=4
-    else
-        glyph=5
-    fi
-
-    set -- $charge_array
-
-    if [ $($WRAPPER --is-charging) = 0 ]; then
-        if [ "$CHARGING_INDEX" = 5 ] || [ -z "$CHARGING_INDEX" ]; then
-            CHARGING_INDEX=$glyph
-        else
-            CHARGING_INDEX=$((CHARGING_INDEX + 1))
-        fi
-
-        eval glyph="\${$CHARGING_INDEX}"
-    else
-        [ -n "$color" ] && eval glyph="%{F$color}\${$glyph}%{F-}" || eval glyph="\${$glyph}"
-    fi
-
-    echo "battery%{A:$HOME/.bin/batteryprompt.py click:}$glyph%{A}"
-}
 
 get_volume() {
     local slider
@@ -124,9 +82,7 @@ if [ "$INTEL_BACKLIGHT" = true ]; then
 fi
 
 # Only run this if the device has a battery
-if [ "$BATTERY_AVAILABLE" = true ]; then
-    while :; do battery; sleep 2; done > $FIFO &
-fi
+while :; do $WRAPPER --charge-glyph; sleep 2; done > $FIFO &
 
 while read -r line; do
     case $line in
@@ -136,8 +92,8 @@ while read -r line; do
         time*)
             TIME=$(echo "$line" | tail -c+5)
             ;;
-        battery*)
-            BATTERY=$(echo "$line" | tail -c+8)
+        charge-glyph*)
+            BATTERY=$(echo "$line" | tail -c+13)
             ;;
         bspwm-status*)
             BSPWM_STATUS=$(echo "$line" | tail -c+13)
