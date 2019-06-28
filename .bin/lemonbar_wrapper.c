@@ -150,7 +150,7 @@ char *build_bspwm_status() {
 	int active_window, bg_window, rs_empty, index = 0;
 	char *delim_ptr, wm_status[90], glyph[] = "";
 	char grey_glyph[] = "%{F#a5a5a5}%{F-}", space[] = "    ";
-	char *return_window_status = NULL, click_command[27];
+	char *return_window_status, click_command[27];
 	FILE *bspwm_status;
 
 	return_window_status = malloc(2);
