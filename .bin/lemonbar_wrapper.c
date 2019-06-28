@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 	} else if (strcmp(argv[1], "--build-slider") == 0) {
 		printf("%s\n", build_slider(atoi(argv[2])));
 	} else if (strcmp(argv[1], "--brightness-slider") == 0) {
-		printf("brightness-slider  %s\n", get_brightness_slider());
+		printf("brightness-slider%s\n", get_brightness_slider());
 	} else if (strcmp(argv[1], "--network-status") == 0) {
 		printf("network-status%s\n", get_network_status());
 	} else {
@@ -295,7 +295,7 @@ int is_charging() {
 char *get_brightness_slider() {
 	FILE *brightness_file, *max_brightness_file;
 	int brightness, max_brightness, percent_brightness;
-	static char slider[5];
+	static char slider[10] = " ";
 
 	brightness_file = fopen("/sys/class/backlight/intel_backlight/brightness", "r");
 	max_brightness_file = fopen("/sys/class/backlight/intel_backlight/max_brightness", "r");
@@ -309,7 +309,7 @@ char *get_brightness_slider() {
 	fclose(max_brightness_file);
 
 	percent_brightness = round((float) brightness / (float) max_brightness * 100);
-	strcpy(slider, build_slider(percent_brightness));
+	strcat(slider, build_slider(percent_brightness));
 
 	return slider;
 }
