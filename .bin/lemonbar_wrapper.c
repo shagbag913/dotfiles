@@ -66,6 +66,7 @@ int main(int argc, char *argv[]) {
 	} else if (strcmp(argv[1], "--bspwm-status") == 0) {
 		char *bspwm_status = build_bspwm_status();
 		printf("bspwm-status%s\n", bspwm_status);
+		free(bspwm_status);
 	} else if (strcmp(argv[1], "--charge") == 0) {
 		printf("%i\n", get_charge());
 	} else if (strcmp(argv[1], "--charge-glyph") == 0) {
