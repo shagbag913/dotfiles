@@ -66,7 +66,6 @@ int main(int argc, char *argv[]) {
 	} else if (strcmp(argv[1], "--bspwm-status") == 0) {
 		char *bspwm_status = build_bspwm_status();
 		printf("bspwm-status%s\n", bspwm_status);
-		free(bspwm_status);
 	} else if (strcmp(argv[1], "--charge") == 0) {
 		printf("%i\n", get_charge());
 	} else if (strcmp(argv[1], "--charge-glyph") == 0) {
@@ -136,7 +135,7 @@ char *build_bspwm_status() {
 	int active_window, bg_window, rs_empty, index = 0;
 	char *delim_ptr, wm_status[90], glyph[] = "";
 	char grey_glyph[] = "%{F#a5a5a5}%{F-}", space[] = "    ";
-	char *return_window_status, click_command[27];
+	char *return_window_status, click_command[27], *old_return_status;
 	FILE *bspwm_status;
 
 	return_window_status = malloc(2);
@@ -155,6 +154,7 @@ char *build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
+			old_return_status = return_window_status;
 			return_window_status = realloc(return_window_status,
 					strlen(return_window_status) + 28);
 			if (return_window_status == NULL)
@@ -164,6 +164,7 @@ char *build_bspwm_status() {
 			strcat(return_window_status, click_command);
 
 			if (active_window) {
+				old_return_status = return_window_status;
 				return_window_status = realloc(return_window_status,
 						strlen(return_window_status) + strlen(glyph) + 2);
 				if (return_window_status == NULL)
@@ -171,6 +172,7 @@ char *build_bspwm_status() {
 
 				strcat(return_window_status, glyph);
 			} else if (bg_window) {
+				old_return_status = return_window_status;
 				return_window_status = realloc(return_window_status,
 						strlen(return_window_status) + strlen(grey_glyph) + 2);
 				if (return_window_status == NULL)
@@ -179,6 +181,7 @@ char *build_bspwm_status() {
 				strcat(return_window_status, grey_glyph);
 			}
 
+			old_return_status = return_window_status;
 			return_window_status = realloc(return_window_status,
 					strlen(return_window_status) + strlen(space) + 7);
 			if (return_window_status == NULL)
@@ -196,6 +199,10 @@ char *build_bspwm_status() {
 
 failed_alloc:
 	printf("Failed to allocate memory for return_window_status.\n");
+	if (old_return_status != NULL)
+		free(old_return_status);
+	if (return_window_status != NULL)
+		free(return_window_status);
 	return "";
 }
 
