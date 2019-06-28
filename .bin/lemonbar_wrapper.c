@@ -31,6 +31,7 @@ char *get_network_status();
 int get_charge();
 int is_charging();
 void mem_stats(struct meminfo *mi);
+void *realloc_free_fail(void *ptr, int bytes);
 
 int main(int argc, char *argv[]) {
 	int max_args = 2, min_args = 2;
@@ -129,6 +130,19 @@ char *get_formatted_time() {
 	return formatted_time;
 }
 
+void *realloc_free_fail(void *ptr, int bytes) {
+	void *ptr2 = ptr;
+
+	ptr = realloc(ptr, bytes);
+
+	if (ptr == NULL) {
+		free(ptr2);
+		return NULL;
+	}
+
+	return ptr;
+}
+
 /*
  * Retrieves BSPWM active/inactive desktops and sorts them into glyphs.
  */
@@ -136,7 +150,7 @@ char *build_bspwm_status() {
 	int active_window, bg_window, rs_empty, index = 0;
 	char *delim_ptr, wm_status[90], glyph[] = "";
 	char grey_glyph[] = "%{F#a5a5a5}%{F-}", space[] = "    ";
-	char *return_window_status, click_command[27], *old_return_status;
+	char *return_window_status = NULL, click_command[27];
 	FILE *bspwm_status;
 
 	return_window_status = malloc(2);
@@ -155,8 +169,7 @@ char *build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
-			old_return_status = return_window_status;
-			return_window_status = realloc(return_window_status,
+			return_window_status = realloc_free_fail(return_window_status,
 					strlen(return_window_status) + 28);
 			if (return_window_status == NULL)
 				goto failed_alloc;
@@ -165,16 +178,14 @@ char *build_bspwm_status() {
 			strcat(return_window_status, click_command);
 
 			if (active_window) {
-				old_return_status = return_window_status;
-				return_window_status = realloc(return_window_status,
+				return_window_status = realloc_free_fail(return_window_status,
 						strlen(return_window_status) + strlen(glyph) + 2);
 				if (return_window_status == NULL)
 					goto failed_alloc;
 
 				strcat(return_window_status, glyph);
 			} else if (bg_window) {
-				old_return_status = return_window_status;
-				return_window_status = realloc(return_window_status,
+				return_window_status = realloc_free_fail(return_window_status,
 						strlen(return_window_status) + strlen(grey_glyph) + 2);
 				if (return_window_status == NULL)
 					goto failed_alloc;
@@ -182,8 +193,7 @@ char *build_bspwm_status() {
 				strcat(return_window_status, grey_glyph);
 			}
 
-			old_return_status = return_window_status;
-			return_window_status = realloc(return_window_status,
+			return_window_status = realloc_free_fail(return_window_status,
 					strlen(return_window_status) + strlen(space) + 7);
 			if (return_window_status == NULL)
 				goto failed_alloc;
@@ -200,10 +210,6 @@ char *build_bspwm_status() {
 
 failed_alloc:
 	printf("Failed to allocate memory for return_window_status.\n");
-	if (old_return_status != NULL)
-		free(old_return_status);
-	if (return_window_status != NULL)
-		free(return_window_status);
 	return "";
 }
 
