@@ -212,18 +212,26 @@ char *get_battery_glyph() {
 	if (charging == 0)
 		strcat(glyph, "%{F#A1FFA2}");
 
-	if (charge >= 90)
+	if (charge >= 90) {
 		strcat(glyph, "");
-	else if (charge >= 70)
+	} else if (charge >= 70) {
 		strcat(glyph, "");
-	else if (charge >= 45)
+	} else if (charge >= 45) {
 		strcat(glyph, "");
-	else if (charge >= 20)
+	} else if (charge >= 20) {
 		strcat(glyph, "");
-	else
-		strcat(glyph, "");
+	} else {
+		if (charging != 0) {
+			if (charge >= 10)
+				strcat(glyph, "%{F#FF7575}");
+			else
+				strcat(glyph, "%{F#FF3838}");
+		}
 
-	if (charging == 0)
+		strcat(glyph, "");
+	}
+
+	if (glyph[0] == '%')
 		strcat(glyph, "%{F-}");
 
 	return glyph;
@@ -239,7 +247,6 @@ int get_charge() {
 
 	cap_file = fopen("/sys/class/power_supply/BAT0/capacity", "r");
 
-	/* return -1 if the file couldn't be opened (battery not available) */
 	if (cap_file == NULL)
 		return UNAVAILABLE;
 
@@ -259,7 +266,6 @@ int is_charging() {
 
 	status_file = fopen("/sys/class/power_supply/BAT0/status", "r");
 
-	/* return -1 if the file couldn't be opened (battery not available) */
 	if (status_file == NULL)
 		return UNAVAILABLE;
 
@@ -280,7 +286,6 @@ char *get_brightness_slider() {
 	brightness_file = fopen("/sys/class/backlight/intel_backlight/brightness", "r");
 	max_brightness_file = fopen("/sys/class/backlight/intel_backlight/max_brightness", "r");
 
-	/* return empty array if the file couldn't be opened (Intel backlight not available) */
 	if (brightness_file == NULL || max_brightness_file == NULL)
 		return "";
 
