@@ -22,7 +22,6 @@ enum {
 	UNAVAILABLE = -1
 };
 
-char *build_bspwm_status();
 char *build_slider(int current_place);
 char *get_battery_glyph();
 char *get_brightness_slider();
@@ -30,6 +29,7 @@ char *get_formatted_time();
 char *get_network_status();
 int get_charge();
 int is_charging();
+void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
 void *realloc_free_fail(void *ptr, int bytes);
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 	int max_args = 2, min_args = 2;
 
 	/*
-	 * Handle command line arguments.
+	 * Handle arguments.
 	 */
 	if (argc >= min_args) {
 		if (strcmp(argv[1], "--build-slider") == 0) {
@@ -66,14 +66,15 @@ int main(int argc, char *argv[]) {
 		printf("time%s\n", get_formatted_time());
 	} else if (strcmp(argv[1], "--bspwm-status") == 0) {
 		char *bspwm_status = build_bspwm_status();
-		printf("bspwm-status%s\n", bspwm_status);
-		free(bspwm_status);
-	} else if (strcmp(argv[1], "--charge") == 0) {
-		printf("%i\n", get_charge());
+
+		// Only do these if build_bspwm_status doesn't return NULL, in case memory allocation fails.
+                if (bspwm_status != NULL) {
+			printf("bspwm-status%s\n", bspwm_status);
+			free(bspwm_status);
+                }
+
 	} else if (strcmp(argv[1], "--charge-glyph") == 0) {
 		printf("charge-glyph%s\n", get_battery_glyph());
-	} else if (strcmp(argv[1], "--is-charging") == 0) {
-		printf("%i\n", is_charging());
 	} else if (strcmp(argv[1], "--build-slider") == 0) {
 		printf("%s\n", build_slider(atoi(argv[2])));
 	} else if (strcmp(argv[1], "--brightness-slider") == 0) {
@@ -150,7 +151,7 @@ void *realloc_free_fail(void *ptr, int bytes) {
 /*
  * Retrieves BSPWM active/inactive desktops and sorts them into glyphs.
  */
-char *build_bspwm_status() {
+void *build_bspwm_status() {
 	int active_window, bg_window, rs_empty, index = 0;
 	char *delim_ptr, wm_status[90], glyph[] = "";
 	char grey_glyph[] = "%{F#a5a5a5}%{F-}", space[] = "    ";
@@ -214,7 +215,7 @@ char *build_bspwm_status() {
 
 failed_alloc:
 	printf("Failed to allocate memory for return_window_status.\n");
-	return "";
+	return NULL;
 }
 
 /*
