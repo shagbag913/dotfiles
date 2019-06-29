@@ -130,6 +130,10 @@ char *get_formatted_time() {
 	return formatted_time;
 }
 
+/*
+ * Tries to realloc intput bytes amount of memory from input pointer to new pointer,
+ * and if the realloc fails, the old pointer is freed and NULL is returned.
+ */
 void *realloc_free_fail(void *ptr, int bytes) {
 	void *ptr2 = ptr;
 
