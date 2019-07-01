@@ -168,7 +168,7 @@ void *build_bspwm_status() {
 				goto failed_alloc;
 			}
 
-			// Add underline under active windows
+			// Add underline under active window numbers
 			if (active_window)
 				strcat(return_window_status, "%{+u}%{U#ffffff}");
 
@@ -179,16 +179,7 @@ void *build_bspwm_status() {
 				goto failed_alloc;
 
 			strcpy(tmp_status, return_window_status);
-			sprintf(return_window_status, "%s%%{A:bspc desktop -f ^%i:}      ", tmp_status, index);
-
-			tmp_status = realloc(tmp_status, strlen(return_window_status) + 1);
-
-			if (tmp_status == NULL)
-				goto failed_alloc;
-
-			strcpy(tmp_status, return_window_status);
-			sprintf(return_window_status, "%s%i", tmp_status, index);
-
+			sprintf(return_window_status, "%s%%{A:bspc desktop -f ^%i:}      %i", tmp_status, index, index);
 			free(tmp_status);
 
 			strcat(return_window_status, "      %{A}");
