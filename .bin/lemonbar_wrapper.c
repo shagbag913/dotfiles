@@ -31,7 +31,6 @@ int get_charge();
 int is_charging();
 void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
-void *realloc_free_fail(void *ptr, int bytes);
 
 int main(int argc, char *argv[]) {
 	int max_args = 2, min_args = 2;
@@ -132,41 +131,21 @@ char *get_formatted_time() {
 }
 
 /*
- * Tries to realloc intput bytes amount of memory from input pointer to new pointer,
- * and if the realloc fails, the old pointer is freed and NULL is returned.
- */
-void *realloc_free_fail(void *ptr, int bytes) {
-	void *ptr2 = ptr;
-
-	ptr = realloc(ptr, bytes);
-
-	if (ptr == NULL) {
-		free(ptr2);
-		return NULL;
-	}
-
-	return ptr;
-}
-
-/*
  * Retrieves BSPWM active/inactive desktops and sorts them into glyphs.
  */
 void *build_bspwm_status() {
-	int active_window, bg_window, rs_empty, index = 0;
-	char *delim_ptr, wm_status[56], glyph[] = "";
-	char grey_glyph[] = "%{F#a5a5a5}%{F-}", space[] = "    ";
-	char *return_window_status, click_command[27];
+	int active_window, bg_window, index = 0;
+	char *delim_ptr, *return_window_status, *tmp_status, wm_status[56];
 	FILE *bspwm_status;
 
 	return_window_status = malloc(2);
-	if (return_window_status == NULL)
-		goto failed_alloc;
 
 	strcpy(return_window_status, "\0");
 
 	bspwm_status = popen("bspc wm --get-status", "r");
 	fscanf(bspwm_status, "%s", wm_status);
 	pclose(bspwm_status);
+
 	delim_ptr = strtok(wm_status, ":");
 
 	while (delim_ptr != NULL) {
@@ -174,37 +153,44 @@ void *build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
-			return_window_status = realloc_free_fail(return_window_status,
-					strlen(return_window_status) + 28);
-			if (return_window_status == NULL)
+			tmp_status = return_window_status;
+			return_window_status = realloc(return_window_status,
+					strlen(return_window_status) + 10 +
+					(index >= 10 ? 32 : 31) + (active_window ? 26 : 0) + 1);
+
+			if (return_window_status == NULL) {
+				free(tmp_status);
 				goto failed_alloc;
-
-			sprintf(click_command, "%%{A:bspc desktop -f ^%i:}", index);
-			strcat(return_window_status, click_command);
-
-			if (active_window) {
-				return_window_status = realloc_free_fail(return_window_status,
-						strlen(return_window_status) + strlen(glyph) + 2);
-				if (return_window_status == NULL)
-					goto failed_alloc;
-
-				strcat(return_window_status, glyph);
-			} else if (bg_window) {
-				return_window_status = realloc_free_fail(return_window_status,
-						strlen(return_window_status) + strlen(grey_glyph) + 2);
-				if (return_window_status == NULL)
-					goto failed_alloc;
-
-				strcat(return_window_status, grey_glyph);
 			}
 
-			return_window_status = realloc_free_fail(return_window_status,
-					strlen(return_window_status) + strlen(space) + 7);
-			if (return_window_status == NULL)
+
+			// Add underline under active windows
+			if (active_window)
+				strcat(return_window_status, "%{+u}%{U#ffffff}");
+
+			// Temporary string identical to return_window_status for sprintf
+			tmp_status = malloc(strlen(return_window_status) + 1);
+
+			if (tmp_status == NULL)
 				goto failed_alloc;
 
-			strcat(return_window_status, space);
-			strcat(return_window_status, "%{A}");
+			strcpy(tmp_status, return_window_status);
+			sprintf(return_window_status, "%s%%{A:bspc desktop -f ^%i:}      ", tmp_status, index);
+
+			tmp_status = realloc(tmp_status, strlen(return_window_status) + 1);
+
+			if (tmp_status == NULL)
+				goto failed_alloc;
+
+			strcpy(tmp_status, return_window_status);
+			sprintf(return_window_status, "%s%i", tmp_status, index);
+
+			free(tmp_status);
+
+			strcat(return_window_status, "      %{A}");
+
+			if (active_window)
+				strcat(return_window_status, "%{U-}%{-u}");
 		}
 
 		++index;
@@ -214,7 +200,13 @@ void *build_bspwm_status() {
 	return return_window_status;
 
 failed_alloc:
-	printf("Failed to allocate memory for return_window_status.\n");
+	printf("%s: Memory allocation failed!\n", __func__);
+
+	if (tmp_status == NULL)
+		free(tmp_status);
+	else if (return_window_status == NULL)
+		free(return_window_status);
+
 	return NULL;
 }
 
