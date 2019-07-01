@@ -158,7 +158,7 @@ void *build_bspwm_status() {
 			tmp_status = return_window_status;
 			return_window_status = realloc(return_window_status,
 					strlen(return_window_status) + 10 +
-					(index >= 10 ? 32 : 31) + (active_window ? 26 : 0) + 2);
+					(index >= 10 ? 33 : 31) + (active_window ? 26 : 0) + 1);
 
 			if (return_window_status == NULL) {
 				free(tmp_status);
