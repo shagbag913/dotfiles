@@ -90,19 +90,17 @@ int main(int argc, char *argv[]) {
  * Builds a visual slider representing something on a scale of 100.
  */
 char *build_slider(int current_place) {
-	static char final_slider[6] = "\0";
+	static char final_slider[17] = "\0";
 	int net_length = 5, plc;
 	int current_small_place = (float) current_place / (float) (100 / net_length);
 
-	for (plc = 0; plc < current_small_place; plc++) {
+	for (plc = 0; plc < current_small_place; plc++)
 		strcat(final_slider, "—");
-	}
 
 	strcat(final_slider, "|");
 
-	for (; plc < net_length; ++plc) {
+	for (; plc < net_length; ++plc)
 		strcat(final_slider, "—");
-	}
 
 	return final_slider;
 }
@@ -296,7 +294,7 @@ int is_charging() {
 char *get_brightness_slider() {
 	FILE *brightness_file, *max_brightness_file;
 	int brightness, max_brightness, percent_brightness;
-	static char slider[10] = " ";
+	static char slider[21] = " ";
 
 	brightness_file = fopen("/sys/class/backlight/intel_backlight/brightness", "r");
 	max_brightness_file = fopen("/sys/class/backlight/intel_backlight/max_brightness", "r");
