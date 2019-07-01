@@ -208,7 +208,8 @@ failed_alloc:
 
 	if (tmp_status == NULL)
 		free(tmp_status);
-	else if (return_window_status == NULL)
+
+	if (return_window_status == NULL)
 		free(return_window_status);
 
 	return NULL;
