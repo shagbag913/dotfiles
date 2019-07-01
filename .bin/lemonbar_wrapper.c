@@ -158,13 +158,12 @@ void *build_bspwm_status() {
 			tmp_status = return_window_status;
 			return_window_status = realloc(return_window_status,
 					strlen(return_window_status) + 10 +
-					(index >= 10 ? 32 : 31) + (active_window ? 26 : 0) + 1);
+					(index >= 10 ? 32 : 31) + (active_window ? 26 : 0) + 2);
 
 			if (return_window_status == NULL) {
 				free(tmp_status);
 				goto failed_alloc;
 			}
-
 
 			// Add underline under active windows
 			if (active_window)
