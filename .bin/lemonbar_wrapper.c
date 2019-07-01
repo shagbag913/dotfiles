@@ -205,13 +205,6 @@ void *build_bspwm_status() {
 
 failed_alloc:
 	printf("%s: Memory allocation failed!\n", __func__);
-
-	if (tmp_status == NULL)
-		free(tmp_status);
-
-	if (return_window_status == NULL)
-		free(return_window_status);
-
 	return NULL;
 }
 
