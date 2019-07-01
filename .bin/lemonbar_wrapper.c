@@ -153,7 +153,7 @@ void *realloc_free_fail(void *ptr, int bytes) {
  */
 void *build_bspwm_status() {
 	int active_window, bg_window, rs_empty, index = 0;
-	char *delim_ptr, wm_status[90], glyph[] = "";
+	char *delim_ptr, wm_status[56], glyph[] = "";
 	char grey_glyph[] = "%{F#a5a5a5}%{F-}", space[] = "    ";
 	char *return_window_status, click_command[27];
 	FILE *bspwm_status;
