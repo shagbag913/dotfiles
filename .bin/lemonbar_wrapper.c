@@ -142,6 +142,9 @@ void *build_bspwm_status() {
 
 	return_window_status = malloc(2);
 
+	if (return_window_status == NULL)
+		goto failed_alloc;
+
 	strcpy(return_window_status, "\0");
 
 	bspwm_status = popen("bspc wm --get-status", "r");
