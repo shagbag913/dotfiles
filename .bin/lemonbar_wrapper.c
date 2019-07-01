@@ -94,11 +94,15 @@ char *build_slider(int current_place) {
 	int net_length = 5, plc;
 	int current_small_place = (float) current_place / (float) (100 / net_length);
 
-	for (plc = 0; plc < current_small_place; plc++)
+	for (plc = 0; plc < current_small_place; plc++) {
 		strcat(final_slider, "—");
+	}
+
 	strcat(final_slider, "|");
-	for (; plc < net_length; ++plc)
+
+	for (; plc < net_length; ++plc) {
 		strcat(final_slider, "—");
+	}
 
 	return final_slider;
 }
