@@ -65,7 +65,7 @@ seperate() {
 
 while :; do $WRAPPER --time; sleep 10; done > $FIFO &
 while :; do $WRAPPER --used-memory-percentage; sleep 10; done > $FIFO &
-while :; do $WRAPPER --bspwm-status; sleep .15; done > $FIFO &
+while :; do $WRAPPER --bspwm-status; sleep .1; done > $FIFO &
 while :; do $WRAPPER --network-status; sleep 10; done > $FIFO &
 while :; do $WRAPPER --brightness-slider; sleep .6; done > $FIFO &
 while :; do $WRAPPER --charge-glyph; sleep 2; done > $FIFO &
