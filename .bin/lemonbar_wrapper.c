@@ -137,7 +137,7 @@ char *get_formatted_time() {
  */
 void *build_bspwm_status() {
 	int active_window, bg_window, index = 0;
-	char *delim_ptr, *return_window_status, *tmp_status, wm_status[56];
+	char *delim_ptr, *return_window_status, *tmp_status, wm_status[80];
 	FILE *bspwm_status;
 
 	return_window_status = malloc(2);
