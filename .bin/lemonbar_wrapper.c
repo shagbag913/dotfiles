@@ -27,35 +27,29 @@ enum {
 	UNAVAILABLE = -1
 };
 
-char *build_volume_slider(int volume);
+char *build_slider(int current_place);
+char *build_volume_slider();
 char *get_battery_glyph();
 char *get_brightness_slider();
 char *get_formatted_time();
 char *get_network_status();
 void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
+int get_charge();
+int get_volume_level();
+int is_charging();
+int is_volume_muted();
 
 int main(int argc, char *argv[]) {
-	int max_args = 2, min_args = 2;
 
 	/*
 	 * Handle arguments.
 	 */
-	if (argc >= min_args) {
-		if (strcmp(argv[1], "--build-slider") == 0) {
-			++max_args;
-			++min_args;
-		}
-
-		if (argc < min_args) {
-			printf("Not enough arguments specified. You must specify one argument.\n");
-			return 1;
-		} else if (argc > max_args) {
-			printf("Too many arguments specified. Only specify one argument.\n");
-			return 1;
-		}
-	} else {
+	if (argc < 2) {
 		printf("Not enough arguments specified. You must specify one argument.\n");
+		return 1;
+	} else if (argc > 2) {
+		printf("Too many arguments specified. Only specify one argument.\n");
 		return 1;
 	}
 
@@ -82,7 +76,7 @@ int main(int argc, char *argv[]) {
 	} else if (strcmp(argv[1], "--network-status") == 0) {
 		printf("network-status%s\n", get_network_status());
 	} else if (strcmp(argv[1], "--volume-slider") == 0) {
-		printf("volume-slider%s\n", build_volume_slider(get_volume_level()));
+		printf("volume-slider%s\n", build_volume_slider());
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
@@ -451,8 +445,10 @@ int is_volume_muted() {
 /*
  * Returns visual volume slider with glyph indicating volume level / status.
  */
-char *build_volume_slider(int volume) {
+char *build_volume_slider() {
 	static char return_slider[22];
+
+	int volume = get_volume_level();
 
 	if (is_volume_muted())
 		sprintf(return_slider, "  %s", build_slider(volume));
