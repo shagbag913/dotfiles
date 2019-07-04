@@ -1,11 +1,16 @@
 /*
  * Lemonbar wrapper.
  */
+#include <alsa/asoundlib.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+/* Audio devices for fetching volume */
+const char *card = "pulse";
+const char *selem_name = "Master";
 
 struct meminfo {
 	int total;
@@ -23,12 +28,15 @@ enum {
 };
 
 char *build_slider(int current_place);
+char *build_volume_slider(int volume);
 char *get_battery_glyph();
 char *get_brightness_slider();
 char *get_formatted_time();
 char *get_network_status();
 int get_charge();
+int get_volume_level();
 int is_charging();
+int is_volume_muted();
 void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
 
@@ -67,19 +75,19 @@ int main(int argc, char *argv[]) {
 		char *bspwm_status = build_bspwm_status();
 
 		// Only do these if build_bspwm_status doesn't return NULL, in case memory allocation fails.
-                if (bspwm_status != NULL) {
+		if (bspwm_status != NULL) {
 			printf("bspwm-status%s\n", bspwm_status);
 			free(bspwm_status);
-                }
+		}
 
 	} else if (strcmp(argv[1], "--charge-glyph") == 0) {
 		printf("charge-glyph%s\n", get_battery_glyph());
-	} else if (strcmp(argv[1], "--build-slider") == 0) {
-		printf("%s\n", build_slider(atoi(argv[2])));
 	} else if (strcmp(argv[1], "--brightness-slider") == 0) {
 		printf("brightness-slider%s\n", get_brightness_slider());
 	} else if (strcmp(argv[1], "--network-status") == 0) {
 		printf("network-status%s\n", get_network_status());
+	} else if (strcmp(argv[1], "--volume-slider") == 0) {
+		printf("volume-slider%s\n", build_volume_slider(get_volume_level()));
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
@@ -364,9 +372,9 @@ char *get_network_status() {
 	if (wifi_operstate != NULL) {
 		fscanf(wifi_operstate, "%s", wstate);
 		fclose(wifi_operstate);
-        }
+	}
 
-        if (ethernet_operstate != NULL) {
+	if (ethernet_operstate != NULL) {
 		fscanf(ethernet_operstate, "%s", estate);
 		fclose(ethernet_operstate);
 	}
@@ -379,4 +387,68 @@ char *get_network_status() {
 		return "";
 
 	return "";
+}
+
+/*
+ * Returns PulseAudio volume in percentage.
+ */
+int get_volume_level() {
+	long volume, min, max;
+
+	snd_mixer_t *handle;
+	snd_mixer_selem_id_t *sid;
+
+	snd_mixer_open(&handle, 0);
+	snd_mixer_attach(handle, card);
+	snd_mixer_selem_register(handle, NULL, NULL);
+	snd_mixer_load(handle);
+
+	snd_mixer_selem_id_alloca(&sid);
+	snd_mixer_selem_id_set_index(sid, 0);
+	snd_mixer_selem_id_set_name(sid, selem_name);
+	snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
+
+	snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_LEFT, &volume);
+	snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
+
+	snd_mixer_close(handle);
+
+	return round((float) volume / (float) max * 100);
+
+}
+
+/*
+ * Returns whether playback is enabled or not.
+ */
+int is_volume_muted() {
+	int muted;
+	snd_mixer_t *handle;
+	snd_mixer_selem_id_t *sid;
+
+	snd_mixer_open(&handle, 0);
+	snd_mixer_attach(handle, card);
+	snd_mixer_selem_register(handle, NULL, NULL);
+	snd_mixer_load(handle);
+
+	snd_mixer_selem_id_alloca(&sid);
+	snd_mixer_selem_id_set_index(sid, 0);
+	snd_mixer_selem_id_set_name(sid, selem_name);
+	snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
+
+	snd_mixer_selem_get_playback_switch(elem, SND_MIXER_SCHN_FRONT_LEFT, &muted);
+
+	return !muted;
+}
+
+/*
+ * Returns visual volume slider with glyph indicating volume level / status.
+ */
+char *build_volume_slider(int volume) {
+	static char return_slider[22];
+
+	if (is_volume_muted())
+		sprintf(return_slider, "  %s", build_slider(volume));
+	else
+		sprintf(return_slider, "  %s", build_slider(volume));
+	return return_slider;
 }

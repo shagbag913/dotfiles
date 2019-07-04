@@ -10,7 +10,7 @@ WRAPPER=$HOME/.bin/lemonbar_wrapper
 # Check if the wrapper for this is compiled
 if [ ! -f "$WRAPPER" ]; then
     cd $HOME/.bin
-    gcc -lm -o lemonbar_wrapper lemonbar_wrapper.c
+    gcc -lm -lasound -o lemonbar_wrapper lemonbar_wrapper.c
     cd -
 fi
 
@@ -30,30 +30,6 @@ FIFO=/tmp/lemonfifo
 [ -e $FIFO ] && rm $FIFO
 mkfifo $FIFO
 
-# Check if `amixer` is available
-command -v amixer && VOLUME_AVAILABLE=true
-
-get_volume() {
-    local slider
-    local current_volume="$(amixer -D pulse get Master | awk -F'[][%]' 'END{print $2,$5}')"
-    local is_muted=$(echo "$current_volume" | grep off)
-    set -- $current_volume
-    current_volume=$1
-    local icon_array='  '
-
-    set -- $icon_array
-
-    if [ -n "$is_muted" ] || [ $current_volume = 0 ]; then
-        glyph=$1
-    elif [ $current_volume -le 50 ]; then
-        glyph=$2
-    else
-        glyph=$3
-    fi
-
-    echo "get_volume$glyph  $($WRAPPER --build-slider $current_volume)"
-}
-
 seperate() {
     local items
     for i in "$@"; do
@@ -69,11 +45,7 @@ while :; do $WRAPPER --bspwm-status; sleep .1; done > $FIFO &
 while :; do $WRAPPER --network-status; sleep 10; done > $FIFO &
 while :; do $WRAPPER --brightness-slider; sleep .6; done > $FIFO &
 while :; do $WRAPPER --charge-glyph; sleep 2; done > $FIFO &
-
-# Only run if amixer is available
-if [ "$VOLUME_AVAILABLE" = true ]; then
-    while :; do get_volume; sleep .6; done > $FIFO &
-fi
+while :; do $WRAPPER --volume-slider; sleep .6; done > $FIFO &
 
 while read -r line; do
     case $line in
@@ -95,8 +67,8 @@ while read -r line; do
         brightness-slider*)
             INTEL_BRIGHTNESS=$(echo "$line" | tail -c+18)
             ;;
-        get_volume*)
-            VOLUME=$(echo "$line" | tail -c+11)
+        volume-slider*)
+            VOLUME=$(echo "$line" | tail -c+14)
             ;;
     esac
     echo "%{l}$(seperate "$TIME")%{c}$BSPWM_STATUS%{r}$(seperate "$VOLUME" "$INTEL_BRIGHTNESS" "$MEMORY_USAGE" "$NETWORK_STATUS" "$BATTERY")    "
