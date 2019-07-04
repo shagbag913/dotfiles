@@ -27,16 +27,11 @@ enum {
 	UNAVAILABLE = -1
 };
 
-char *build_slider(int current_place);
 char *build_volume_slider(int volume);
 char *get_battery_glyph();
 char *get_brightness_slider();
 char *get_formatted_time();
 char *get_network_status();
-int get_charge();
-int get_volume_level();
-int is_charging();
-int is_volume_muted();
 void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
 
