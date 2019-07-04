@@ -276,26 +276,39 @@ int is_charging() {
 }
 
 /*
- * Returns a brightness slider for Intel drivers.
+ * Returns brightness level in a range from 0 to 100.
  */
-char *get_brightness_slider() {
+int get_brightness() {
 	FILE *brightness_file, *max_brightness_file;
 	int brightness, max_brightness, percent_brightness;
-	static char slider[21] = " ";
 
 	brightness_file = fopen("/sys/class/backlight/intel_backlight/brightness", "r");
 	max_brightness_file = fopen("/sys/class/backlight/intel_backlight/max_brightness", "r");
 
 	if (brightness_file == NULL || max_brightness_file == NULL)
-		return "";
+		return UNAVAILABLE;
 
 	fscanf(brightness_file, "%i", &brightness);
 	fscanf(max_brightness_file, "%i", &max_brightness);
 	fclose(brightness_file);
 	fclose(max_brightness_file);
 
-	percent_brightness = round((float) brightness / (float) max_brightness * 100);
-	strcat(slider, build_slider(percent_brightness));
+	return round((float) brightness / (float) max_brightness * 100);
+}
+
+/*
+ * Returns a brightness slider.
+ */
+char *get_brightness_slider() {
+	static char slider[21] = " ";
+	int brightness;
+
+	brightness = get_brightness();
+
+	if (brightness == UNAVAILABLE)
+		return "";
+
+	strcat(slider, build_slider(brightness));
 
 	return slider;
 }
