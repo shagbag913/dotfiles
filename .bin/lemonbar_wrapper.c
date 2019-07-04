@@ -172,17 +172,9 @@ void *build_bspwm_status() {
 			if (active_window)
 				strcat(return_window_status, "%{+u}%{U#ffffff}");
 
-			// Temporary string identical to return_window_status for sprintf
-			tmp_status = malloc(strlen(return_window_status) + 1);
-
-			if (tmp_status == NULL)
-				goto failed_alloc;
-
-			strcpy(tmp_status, return_window_status);
-			sprintf(return_window_status, "%s%%{A:bspc desktop -f ^%i:}      %i", tmp_status, index, index);
-			free(tmp_status);
-
-			strcat(return_window_status, "      %{A}");
+			sprintf(return_window_status,
+					"%s%%{A:bspc desktop -f ^%i:}      %i      %%{A}",
+					return_window_status, index, index);
 
 			if (active_window)
 				strcat(return_window_status, "%{U-}%{-u}");
