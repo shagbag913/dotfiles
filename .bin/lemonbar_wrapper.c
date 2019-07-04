@@ -450,5 +450,6 @@ char *build_volume_slider(int volume) {
 		sprintf(return_slider, "  %s", build_slider(volume));
 	else
 		sprintf(return_slider, "  %s", build_slider(volume));
+
 	return return_slider;
 }
