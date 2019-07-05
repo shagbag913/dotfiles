@@ -42,7 +42,7 @@ void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
 int get_charge();
 int is_charging();
-struct volume *get_volume();
+struct volume get_volume();
 
 int main(int argc, char *argv[]) {
 
@@ -398,11 +398,10 @@ char *get_network_status() {
 /*
  * Returns PulseAudio volume in percentage.
  */
-struct volume *get_volume() {
+struct volume get_volume() {
 	long volume, min, max;
 	int muted;
-
-	struct volume *volinfo = malloc(sizeof(struct volume));
+	struct volume volinfo;
 
 	snd_mixer_t *handle;
 	snd_mixer_selem_id_t *sid;
@@ -423,8 +422,8 @@ struct volume *get_volume() {
 
 	snd_mixer_close(handle);
 
-	volinfo->level = round((float) volume / (float) max * 100);
-	volinfo->muted = muted;
+	volinfo.level = round((float) volume / (float) max * 100);
+	volinfo.muted = muted;
 
 	return volinfo;
 }
@@ -435,12 +434,12 @@ struct volume *get_volume() {
 char *build_volume_slider() {
 	static char return_slider[22];
 
-	struct volume *volinfo = get_volume();
+	struct volume volinfo = get_volume();
 
-	if (volinfo->muted == 1)
-		sprintf(return_slider, "  %s", build_slider(volinfo->level));
+	if (volinfo.muted == 1)
+		sprintf(return_slider, "  %s", build_slider(volinfo.level));
 	else
-		sprintf(return_slider, "  %s", build_slider(volinfo->level));
+		sprintf(return_slider, "  %s", build_slider(volinfo.level));
 
 	return return_slider;
 }
