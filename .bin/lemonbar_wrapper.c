@@ -23,6 +23,11 @@ struct meminfo {
 	int sreclaimable;
 };
 
+struct volume {
+	int muted;
+	int level;
+};
+
 enum {
 	UNAVAILABLE = -1
 };
@@ -36,9 +41,8 @@ char *get_network_status();
 void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
 int get_charge();
-int get_volume_level();
 int is_charging();
-int is_volume_muted();
+struct volume *get_volume();
 
 int main(int argc, char *argv[]) {
 
@@ -394,8 +398,11 @@ char *get_network_status() {
 /*
  * Returns PulseAudio volume in percentage.
  */
-int get_volume_level() {
+struct volume *get_volume() {
 	long volume, min, max;
+	int muted;
+
+	struct volume *volinfo = malloc(sizeof(struct volume));
 
 	snd_mixer_t *handle;
 	snd_mixer_selem_id_t *sid;
@@ -412,34 +419,14 @@ int get_volume_level() {
 
 	snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_LEFT, &volume);
 	snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
+	snd_mixer_selem_get_playback_switch(elem, SND_MIXER_SCHN_FRONT_LEFT, &muted);
 
 	snd_mixer_close(handle);
 
-	return round((float) volume / (float) max * 100);
+	volinfo->level = round((float) volume / (float) max * 100);
+	volinfo->muted = muted;
 
-}
-
-/*
- * Returns whether playback is enabled or not.
- */
-int is_volume_muted() {
-	int muted;
-	snd_mixer_t *handle;
-	snd_mixer_selem_id_t *sid;
-
-	snd_mixer_open(&handle, 0);
-	snd_mixer_attach(handle, card);
-	snd_mixer_selem_register(handle, NULL, NULL);
-	snd_mixer_load(handle);
-
-	snd_mixer_selem_id_alloca(&sid);
-	snd_mixer_selem_id_set_index(sid, 0);
-	snd_mixer_selem_id_set_name(sid, selem_name);
-	snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
-
-	snd_mixer_selem_get_playback_switch(elem, SND_MIXER_SCHN_FRONT_LEFT, &muted);
-
-	return !muted;
+	return volinfo;
 }
 
 /*
@@ -448,12 +435,12 @@ int is_volume_muted() {
 char *build_volume_slider() {
 	static char return_slider[22];
 
-	int volume = get_volume_level();
+	struct volume *volinfo = get_volume();
 
-	if (is_volume_muted())
-		sprintf(return_slider, "  %s", build_slider(volume));
+	if (volinfo->muted == 1)
+		sprintf(return_slider, "  %s", build_slider(volinfo->level));
 	else
-		sprintf(return_slider, "  %s", build_slider(volume));
+		sprintf(return_slider, "  %s", build_slider(volinfo->level));
 
 	return return_slider;
 }
