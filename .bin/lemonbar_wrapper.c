@@ -423,7 +423,7 @@ struct volume get_volume() {
 	snd_mixer_close(handle);
 
 	volinfo.level = round((float) volume / (float) max * 100);
-	volinfo.muted = muted;
+	volinfo.muted = !muted;
 
 	return volinfo;
 }
@@ -436,7 +436,7 @@ char *build_volume_slider() {
 
 	struct volume volinfo = get_volume();
 
-	if (volinfo.muted == 1)
+	if (volinfo.muted)
 		sprintf(return_slider, "  %s", build_slider(volinfo.level));
 	else
 		sprintf(return_slider, "  %s", build_slider(volinfo.level));
