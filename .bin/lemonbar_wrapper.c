@@ -312,7 +312,7 @@ char *get_brightness_slider() {
 void mem_stats(struct meminfo *mi) {
 	FILE *meminfo;
 	char file_content[100];
-	int loc;
+	int loc = 0;
 
 	meminfo = fopen("/proc/meminfo", "r");
 
