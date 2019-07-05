@@ -436,7 +436,7 @@ char *build_volume_slider() {
 
 	struct volume volinfo = get_volume();
 
-	if (volinfo.muted)
+	if (volinfo.muted || volinfo.level == 0)
 		sprintf(return_slider, "  %s", build_slider(volinfo.level));
 	else
 		sprintf(return_slider, "  %s", build_slider(volinfo.level));
