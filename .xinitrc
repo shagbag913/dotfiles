@@ -3,6 +3,8 @@ if [[ $(hostname) == ShagBook ]]; then
     for mf in 'Middle Emulation' 'Natural Scrolling' 'Tapping'; do
         xinput set-prop "Elan Touchpad" "libinput $mf Enabled" 1 &
     done &
+else
+     while :; do if xrandr --output HDMI-0 --mode 1600x900; then break; fi; done &
 fi
 xsetroot -cursor_name top_left_arrow
 exec bspwm
