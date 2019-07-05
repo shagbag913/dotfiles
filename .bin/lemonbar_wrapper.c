@@ -273,7 +273,7 @@ int is_charging() {
  */
 int get_brightness() {
 	FILE *brightness_file, *max_brightness_file;
-	int brightness, max_brightness, percent_brightness;
+	int brightness, max_brightness;
 
 	brightness_file = fopen("/sys/class/backlight/intel_backlight/brightness", "r");
 	max_brightness_file = fopen("/sys/class/backlight/intel_backlight/max_brightness", "r");
