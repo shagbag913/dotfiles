@@ -3,7 +3,7 @@
 sleep 3 && sxhkd &
 compton &
 dunst &
-kill $(ps -xe | awk '/lemon/{print $1}'); $HOME/.bin/lemon &
+kill $(ps -xe | awk '/lemon/{print $1}'); $HOME/.bin/lemonbar_wrapper &
 sleep 2; xdo above -t $(xdo id -n root) $(xdo id -n lemonbar) &
 nitrogen --restore
 

@@ -16,8 +16,8 @@
 !.bin/deldog
 !.bin/elapsed
 !.bin/getimages
-!.bin/lemon
-!.bin/lemonbar_wrapper.c
+!.bin/lemonbar_wrapper
+!.bin/lemonbar_utils.c
 !.bin/nfetch
 !.bin/vim
 !.bin/reinit_mouse

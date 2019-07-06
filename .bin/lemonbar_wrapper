@@ -5,12 +5,12 @@
 #             a lemonbar fork with xft font compatibility.
 #
 
-WRAPPER=$HOME/.bin/lemonbar_wrapper
+UTILS=$HOME/.bin/lemonbar_utils
 
 # Check if the wrapper for this is compiled
-if [ ! -f "$WRAPPER" ]; then
+if [ ! -f "$UTILS" ]; then
     cd $HOME/.bin
-    gcc -lm -lasound -o lemonbar_wrapper lemonbar_wrapper.c
+    gcc -lm -lasound -o lemonbar_utils lemonbar_utils.c
     cd -
 fi
 
@@ -39,13 +39,13 @@ seperate() {
     echo "$items" | sed 's/ \+|//'
 }
 
-while :; do $WRAPPER --time; sleep 10; done > $FIFO &
-while :; do $WRAPPER --used-memory-percentage; sleep 10; done > $FIFO &
-while :; do $WRAPPER --bspwm-status; sleep .1; done > $FIFO &
-while :; do $WRAPPER --network-status; sleep 10; done > $FIFO &
-while :; do $WRAPPER --brightness-slider; sleep 1; done > $FIFO &
-while :; do $WRAPPER --charge-glyph; sleep 2; done > $FIFO &
-while :; do $WRAPPER --volume-slider; sleep 1; done > $FIFO &
+while :; do $UTILS --time; sleep 10; done > $FIFO &
+while :; do $UTILS --used-memory-percentage; sleep 10; done > $FIFO &
+while :; do $UTILS --bspwm-status; sleep .1; done > $FIFO &
+while :; do $UTILS --network-status; sleep 10; done > $FIFO &
+while :; do $UTILS --brightness-slider; sleep 1; done > $FIFO &
+while :; do $UTILS --charge-glyph; sleep 2; done > $FIFO &
+while :; do $UTILS --volume-slider; sleep 1; done > $FIFO &
 
 while read -r line; do
     case $line in
