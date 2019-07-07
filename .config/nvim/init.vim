@@ -22,6 +22,7 @@ nnoremap <silent> <C-w> :noh<CR>
 call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'farmergreg/vim-lastplace'
+Plug 'jiangmiao/auto-pairs'
 call plug#end()
 
 " Use tab for trigger completion with characters ahead and navigate.
