@@ -211,7 +211,7 @@ char *get_battery_glyph() {
 	} else if (charge >= 15) {
 		strcat(status, "");
 	} else {
-		if (charging != 0)
+		if (!charging)
 			strcat(status, "%{F#FF3838}");
 		strcat(status, "");
 	}
@@ -221,7 +221,7 @@ char *get_battery_glyph() {
 
 	sprintf(status, "%s  %i%%", status, charge);
 
-	if (charging == 0)
+	if (charging)
 		strcat(status, "+");
 
 	return status;
@@ -262,7 +262,7 @@ int is_charging() {
 	fscanf(status_file, "%s", status);
 	fclose(status_file);
 
-	return strcmp(status, "Charging");
+	return strcmp(status, "Discharging");
 }
 
 /*
