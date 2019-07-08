@@ -197,37 +197,34 @@ failed_alloc:
  */
 char *get_battery_glyph() {
 	int charging = is_charging(), charge = get_charge();
-	static char glyph[20] = "\0";
+	static char status[25] = "\0";
 
 	if (charge == -1)
 		return "";
 
-	if (charging == 0)
-		strcat(glyph, "%{F#A1FFA2}");
-
 	if (charge >= 90) {
-		strcat(glyph, "");
+		strcat(status, "");
 	} else if (charge >= 70) {
-		strcat(glyph, "");
+		strcat(status, "");
 	} else if (charge >= 45) {
-		strcat(glyph, "");
-	} else if (charge >= 20) {
-		strcat(glyph, "");
+		strcat(status, "");
+	} else if (charge >= 15) {
+		strcat(status, "");
 	} else {
-		if (charging != 0) {
-			if (charge >= 10)
-				strcat(glyph, "%{F#FF7575}");
-			else
-				strcat(glyph, "%{F#FF3838}");
-		}
-
-		strcat(glyph, "");
+		if (charging != 0)
+			strcat(status, "%{F#FF3838}");
+		strcat(status, "");
 	}
 
-	if (glyph[0] == '%')
-		strcat(glyph, "%{F-}");
+	if (status[0] == '%')
+		strcat(status, "%{F-}");
 
-	return glyph;
+	sprintf(status, "%s  %i%%", status, charge);
+
+	if (charging == 0)
+		strcat(status, "+");
+
+	return status;
 }
 
 /*
