@@ -71,7 +71,7 @@ while read -r line; do
             VOLUME=$(echo "$line" | tail -c+14)
             ;;
     esac
-    echo "%{l}$(seperate "$TIME")%{c}$BSPWM_STATUS%{r}$(seperate "$VOLUME" "$INTEL_BRIGHTNESS" "$MEMORY_USAGE" "$NETWORK_STATUS" "$BATTERY")    "
+    echo "%{l}$(seperate "$TIME")%{c}$BSPWM_STATUS%{r}$(seperate "$VOLUME" "$INTEL_BRIGHTNESS" "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
 done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
