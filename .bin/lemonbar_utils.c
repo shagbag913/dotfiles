@@ -28,27 +28,21 @@ struct volume {
 	int level;
 };
 
-enum {
-	UNAVAILABLE = -1
-};
+enum {UNAVAILABLE = -1};
 
 char *build_slider(int current_place);
 char *build_volume_slider();
-char *get_battery_glyph();
-char *get_brightness_slider();
-char *get_formatted_time();
-char *get_network_status();
+char *battery_status();
+char *build_brightness_slider();
+char *formatted_time();
+char *network_status();
 void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
 int get_charge();
 int is_charging();
-struct volume get_volume();
+struct volume volume_info();
 
 int main(int argc, char *argv[]) {
-
-	/*
-	 * Handle arguments.
-	 */
 	if (argc < 2) {
 		printf("Not enough arguments specified. You must specify one argument.\n");
 		return 1;
@@ -57,28 +51,25 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-
 	if (strcmp(argv[1], "--used-memory-percentage") == 0) {
 		struct meminfo mi;
 		mem_stats(&mi);
 		printf("used-memory-percentage  %i%%\n", mi.percentage_used);
 	} else if (strcmp(argv[1], "--time") == 0) {
-		printf("time%s\n", get_formatted_time());
+		printf("time%s\n", formatted_time());
 	} else if (strcmp(argv[1], "--bspwm-status") == 0) {
 		char *bspwm_status = build_bspwm_status();
 
-		// Only do these if build_bspwm_status doesn't return NULL, in case memory allocation fails.
 		if (bspwm_status != NULL) {
 			printf("bspwm-status%s\n", bspwm_status);
 			free(bspwm_status);
 		}
-
 	} else if (strcmp(argv[1], "--charge-glyph") == 0) {
-		printf("charge-glyph%s\n", get_battery_glyph());
+		printf("charge-glyph%s\n", battery_status());
 	} else if (strcmp(argv[1], "--brightness-slider") == 0) {
-		printf("brightness-slider%s\n", get_brightness_slider());
+		printf("brightness-slider%s\n", build_brightness_slider());
 	} else if (strcmp(argv[1], "--network-status") == 0) {
-		printf("network-status%s\n", get_network_status());
+		printf("network-status%s\n", network_status());
 	} else if (strcmp(argv[1], "--volume-slider") == 0) {
 		printf("volume-slider%s\n", build_volume_slider());
 	} else {
@@ -110,7 +101,7 @@ char *build_slider(int current_place) {
  * Returns a char array with the 12 hour time in the following format:
  * HH:MM AM/PM
  */
-char *get_formatted_time() {
+char *formatted_time() {
 	static char formatted_time[20];
 	char amorpm[3];
 
@@ -195,11 +186,11 @@ failed_alloc:
 /*
  * Returns a glyph showing current battery charge status.
  */
-char *get_battery_glyph() {
+char *battery_status() {
 	int charging = is_charging(), charge = get_charge();
 	static char status[25] = "\0";
 
-	if (charge == -1)
+	if (charge == UNAVAILABLE)
 		return "";
 
 	if (charge >= 90) {
@@ -268,7 +259,7 @@ int is_charging() {
 /*
  * Returns brightness level in a range from 0 to 100.
  */
-int get_brightness() {
+int current_brightness_level() {
 	FILE *brightness_file, *max_brightness_file;
 	int brightness, max_brightness;
 
@@ -289,11 +280,9 @@ int get_brightness() {
 /*
  * Returns a brightness slider.
  */
-char *get_brightness_slider() {
+char *build_brightness_slider() {
 	static char slider[21] = " ";
-	int brightness;
-
-	brightness = get_brightness();
+	int brightness = current_brightness_level();
 
 	if (brightness == UNAVAILABLE)
 		return "";
@@ -365,7 +354,7 @@ void mem_stats(struct meminfo *mi) {
  * - Connected to Ethernet: wired connection glyph
  * - Else: no output
  */
-char *get_network_status() {
+char *network_status() {
 	FILE *wifi_operstate, *ethernet_operstate;
 	static char wstate[5], estate[5];
 
@@ -395,9 +384,8 @@ char *get_network_status() {
 /*
  * Returns PulseAudio volume in percentage.
  */
-struct volume get_volume() {
+struct volume volume_info() {
 	long volume, min, max;
-	int muted;
 	struct volume volinfo;
 
 	snd_mixer_t *handle;
@@ -415,12 +403,14 @@ struct volume get_volume() {
 
 	snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_LEFT, &volume);
 	snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-	snd_mixer_selem_get_playback_switch(elem, SND_MIXER_SCHN_FRONT_LEFT, &muted);
+	snd_mixer_selem_get_playback_switch(elem, SND_MIXER_SCHN_FRONT_LEFT, &volinfo.muted);
 
 	snd_mixer_close(handle);
 
 	volinfo.level = round((float) volume / (float) max * 100);
-	volinfo.muted = !muted;
+
+	// Invert this value
+	volinfo.muted = !volinfo.muted;
 
 	return volinfo;
 }
@@ -430,8 +420,7 @@ struct volume get_volume() {
  */
 char *build_volume_slider() {
 	static char return_slider[22];
-
-	struct volume volinfo = get_volume();
+	struct volume volinfo = volume_info();
 
 	if (volinfo.muted || volinfo.level == 0)
 		sprintf(return_slider, "  %s", build_slider(volinfo.level));
