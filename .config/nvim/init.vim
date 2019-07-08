@@ -25,6 +25,10 @@ Plug 'farmergreg/vim-lastplace'
 Plug 'jiangmiao/auto-pairs'
 call plug#end()
 
+"Persistent undo
+set undofile
+set undodir=$HOME/.vimundo
+
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
 inoremap <silent><expr> <TAB>
