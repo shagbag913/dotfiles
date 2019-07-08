@@ -41,7 +41,7 @@ seperate() {
 
 while :; do $UTILS --time; sleep 10; done > $FIFO &
 while :; do $UTILS --used-memory-percentage; sleep 10; done > $FIFO &
-while :; do $UTILS --bspwm-status; sleep .1; done > $FIFO &
+while :; do $UTILS --bspwm-status; sleep .15; done > $FIFO &
 while :; do $UTILS --network-status; sleep 10; done > $FIFO &
 while :; do $UTILS --brightness-slider; sleep 1; done > $FIFO &
 while :; do $UTILS --charge-glyph; sleep 4; done > $FIFO &
