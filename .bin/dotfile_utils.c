@@ -133,6 +133,9 @@ int main(int argc, char *argv[]) {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
 	}
+
+	return 0;
+
 not_enough_args:
 	printf("Not enough arguments specified. You must specify one argument.\n");
 	return 1;
