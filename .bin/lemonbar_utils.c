@@ -43,23 +43,55 @@ char *build_brightness_slider();
 char *formatted_time();
 char *network_status();
 void *build_bspwm_status();
-void mem_stats(struct meminfo *mi);
+struct meminfo mem_stats();
 int get_charge();
 int is_charging();
 float kb_to_gb(int kb);
 
 int main(int argc, char *argv[]) {
-	if (argc < 2) {
-		printf("Not enough arguments specified. You must specify one argument.\n");
-		return 1;
+	if (argc < 2)
+		goto not_enough_args;
+
+	if (strcmp(argv[1], "--memory") == 0) {
+		char ret[20];
+		float amount = 0;
+		int use_gb = 0, use_total_pct = 0;
+		struct meminfo mi = mem_stats();
+
+		for (int iter = 0; iter < argc; iter++) {
+			if (strcmp(argv[iter], "--gigabytes") == 0)
+				use_gb = 1;
+			else if (strcmp(argv[iter], "--percentage-total") == 0)
+				use_total_pct = 1;
+		}
+
+		if (argc >= 3) {
+			if (strcmp(argv[2], "used") == 0)
+				amount = mi.used;
+			else if (strcmp(argv[2], "total") == 0)
+				amount = mi.total;
+			else if (strcmp(argv[2], "free") == 0)
+				amount = mi.free;
+
+			if (use_gb)
+				amount = kb_to_gb(amount);
+
+			if (use_total_pct)
+				sprintf(ret, "%0.0f", (float) amount / mi.total * 100);
+			else
+				sprintf(ret, "%0.2f", amount);
+
+			if (use_gb)
+				strcat(ret, "GB");
+
+			printf("%s\n", ret);
+			return 0;
+		} else {
+			goto not_enough_args;
+		}
 	}
 
-	if (strcmp(argv[1], "--used-memory-percentage") == 0) {
-		struct meminfo mi;
-		mem_stats(&mi);
-		int percentage_used = (float) mi.used / (float) mi.total * 100;
-		printf("used-memory-percentage  %i%%\n", percentage_used);
-	} else if (strcmp(argv[1], "--time") == 0) {
+	if (strcmp(argv[1], "--time") == 0) {
 		printf("time%s\n", formatted_time());
 	} else if (strcmp(argv[1], "--bspwm-status") == 0) {
 		char *bspwm_status = build_bspwm_status();
@@ -80,18 +112,13 @@ int main(int argc, char *argv[]) {
 #endif
 	} else if (strcmp(argv[1], "--kb-to-gb") == 0) {
 		printf("%0.2fGB\n", kb_to_gb(atoi(argv[2])));
-	} else if (strcmp(argv[1], "--total-memory") == 0) {
-		struct meminfo mi;
-		mem_stats(&mi);
-		printf("%i\n", mi.total);
-	} else if (strcmp(argv[1], "--used-memory") == 0) {
-		struct meminfo mi;
-		mem_stats(&mi);
-		printf("%i\n", mi.used);
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
 	}
+not_enough_args:
+	printf("Not enough arguments specified. You must specify one argument.\n");
+	return 1;
 }
 
 /*
@@ -318,14 +345,15 @@ char *build_brightness_slider() {
 /*
  * Fills meminfo struct members.
  */
-void mem_stats(struct meminfo *mi) {
-	FILE *meminfo;
+struct meminfo mem_stats() {
+	FILE *memfile;
 	char file_content[100];
+	struct meminfo mi;
 	int loc = 0;
 
-	meminfo = fopen("/proc/meminfo", "r");
+	memfile = fopen("/proc/meminfo", "r");
 
-	while (fscanf(meminfo, "%s", file_content) != EOF) {
+	while (fscanf(memfile, "%s", file_content) != EOF) {
 		if (strcmp(file_content, "MemTotal:") == 0) {
 			loc = 1;
 			continue;
@@ -348,25 +376,27 @@ void mem_stats(struct meminfo *mi) {
 
 		switch (loc) {
 			case 1:
-				mi->total = atoi(file_content);
+				mi.total = atoi(file_content);
 			case 2:
-				mi->free = atoi(file_content);
+				mi.free = atoi(file_content);
 			case 3:
-				mi->buffers = atoi(file_content);
+				mi.buffers = atoi(file_content);
 			case 4:
-				mi->cached = atoi(file_content);
+				mi.cached = atoi(file_content);
 			case 5:
-				mi->shmem = atoi(file_content);
+				mi.shmem = atoi(file_content);
 			case 6:
-				mi->sreclaimable = atoi(file_content);
+				mi.sreclaimable = atoi(file_content);
 		}
 
 		loc = 0;
 	}
 
-	fclose(meminfo);
+	fclose(memfile);
 
-	mi->used = mi->total + mi->shmem - mi->free - mi->buffers - mi->cached - mi->sreclaimable;
+	mi.used = mi.total + mi.shmem - mi.free - mi.buffers - mi.cached - mi.sreclaimable;
+
+	return mi;
 }
 
 /* Returns network status like so:
