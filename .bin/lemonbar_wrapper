@@ -40,7 +40,7 @@ seperate() {
 }
 
 while :; do $UTILS --time; sleep 10; done > $FIFO &
-while :; do $UTILS --used-memory-percentage; sleep 10; done > $FIFO &
+while :; do $UTILS --memory used --percentage-total --glyph --prefix; sleep 10; done > $FIFO &
 while :; do $UTILS --bspwm-status; sleep .15; done > $FIFO &
 while :; do $UTILS --network-status; sleep 10; done > $FIFO &
 while :; do $UTILS --brightness-slider; sleep 1; done > $FIFO &
@@ -49,8 +49,8 @@ while :; do $UTILS --volume-slider; sleep 1; done > $FIFO &
 
 while read -r line; do
     case $line in
-        used-memory-percentage*)
-            MEMORY_USAGE=$(echo "$line" | tail -c+23)
+        memory*)
+            MEMORY_USAGE=$(echo "$line" | tail -c+7)
             ;;
         time*)
             TIME=$(echo "$line" | tail -c+5)

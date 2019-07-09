@@ -49,7 +49,7 @@ int is_charging();
 float kb_to_gb(int kb);
 
 int main(int argc, char *argv[]) {
-	int use_glyph = 0, iter;
+	int use_glyph = 0, use_prefix = 0, iter;
 
 	if (argc < 2)
 		goto not_enough_args;
@@ -57,10 +57,13 @@ int main(int argc, char *argv[]) {
 	for (iter = 0; iter < argc; iter++) {
 		if (strcmp(argv[iter], "--glyph") == 0)
 			use_glyph = 1;
+
+		if (strcmp(argv[iter], "--prefix") == 0)
+			use_prefix = 1;
 	}
 
 	if (strcmp(argv[1], "--memory") == 0) {
-		char ret[20], num[20];
+		char ret[30], num[20], prefix[30] = "memory";
 		float amount = 0;
 		int use_gb = 0, use_total_pct = 0;
 		struct meminfo mi = mem_stats();
@@ -84,8 +87,7 @@ int main(int argc, char *argv[]) {
 				amount = kb_to_gb(amount);
 
 			if (use_total_pct)
-				sprintf(num, "%0.0f%s", (float) amount / mi.total * 100,
-						use_gb ? "GB" : "KB");
+				sprintf(num, "%0.0f%%", (float) amount / mi.total * 100);
 			else
 				sprintf(num, "%0.2f%s", amount, use_gb ? "GB" : "KB");
 
@@ -93,6 +95,11 @@ int main(int argc, char *argv[]) {
 				sprintf(ret, "  %s", num);
 			else
 				strcpy(ret, num);
+
+			if (use_prefix) {
+				strcat(prefix, ret);
+				strcpy(ret, prefix);
+			}
 
 			printf("%s\n", ret);
 			return 0;
