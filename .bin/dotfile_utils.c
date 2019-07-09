@@ -49,16 +49,23 @@ int is_charging();
 float kb_to_gb(int kb);
 
 int main(int argc, char *argv[]) {
+	int use_glyph = 0, iter;
+
 	if (argc < 2)
 		goto not_enough_args;
 
+	for (iter = 0; iter < argc; iter++) {
+		if (strcmp(argv[iter], "--glyph") == 0)
+			use_glyph = 1;
+	}
+
 	if (strcmp(argv[1], "--memory") == 0) {
-		char ret[20];
+		char ret[20], num[20];
 		float amount = 0;
 		int use_gb = 0, use_total_pct = 0;
 		struct meminfo mi = mem_stats();
 
-		for (int iter = 0; iter < argc; iter++) {
+		for (iter = 0; iter < argc; iter++) {
 			if (strcmp(argv[iter], "--gigabytes") == 0)
 				use_gb = 1;
 			else if (strcmp(argv[iter], "--percentage-total") == 0)
@@ -77,12 +84,15 @@ int main(int argc, char *argv[]) {
 				amount = kb_to_gb(amount);
 
 			if (use_total_pct)
-				sprintf(ret, "%0.0f", (float) amount / mi.total * 100);
+				sprintf(num, "%0.0f%s", (float) amount / mi.total * 100,
+						use_gb ? "GB" : "KB");
 			else
-				sprintf(ret, "%0.2f", amount);
+				sprintf(num, "%0.2f%s", amount, use_gb ? "GB" : "KB");
 
-			if (use_gb)
-				strcat(ret, "GB");
+			if (use_glyph)
+				sprintf(ret, "  %s", num);
+			else
+				strcpy(ret, num);
 
 			printf("%s\n", ret);
 			return 0;
