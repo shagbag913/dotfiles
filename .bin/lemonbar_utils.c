@@ -1,16 +1,28 @@
 /*
  * Lemonbar wrapper.
  */
-#include <alsa/asoundlib.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
+#if __has_include(<alsa/asoundlib.h>)
+#include <alsa/asoundlib.h>
+
+#define SUPPORTS_ASOUNDLIB
+
 /* Audio devices for fetching volume */
 const char *card = "pulse";
 const char *selem_name = "Master";
+
+struct volume {
+	int muted;
+	int level;
+};
+
+struct volume volume_info();
+#endif
 
 struct meminfo {
 	int total;
@@ -21,11 +33,6 @@ struct meminfo {
 	int cached;
 	int shmem;
 	int sreclaimable;
-};
-
-struct volume {
-	int muted;
-	int level;
 };
 
 enum {UNAVAILABLE = -1};
@@ -40,7 +47,6 @@ void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
 int get_charge();
 int is_charging();
-struct volume volume_info();
 
 int main(int argc, char *argv[]) {
 	if (argc < 2) {
@@ -70,8 +76,10 @@ int main(int argc, char *argv[]) {
 		printf("brightness-slider%s\n", build_brightness_slider());
 	} else if (strcmp(argv[1], "--network-status") == 0) {
 		printf("network-status%s\n", network_status());
+#ifdef SUPPORTS_ASOUNDLIB
 	} else if (strcmp(argv[1], "--volume-slider") == 0) {
 		printf("volume-slider%s\n", build_volume_slider());
+#endif
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
@@ -381,6 +389,7 @@ char *network_status() {
 	return "";
 }
 
+#ifdef SUPPORTS_ASOUNDLIB
 /*
  * Returns PulseAudio volume in percentage.
  */
@@ -429,3 +438,4 @@ char *build_volume_slider() {
 
 	return return_slider;
 }
+#endif
