@@ -27,7 +27,6 @@ struct volume volume_info();
 struct meminfo {
 	int total;
 	int used;
-	int percentage_used;
 	int free;
 	int buffers;
 	int cached;
@@ -60,7 +59,8 @@ int main(int argc, char *argv[]) {
 	if (strcmp(argv[1], "--used-memory-percentage") == 0) {
 		struct meminfo mi;
 		mem_stats(&mi);
-		printf("used-memory-percentage  %i%%\n", mi.percentage_used);
+		int percentage_used = (float) mi.used / (float) mi.total * 100;
+		printf("used-memory-percentage  %i%%\n", percentage_used);
 	} else if (strcmp(argv[1], "--time") == 0) {
 		printf("time%s\n", formatted_time());
 	} else if (strcmp(argv[1], "--bspwm-status") == 0) {
@@ -352,7 +352,6 @@ void mem_stats(struct meminfo *mi) {
 	fclose(meminfo);
 
 	mi->used = mi->total + mi->shmem - mi->free - mi->buffers - mi->cached - mi->sreclaimable;
-	mi->percentage_used = (float) mi->used / (float) mi->total * 100;
 }
 
 /* Returns network status like so:
