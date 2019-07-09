@@ -46,13 +46,11 @@ void *build_bspwm_status();
 void mem_stats(struct meminfo *mi);
 int get_charge();
 int is_charging();
+float kb_to_gb(int kb);
 
 int main(int argc, char *argv[]) {
 	if (argc < 2) {
 		printf("Not enough arguments specified. You must specify one argument.\n");
-		return 1;
-	} else if (argc > 2) {
-		printf("Too many arguments specified. Only specify one argument.\n");
 		return 1;
 	}
 
@@ -80,10 +78,27 @@ int main(int argc, char *argv[]) {
 	} else if (strcmp(argv[1], "--volume-slider") == 0) {
 		printf("volume-slider%s\n", build_volume_slider());
 #endif
+	} else if (strcmp(argv[1], "--kb-to-gb") == 0) {
+		printf("%0.2fGB\n", kb_to_gb(atoi(argv[2])));
+	} else if (strcmp(argv[1], "--total-memory") == 0) {
+		struct meminfo mi;
+		mem_stats(&mi);
+		printf("%i\n", mi.total);
+	} else if (strcmp(argv[1], "--used-memory") == 0) {
+		struct meminfo mi;
+		mem_stats(&mi);
+		printf("%i\n", mi.used);
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
 	}
+}
+
+/*
+ * Converts kilobytes to gigabytes.
+ */
+float kb_to_gb(int kb) {
+	return (float) kb / 1024 / 1024;
 }
 
 /*
