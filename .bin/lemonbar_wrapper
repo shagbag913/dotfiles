@@ -5,12 +5,12 @@
 #             a lemonbar fork with xft font compatibility.
 #
 
-UTILS=$HOME/.bin/lemonbar_utils
+UTILS=$HOME/.bin/dotfile_utils
 
 # Check if the wrapper for this is compiled
 if [ ! -f "$UTILS" ]; then
     cd $HOME/.bin
-    gcc -lm -lasound -o lemonbar_utils lemonbar_utils.c
+    gcc -lm -lasound -o dotfile_utils dotfile_utils.c
     cd -
 fi
 
