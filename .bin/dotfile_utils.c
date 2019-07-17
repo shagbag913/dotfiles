@@ -24,88 +24,23 @@ struct volume {
 struct volume volume_info();
 #endif
 
-struct meminfo {
-	int total;
-	int used;
-	int free;
-	int buffers;
-	int cached;
-	int shmem;
-	int sreclaimable;
-};
-
 enum {UNAVAILABLE = -1};
 
 char *build_slider(int current_place);
 char *build_volume_slider();
 char *battery_status();
-char *build_brightness_slider();
 char *formatted_time();
 char *network_status();
 void *build_bspwm_status();
-struct meminfo mem_stats();
 int get_charge();
 int is_charging();
 float kb_to_gb(int kb);
 
 int main(int argc, char *argv[]) {
-	int use_glyph = 0, use_prefix = 0, iter;
 
-	if (argc < 2)
-		goto not_enough_args;
-
-	for (iter = 0; iter < argc; iter++) {
-		if (strcmp(argv[iter], "--glyph") == 0)
-			use_glyph = 1;
-
-		if (strcmp(argv[iter], "--prefix") == 0)
-			use_prefix = 1;
-	}
-
-	if (strcmp(argv[1], "--memory") == 0) {
-		char ret[30], num[20], prefix[30] = "memory";
-		float amount = 0;
-		int use_gb = 0, use_total_pct = 0;
-		struct meminfo mi = mem_stats();
-
-		for (iter = 0; iter < argc; iter++) {
-			if (strcmp(argv[iter], "--gigabytes") == 0)
-				use_gb = 1;
-			else if (strcmp(argv[iter], "--percentage-total") == 0)
-				use_total_pct = 1;
-		}
-
-		if (argc >= 3) {
-			if (strcmp(argv[2], "used") == 0)
-				amount = mi.used;
-			else if (strcmp(argv[2], "total") == 0)
-				amount = mi.total;
-			else if (strcmp(argv[2], "free") == 0)
-				amount = mi.free;
-
-			if (use_gb)
-				amount = kb_to_gb(amount);
-
-			if (use_total_pct)
-				sprintf(num, "%0.0f%%", (float) amount / mi.total * 100);
-			else
-				sprintf(num, "%0.2f%s", amount, use_gb ? "GB" : "KB");
-
-			if (use_glyph)
-				sprintf(ret, "  %s", num);
-			else
-				strcpy(ret, num);
-
-			if (use_prefix) {
-				strcat(prefix, ret);
-				strcpy(ret, prefix);
-			}
-
-			printf("%s\n", ret);
-			return 0;
-		} else {
-			goto not_enough_args;
-		}
+	if (argc < 2) {
+		printf("Not enough arguments specified. You must specify one argument.\n");
+		return 1;
 	}
 
 	if (strcmp(argv[1], "--time") == 0) {
@@ -119,8 +54,6 @@ int main(int argc, char *argv[]) {
 		}
 	} else if (strcmp(argv[1], "--charge-glyph") == 0) {
 		printf("charge-glyph%s\n", battery_status());
-	} else if (strcmp(argv[1], "--brightness-slider") == 0) {
-		printf("brightness-slider%s\n", build_brightness_slider());
 	} else if (strcmp(argv[1], "--network-status") == 0) {
 		printf("network-status%s\n", network_status());
 #ifdef SUPPORTS_ASOUNDLIB
@@ -133,12 +66,6 @@ int main(int argc, char *argv[]) {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
 	}
-
-	return 0;
-
-not_enough_args:
-	printf("Not enough arguments specified. You must specify one argument.\n");
-	return 1;
 }
 
 /*
@@ -324,99 +251,6 @@ int is_charging() {
 	fclose(status_file);
 
 	return strcmp(status, "Discharging");
-}
-
-/*
- * Returns brightness level in a range from 0 to 100.
- */
-int current_brightness_level() {
-	FILE *brightness_file, *max_brightness_file;
-	int brightness, max_brightness;
-
-	brightness_file = fopen("/sys/class/backlight/intel_backlight/brightness", "r");
-	max_brightness_file = fopen("/sys/class/backlight/intel_backlight/max_brightness", "r");
-
-	if (brightness_file == NULL || max_brightness_file == NULL)
-		return UNAVAILABLE;
-
-	fscanf(brightness_file, "%i", &brightness);
-	fscanf(max_brightness_file, "%i", &max_brightness);
-	fclose(brightness_file);
-	fclose(max_brightness_file);
-
-	return round((float) brightness / (float) max_brightness * 100);
-}
-
-/*
- * Returns a brightness slider.
- */
-char *build_brightness_slider() {
-	static char slider[21] = " ";
-	int brightness = current_brightness_level();
-
-	if (brightness == UNAVAILABLE)
-		return "";
-
-	strcat(slider, build_slider(brightness));
-
-	return slider;
-}
-
-/*
- * Fills meminfo struct members.
- */
-struct meminfo mem_stats() {
-	FILE *memfile;
-	char file_content[100];
-	struct meminfo mi;
-	int loc = 0;
-
-	memfile = fopen("/proc/meminfo", "r");
-
-	while (fscanf(memfile, "%s", file_content) != EOF) {
-		if (strcmp(file_content, "MemTotal:") == 0) {
-			loc = 1;
-			continue;
-		} else if (strcmp(file_content, "MemFree:") == 0) {
-			loc = 2;
-			continue;
-		} else if (strcmp(file_content, "Buffers:") == 0) {
-			loc = 3;
-			continue;
-		} else if (strcmp(file_content, "Cached:") == 0) {
-			loc = 4;
-			continue;
-		} else if (strcmp(file_content, "Shmem:") == 0) {
-			loc = 5;
-			continue;
-		} else if (strcmp(file_content, "SReclaimable:") == 0) {
-			loc = 6;
-			continue;
-		}
-
-		switch (loc) {
-			case 1:
-				mi.total = atoi(file_content);
-			case 2:
-				mi.free = atoi(file_content);
-			case 3:
-				mi.buffers = atoi(file_content);
-			case 4:
-				mi.cached = atoi(file_content);
-			case 5:
-				mi.shmem = atoi(file_content);
-			case 6:
-				mi.sreclaimable = atoi(file_content);
-		}
-
-		loc = 0;
-	}
-
-	fclose(memfile);
-
-	mi.used = mi.total + mi.shmem - mi.free - mi.buffers - mi.cached - mi.sreclaimable;
-
-	return mi;
 }
 
 /* Returns network status like so:

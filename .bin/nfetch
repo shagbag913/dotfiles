@@ -26,7 +26,7 @@ GPU="$(lspci | sed -n 's/.*VGA compatible controller: //p' | sed -n 's/ (.*//p' 
 if [[ $(echo "$GPU" | wc -c) -gt 50 ]] && echo "$GPU" | grep -i processor | grep -i intel &>/dev/null; then
     GPU="Intel Integrated Graphics"
 fi
-Memory="$(dotfile_utils --memory used --gigabytes) / $(dotfile_utils --memory total --gigabytes)"
+Memory="$(meminfo -u -g) / $(meminfo -t -g)"
 Uptime="$(uptime --pretty | sed 's/^up //')"
 
 for i in OS Host Kernel Packages Shell WM Terminal CPU GPU Memory Uptime; do

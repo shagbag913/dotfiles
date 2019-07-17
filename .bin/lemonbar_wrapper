@@ -6,11 +6,19 @@
 #
 
 UTILS=$HOME/.bin/dotfile_utils
+MEMUTILS=$HOME/.bin/meminfo
 
 # Check if the wrapper for this is compiled
-if [ ! -f "$UTILS" ]; then
+if [ ! -f $UTILS ]; then
     cd $HOME/.bin
     gcc -lm -lasound -o dotfile_utils dotfile_utils.c
+    cd -
+fi
+
+# Check if memory utils is compiled
+if [ ! -f $MEMUTILS ]; then
+    cd $HOME/.bin
+    gcc meminfo.c -o meminfo
     cd -
 fi
 
@@ -30,6 +38,10 @@ FIFO=/tmp/lemonfifo
 [ -e $FIFO ] && rm $FIFO
 mkfifo $FIFO
 
+meminfo() {
+    echo "memory  $($MEMUTILS -u -p)"
+}
+
 seperate() {
     local items
     for i in "$@"; do
@@ -40,10 +52,9 @@ seperate() {
 }
 
 while :; do $UTILS --time; sleep 10; done > $FIFO &
-while :; do $UTILS --memory used --percentage-total --glyph --prefix; sleep 10; done > $FIFO &
+while :; do meminfo; sleep 5; done > $FIFO &
 while :; do $UTILS --bspwm-status; sleep .15; done > $FIFO &
 while :; do $UTILS --network-status; sleep 10; done > $FIFO &
-while :; do $UTILS --brightness-slider; sleep .7; done > $FIFO &
 while :; do $UTILS --charge-glyph; sleep 4; done > $FIFO &
 while :; do $UTILS --volume-slider; sleep .7; done > $FIFO &
 
@@ -64,14 +75,11 @@ while read -r line; do
         network-status*)
             NETWORK_STATUS=$(echo "$line" | tail -c+15)
             ;;
-        brightness-slider*)
-            INTEL_BRIGHTNESS=$(echo "$line" | tail -c+18)
-            ;;
         volume-slider*)
             VOLUME=$(echo "$line" | tail -c+14)
             ;;
     esac
-    echo "%{l}$(seperate "$TIME")%{c}$BSPWM_STATUS%{r}$(seperate "$VOLUME" "$INTEL_BRIGHTNESS" "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
+    echo "%{l}$(seperate "$TIME")%{c}$BSPWM_STATUS%{r}$(seperate "$VOLUME" "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
 done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \

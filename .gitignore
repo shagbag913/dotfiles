@@ -18,6 +18,7 @@
 !.bin/getimages
 !.bin/lemonbar_wrapper
 !.bin/dotfile_utils.c
+!.bin/meminfo.c
 !.bin/nfetch
 !.bin/vim
 !.bin/reinit_mouse
