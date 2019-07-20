@@ -17,7 +17,7 @@
 !.bin/elapsed
 !.bin/getimages
 !.bin/lemonbar_wrapper
-!.bin/lemonbar_utils
+!.bin/lemonbar_utils.c
 !.bin/meminfo.c
 !.bin/nfetch
 !.bin/vim
