@@ -18,7 +18,7 @@ struct meminfo {
 struct meminfo mem_stats();
 
 int main(int argc, char *argv[]) {
-	int byte_type = 0, percentage_total = 0, total = 0, used = 0, free = 0, quiet = 0;
+	int byte_type = 0, percentage_total = 0, quiet = 0;
 	float return_mem = 0;
 	char return_mem_str[30];
 	struct meminfo mi = mem_stats();
@@ -32,14 +32,14 @@ int main(int argc, char *argv[]) {
 		if (strcmp(argv[iter], "--percentage-total") == 0 || strcmp(argv[iter], "-p") == 0)
 			percentage_total = 1;
 
-		if (strcmp(argv[iter], "--quiet") == 0 || strcmp(argv[iter], "-q") == 0 && !percentage_total)
+		if ((strcmp(argv[iter], "--quiet") == 0 || strcmp(argv[iter], "-q") == 0) && !percentage_total)
 			quiet = 1;
 
-		if (strcmp(argv[iter], "--kilobytes") == 0 || strcmp(argv[iter], "-k") == 0 && !percentage_total)
+		if ((strcmp(argv[iter], "--kilobytes") == 0 || strcmp(argv[iter], "-k") == 0) && !percentage_total)
 			byte_type = 1;
-		else if (strcmp(argv[iter], "--megabytes") == 0 || strcmp(argv[iter], "-m") == 0 && !percentage_total)
+		else if ((strcmp(argv[iter], "--megabytes") == 0 || strcmp(argv[iter], "-m") == 0) && !percentage_total)
 			byte_type = 2;
-		else if (strcmp(argv[iter], "--gigabytes") == 0 || strcmp(argv[iter], "-g") == 0 && !percentage_total)
+		else if ((strcmp(argv[iter], "--gigabytes") == 0 || strcmp(argv[iter], "-g") == 0) && !percentage_total)
 			byte_type = 3;
 
 		if (strcmp(argv[iter], "--free") == 0 || strcmp(argv[iter], "-f") == 0)
