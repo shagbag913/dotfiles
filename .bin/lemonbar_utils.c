@@ -28,7 +28,7 @@ enum {UNAVAILABLE = -1};
 
 char *build_slider(int current_place);
 char *build_volume_slider();
-char *battery_status();
+char *battery_status(char *low_color);
 char *formatted_time();
 char *network_status();
 void *build_bspwm_status();
@@ -53,7 +53,14 @@ int main(int argc, char *argv[]) {
 			free(bspwm_status);
 		}
 	} else if (strcmp(argv[1], "--charge-glyph") == 0) {
-		printf("charge-glyph%s\n", battery_status());
+		char low_color[8];
+
+		if (argc > 2)
+			strncpy(low_color, argv[2], 7);
+		else
+			strcpy(low_color, "#FF3838");
+
+		printf("charge-glyph%s\n", battery_status(low_color));
 	} else if (strcmp(argv[1], "--network-status") == 0) {
 		printf("network-status%s\n", network_status());
 #ifdef SUPPORTS_ASOUNDLIB
@@ -183,8 +190,8 @@ failed_alloc:
 /*
  * Returns a glyph showing current battery charge status.
  */
-char *battery_status() {
-	int charging = is_charging(), charge = get_charge();
+char *battery_status(char *low_color) {
+	int charging = is_charging(), charge = 10;
 	static char status[25] = "\0";
 
 	if (charge == UNAVAILABLE)
@@ -200,7 +207,7 @@ char *battery_status() {
 		strcat(status, "");
 	} else {
 		if (!charging)
-			strcat(status, "%{F#FF3838}");
+			sprintf(status, "%s%%{F%s}", status, low_color);
 		strcat(status, "");
 	}
 
