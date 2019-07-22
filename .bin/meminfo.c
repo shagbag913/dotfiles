@@ -69,16 +69,16 @@ int main(int argc, char *argv[]) {
 	} else {
 		switch (byte_type) {
 			case 0:
-				sprintf(return_mem_str, "%f B", return_mem);
+				sprintf(return_mem_str, "%0.2f B", return_mem);
 				break;
 			case 1:
-				sprintf(return_mem_str, "%f kB", return_mem);
+				sprintf(return_mem_str, "%0.2f kB", return_mem);
 				break;
 			case 2:
-				sprintf(return_mem_str, "%f mB", return_mem);
+				sprintf(return_mem_str, "%0.2f MB", return_mem);
 				break;
 			case 3:
-				sprintf(return_mem_str, "%f gB", return_mem);
+				sprintf(return_mem_str, "%0.2f GB", return_mem);
 				break;
 		}
 
