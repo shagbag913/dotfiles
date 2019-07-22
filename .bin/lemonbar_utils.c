@@ -191,7 +191,7 @@ failed_alloc:
  * Returns a glyph showing current battery charge status.
  */
 char *battery_status(char *low_color) {
-	int charging = is_charging(), charge = 10;
+	int charging = is_charging(), charge = get_charge();
 	static char status[25] = "\0";
 
 	if (charge == UNAVAILABLE)
