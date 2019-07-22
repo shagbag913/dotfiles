@@ -8,7 +8,7 @@ super + Return
 
 # program launcher
 super + @space
-	dmenu_run -fn 'Noto Sans-13' -l 7 -w 700 -x 450 -y 300 -nb '#141b35'
+	$HOME/.bin/custom_dmenu
 
 # make sxhkd reload its configuration files:
 super + Escape

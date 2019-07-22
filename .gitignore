@@ -13,6 +13,7 @@
 !.bin/batteryprompt.py
 !.bin/brightness
 !.bin/build_bl
+!.bin/custom_dmenu
 !.bin/deldog
 !.bin/elapsed
 !.bin/getimages

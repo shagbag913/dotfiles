@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+if [[ -f $HOME/.cache/wal/colors.sh ]]; then
+    . $HOME/.cache/wal/colors.sh
+fi
+
+[[ -z $foreground ]] && foreground='#FFFFFF'
+[[ -z $background ]] && background='#000000'
+[[ -z $color8 ]] && color8='#000000'
+
+MONITOR_WIDTH=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 1p)
+MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)
+DMENU_WIDTH=$(echo "$MONITOR_WIDTH / 3" | bc -l | sed 's/\..*//')
+DMENU_HEIGHT=$(echo "$MONITOR_HEIGHT / 25" | bc -l | sed 's/\..*//')
+X_OFFSET=$(echo "$MONITOR_WIDTH - $DMENU_WIDTH" | bc -l)
+X_OFFSET=$(echo "$X_OFFSET / 2" | bc -l | sed 's/\..*//')
+Y_OFFSET=$(echo "$MONITOR_HEIGHT - $DMENU_HEIGHT * 8" | bc -l)
+Y_OFFSET=$(echo "$Y_OFFSET / 2" | bc -l | sed 's/\..*//')
+
+dmenu_run -fn 'Noto Sans-13' -l 7 -x $X_OFFSET -y $Y_OFFSET -w $DMENU_WIDTH -h $DMENU_HEIGHT \
+        -nb "$background" -nf "$foreground" -sb "$color8"
