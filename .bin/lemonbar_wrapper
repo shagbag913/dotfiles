@@ -22,6 +22,10 @@ if [ ! -f $MEMUTILS ]; then
     cd -
 fi
 
+# Fallback colors if py-wal fails
+FOREGROUND='#FFFFFF'
+BACKGROUND='#000000'
+
 # Vertical size in percentage of the bar
 BAR_HEIGHT_RATIO=04
 
@@ -33,6 +37,12 @@ MONITOR_WIDTH=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | se
 MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)
 BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
 BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
+
+if [ -f $HOME/.cache/wal/colors.sh ]; then
+    . $HOME/.cache/wal/colors.sh
+    FOREGROUND=$foreground
+    BACKGROUND=$background
+fi
 
 FIFO=/tmp/lemonfifo
 [ -e $FIFO ] && rm $FIFO
@@ -84,5 +94,6 @@ done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
-            -B '#141b35' \
+            -B "$BACKGROUND" \
+            -F "$FOREGROUND" \
             -p | dash

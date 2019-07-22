@@ -150,7 +150,7 @@ void *build_bspwm_status() {
 			tmp_status = return_window_status;
 			return_window_status = realloc(return_window_status,
 					strlen(return_window_status) + 10 +
-					(index >= 10 ? 33 : 31) + (active_window ? 26 : 0) + 1);
+					(index >= 10 ? 33 : 31) + (active_window ? 10 : 0) + 1);
 
 			if (return_window_status == NULL) {
 				free(tmp_status);
@@ -159,14 +159,14 @@ void *build_bspwm_status() {
 
 			// Add underline under active window numbers
 			if (active_window)
-				strcat(return_window_status, "%{+u}%{U#ffffff}");
+				strcat(return_window_status, "%{+u}");
 
 			sprintf(return_window_status,
 					"%s%%{A:bspc desktop -f ^%i:}      %i      %%{A}",
 					return_window_status, index, index);
 
 			if (active_window)
-				strcat(return_window_status, "%{U-}%{-u}");
+				strcat(return_window_status, "%{-u}");
 		}
 
 		++index;
