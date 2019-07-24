@@ -125,6 +125,7 @@ done < $FIFO | lemonbar \
             -B "$BACKGROUND" \
             -F "$FOREGROUND" \
             -b \
+            -u 2 \
             -p | dash &
 
 sleep 1
