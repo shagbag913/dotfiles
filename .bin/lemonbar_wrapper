@@ -124,6 +124,7 @@ done < $FIFO | lemonbar \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
             -B "$BACKGROUND" \
             -F "$FOREGROUND" \
+            -b \
             -p | dash &
 
 sleep 1
