@@ -102,6 +102,13 @@ char *get_pywal_color_value(int color_index, char *fallback_color)
 
 	fclose(pywal_file);
 
+	// Make sure specified color index is within range
+	if (line[0] != '#') {
+		printf("Specified color index (%i) not within range, returning fallback color\n",
+				color_index);
+		strcpy(line, fallback_color);
+	}
+
 	return line;
 }
 
