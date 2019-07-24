@@ -67,6 +67,13 @@ int main(int argc, char *argv[]) {
 	} else if (strcmp(argv[1], "--volume-slider") == 0) {
 		printf("volume-slider%s\n", build_volume_slider());
 #endif
+	} else if (!strcmp(argv[1], "--get-pywal-color")) {
+		if (argc < 4) {
+			printf("Not enough arguments.\n");
+			return 1;
+		}
+
+		printf("%s\n", get_pywal_color_value(atoi(argv[2]), argv[3]));
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
