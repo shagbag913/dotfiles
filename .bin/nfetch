@@ -39,7 +39,11 @@ get_wm() {
 }
 
 get_terminal() {
-    Terminal=$(perl -lpe 's/\0/ /g' /proc/$(xdotool getwindowpid $(xdotool getactivewindow 2>/dev/null) 2>/dev/null)/cmdline 2>/dev/null)
+    local tmp
+    tmp=$(xdotool getactivewindow 2>/dev/null)
+    tmp=$(xdotool getwindowpid $tmp 2>/dev/null)
+    [[ -z $tmp ]] && return
+    Terminal=$(perl -lpe 's/\0/ /g' /proc/$tmp/cmdline 2>/dev/null)
 }
 
 get_cpu_info() {
