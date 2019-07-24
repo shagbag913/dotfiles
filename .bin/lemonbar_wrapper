@@ -22,9 +22,9 @@ if [ ! -f $MEMUTILS ]; then
     cd -
 fi
 
-# Fallback colors if py-wal fails
-FOREGROUND='#FFFFFF'
-BACKGROUND='#000000'
+# Lemonbar colors
+FOREGROUND="$($UTILS --get-pywal-color 15 '#FFFFFF')"
+BACKGROUND="$($UTILS --get-pywal-color 0 '#000000')"
 
 # Vertical size in percentage of the bar
 BAR_HEIGHT_RATIO=04
@@ -37,12 +37,6 @@ MONITOR_WIDTH=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | se
 MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)
 BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
 BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
-
-if [ -f $HOME/.cache/wal/colors.sh ]; then
-    . $HOME/.cache/wal/colors.sh
-    FOREGROUND=$foreground
-    BACKGROUND=$background
-fi
 
 FIFO=/tmp/lemonfifo
 [ -e $FIFO ] && rm $FIFO
@@ -61,12 +55,30 @@ seperate() {
     echo "$items" | sed 's/ \+|//'
 }
 
+fg_color() {
+    echo "fg$($UTILS --get-pywal-color 15 '#FFFFFF')"
+}
+
+bg_color() {
+    echo "bg$($UTILS --get-pywal-color 0 '#FFFFFF')"
+}
+
 while :; do $UTILS --time; sleep 10; done > $FIFO &
+PID=$!
 while :; do meminfo; sleep 5; done > $FIFO &
+PID="$PID $!"
 while :; do $UTILS --bspwm-status; sleep .15; done > $FIFO &
+PID="$PID $!"
 while :; do $UTILS --network-status; sleep 10; done > $FIFO &
+PID="$PID $!"
 while :; do $UTILS --charge-glyph; sleep 4; done > $FIFO &
+PID="$PID $!"
 while :; do $UTILS --volume-slider; sleep 1.5; done > $FIFO &
+PID="$PID $!"
+while :; do fg_color; sleep 3; done > $FIFO &
+PID="$PID $!"
+while :; do bg_color; sleep 3; done > $FIFO &
+PID="$PID $!"
 
 while read -r line; do
     case $line in
@@ -88,7 +100,23 @@ while read -r line; do
         volume-slider*)
             VOLUME=$(echo "$line" | tail -c+14)
             ;;
+        fg*)
+            FG=$(echo "$line" | tail -c+3)
+            ;;
+        bg*)
+            BG=$(echo "$line" | tail -c+3)
+            ;;
     esac
+
+    if [ -n $BG ] && [ -n $FG ]; then
+        if [ ! $BG = $BACKGROUND ] || [ ! $FG = $FOREGROUND ]; then
+            kill $PID
+            killall lemonbar
+            $0 &
+            exit 0
+        fi
+    fi
+
     echo "%{l}$BSPWM_STATUS%{c}$(seperate "$TIME")%{r}$(seperate "$VOLUME" "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
 done < $FIFO | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
