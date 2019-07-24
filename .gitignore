@@ -10,12 +10,9 @@
 
 !.bin/
 !.bin/apktool.jar
-!.bin/batteryprompt.py
 !.bin/brightness
-!.bin/build_bl
 !.bin/custom_dmenu
 !.bin/deldog
-!.bin/elapsed
 !.bin/getimages
 !.bin/lemonbar_wrapper
 !.bin/lemonbar_utils.c
@@ -23,9 +20,7 @@
 !.bin/nfetch
 !.bin/vim
 !.bin/reinit_mouse
-!.bin/shagfetch
 !.bin/tg_bot
-!.bin/trythree
 !.bin/volume
 
 !.config/
