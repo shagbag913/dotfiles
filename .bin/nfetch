@@ -65,6 +65,12 @@ get_uptime() {
     Uptime="$(uptime --pretty | sed 's/^up //')"
 }
 
+print_info() {
+    if [[ -n "$1" ]]; then
+        echo -e "$1"
+    fi
+}
+
 get_os
 get_host
 get_kernel
@@ -88,19 +94,18 @@ for i in OS Host Kernel Packages Shell WM Terminal CPU GPU Memory Uptime; do
     LIST+=("\e[96m$i: \e[39m$tmp")
 done
 
-echo -e "                                     \e[96m$(whoami)\e[39m@\e[96m$(hostname)"
-echo -e "\e[96m               -@                    -------------------"
-echo -e "\e[96m              .##@                   $LIST[1]"
-echo -e "\e[96m            .####@                   $LIST[2]"
-echo -e "\e[96m             @#####@                 $LIST[3]"
-echo -e "\e[96m           . *######@                $LIST[4]"
-echo -e "\e[96m          .##@o@#####@               $LIST[5]"
-echo -e "\e[96m         /############@              $LIST[6]"
-echo -e "\e[96m        /##############@             $LIST[7]"
-echo -e "\e[96m      @######\`     %#####o           $LIST[8]"
-echo -e "\e[96m      @######\`     %#####o           $LIST[9]"
-echo -e "\e[96m     @######@       ######%          $LIST[10]"
-echo -e "\e[96m   -@#######h       ######@.\`        $LIST[11]"
-echo -e "\e[96m  /#####h**\`\`       \`**%@####@       $LIST[12]"
-echo -e "\e[96m @H@*\`                    \`*%#@      $LIST[13]"
-echo -e "\e[96m*\`                            \`*     $LIST[14]"
+print_info "\e[96m$(whoami)\e[39m@\e[96m$(hostname)"
+print_info "$LIST[1]"
+print_info "$LIST[2]"
+print_info "$LIST[3]"
+print_info "$LIST[4]"
+print_info "$LIST[5]"
+print_info "$LIST[6]"
+print_info "$LIST[7]"
+print_info "$LIST[8]"
+print_info "$LIST[9]"
+print_info "$LIST[10]"
+print_info "$LIST[11]"
+print_info "$LIST[12]"
+print_info "$LIST[13]"
+print_info "$LIST[14]"
