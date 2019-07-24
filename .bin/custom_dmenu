@@ -17,5 +17,5 @@ X_OFFSET=$(echo "$X_OFFSET / 2" | bc -l | sed 's/\..*//')
 Y_OFFSET=$(echo "$MONITOR_HEIGHT - $DMENU_HEIGHT * 8" | bc -l)
 Y_OFFSET=$(echo "$Y_OFFSET / 2" | bc -l | sed 's/\..*//')
 
-dmenu_run -fn 'Noto Sans-13' -l 7 -x $X_OFFSET -y $Y_OFFSET -w $DMENU_WIDTH -h $DMENU_HEIGHT \
+dmenu_run -fn 'Noto Sans-13' -l 5 -x $X_OFFSET -y $Y_OFFSET -w $DMENU_WIDTH -h $DMENU_HEIGHT \
         -nb "$background" -nf "$foreground" -sb "$color8"
