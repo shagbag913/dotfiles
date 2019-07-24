@@ -124,4 +124,7 @@ done < $FIFO | lemonbar \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
             -B "$BACKGROUND" \
             -F "$FOREGROUND" \
-            -p | dash
+            -p | dash &
+
+sleep 1
+xdo above -t $(xdo id -n root) $(xdo id -n lemonbar)
