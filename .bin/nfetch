@@ -2,6 +2,13 @@
 LC_ALL=C
 LANG=C
 
+# Make sure meminfo is compiled
+if [[ ! -f $HOME/.bin/meminfo ]]; then
+    cd $HOME/.bin
+    gcc meminfo.c -o meminfo
+    cd - &>/dev/null
+fi
+
 get_os() {
     OS=$(cat /etc/os-release | awk -F'"' '/^NAME/{print $2}')
 }
