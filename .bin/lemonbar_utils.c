@@ -28,13 +28,13 @@ enum {UNAVAILABLE = -1};
 
 char *build_slider(int current_place);
 char *build_volume_slider();
-char *battery_status(char *low_color);
+char *battery_status();
 char *formatted_time();
 char *network_status();
+char *get_pywal_color_value(int color_index, char *fallback_color);
 void *build_bspwm_status();
 int get_charge();
 int is_charging();
-float kb_to_gb(int kb);
 
 int main(int argc, char *argv[]) {
 
@@ -67,8 +67,6 @@ int main(int argc, char *argv[]) {
 	} else if (strcmp(argv[1], "--volume-slider") == 0) {
 		printf("volume-slider%s\n", build_volume_slider());
 #endif
-	} else if (strcmp(argv[1], "--kb-to-gb") == 0) {
-		printf("%0.2fGB\n", kb_to_gb(atoi(argv[2])));
 	} else {
 		printf("Unknown argument: %s.\n", argv[1]);
 		return 1;
@@ -76,10 +74,28 @@ int main(int argc, char *argv[]) {
 }
 
 /*
- * Converts kilobytes to gigabytes.
+ * Fetch color_index value from pywal cache file, if it fails return fallback_color.
  */
-float kb_to_gb(int kb) {
-	return (float) kb / 1024 / 1024;
+char *get_pywal_color_value(int color_index, char *fallback_color)
+{
+	FILE *pywal_file;
+	static char line[8];
+	int tmp = 0;
+
+	pywal_file = fopen("/home/shagbag913/.cache/wal/colors", "r");
+
+	if (pywal_file == NULL)
+		return fallback_color;
+
+	while (fgets(line, sizeof(line), pywal_file) != NULL) {
+		if (tmp == color_index * 2)
+			break;
+		tmp++;
+	}
+
+	fclose(pywal_file);
+
+	return line;
 }
 
 /*
@@ -190,9 +206,10 @@ failed_alloc:
 /*
  * Returns a glyph showing current battery charge status.
  */
-char *battery_status(char *low_color) {
+char *battery_status() {
 	int charging = is_charging(), charge = get_charge();
 	static char status[25] = "\0";
+	char *low_color = get_pywal_color_value(1, "#FFA3A3");
 
 	if (charge == UNAVAILABLE)
 		return "";

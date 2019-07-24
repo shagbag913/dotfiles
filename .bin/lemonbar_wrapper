@@ -65,7 +65,7 @@ while :; do $UTILS --time; sleep 10; done > $FIFO &
 while :; do meminfo; sleep 5; done > $FIFO &
 while :; do $UTILS --bspwm-status; sleep .15; done > $FIFO &
 while :; do $UTILS --network-status; sleep 10; done > $FIFO &
-while :; do $UTILS --charge-glyph $color1; sleep 4; done > $FIFO &
+while :; do $UTILS --charge-glyph; sleep 4; done > $FIFO &
 while :; do $UTILS --volume-slider; sleep 1.5; done > $FIFO &
 
 while read -r line; do
