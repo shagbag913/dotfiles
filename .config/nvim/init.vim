@@ -23,7 +23,14 @@ call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'farmergreg/vim-lastplace'
 Plug 'jiangmiao/auto-pairs'
+Plug 'Yggdroot/indentLine'
 call plug#end()
+
+"Configure indention guide
+set list lcs=tab:\⋮\ 
+let g:indentLine_char = '⋮'
+let g:indentLine_showFirstIndentLevel = 1
+let g:indentLine_first_char = '⋮'
 
 "Persistent undo
 set undofile
