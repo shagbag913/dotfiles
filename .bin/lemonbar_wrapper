@@ -65,7 +65,7 @@ bg_color() {
 
 while :; do $UTILS --time; sleep 10; done > $FIFO &
 PID=$!
-while :; do meminfo; sleep 5; done > $FIFO &
+while :; do meminfo; sleep 2; done > $FIFO &
 PID="$PID $!"
 while :; do $UTILS --bspwm-status; sleep .15; done > $FIFO &
 PID="$PID $!"
