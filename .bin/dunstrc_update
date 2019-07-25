@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# Script to regenerate dunstrc with pywal color values and
+# correct dimensions.
+#
+DUNSTRC=$HOME/.config/dunst/dunstrc
+
+. $HOME/.cache/wal/colors.sh
+
+if [[ -n "$background" ]]; then
+    sed -i 's/foreground = .*/foreground = \"'"$foreground"'\"/g' $DUNSTRC
+    sed -i 's/background = .*/background = \"'"$background"'\"/g' $DUNSTRC
+else
+    echo "Couldn't source pywal config, not changing colors"
+fi
+
+# Vertical size in percentage of the bar
+BAR_HEIGHT_RATIO=04
+
+# Find bspwm gap ratio
+BSPWM_GAP=$(awk '/window_gap/{print $4}' $HOME/.config/bspwm/bspwmrc)
+
+MONITOR_WIDTH=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 1p)
+MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)
+BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
+BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
+
+sed -i 's/geometry = .*/geometry = \"'"${BAR_WIDTH}x${BAR_HEIGHT}-${BSPWM_GAP}+$((MONITOR_HEIGHT - BAR_HEIGHT - (BSPWM_GAP / 2)))"'\"/' $DUNSTRC
+
+killall dunst
+dunst &

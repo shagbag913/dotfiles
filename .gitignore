@@ -13,6 +13,7 @@
 !.bin/brightness
 !.bin/custom_dmenu
 !.bin/deldog
+!.bin/dunstrc_update
 !.bin/getimages
 !.bin/lemonbar_wrapper
 !.bin/lemonbar_utils.c
