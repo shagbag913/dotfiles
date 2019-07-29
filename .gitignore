@@ -48,5 +48,8 @@
 !.sysd/
 !.sysd/*
 
+!.termux/
+!.termux/*
+
 !Walls/
 !Walls/*
