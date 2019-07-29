@@ -43,16 +43,16 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	if (strcmp(argv[1], "--time") == 0) {
+	if (!strcmp(argv[1], "--time")) {
 		printf("time%s\n", formatted_time());
-	} else if (strcmp(argv[1], "--bspwm-status") == 0) {
+	} else if (!strcmp(argv[1], "--bspwm-status")) {
 		char *bspwm_status = build_bspwm_status();
 
 		if (bspwm_status != NULL) {
 			printf("bspwm-status%s\n", bspwm_status);
 			free(bspwm_status);
 		}
-	} else if (strcmp(argv[1], "--charge-glyph") == 0) {
+	} else if (!strcmp(argv[1], "--charge-glyph")) {
 		char low_color[8];
 
 		if (argc > 2)
@@ -61,10 +61,10 @@ int main(int argc, char *argv[]) {
 			strcpy(low_color, "#FF3838");
 
 		printf("charge-glyph%s\n", battery_status(low_color));
-	} else if (strcmp(argv[1], "--network-status") == 0) {
+	} else if (!strcmp(argv[1], "--network-status")) {
 		printf("network-status%s\n", network_status());
 #ifdef SUPPORTS_ASOUNDLIB
-	} else if (strcmp(argv[1], "--volume-slider") == 0) {
+	} else if (!strcmp(argv[1], "--volume-slider")) {
 		printf("volume-slider%s\n", build_volume_slider());
 #endif
 	} else if (!strcmp(argv[1], "--get-pywal-color")) {
@@ -316,11 +316,11 @@ char *network_status() {
 		fclose(ethernet_operstate);
 	}
 
-	if (strcmp(wstate, "up") == 0)
+	if (!strcmp(wstate, "up"))
 		return "";
-	else if (strcmp(estate, "up") != 0)
+	else if (strcmp(estate, "up"))
 		return "%{F#99FFFFFF}%{F-}";
-	else if (strcmp(estate, "up") == 0)
+	else if (!strcmp(estate, "up"))
 		return "";
 
 	return "";
