@@ -22,7 +22,6 @@ nnoremap <silent> <C-w> :noh<CR>
 call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'farmergreg/vim-lastplace'
-Plug 'jiangmiao/auto-pairs'
 Plug 'Yggdroot/indentLine'
 call plug#end()
 
