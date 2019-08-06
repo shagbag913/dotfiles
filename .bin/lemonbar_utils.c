@@ -80,9 +80,13 @@ char *get_pywal_color_value(int color_index, char *fallback_color)
 {
 	FILE *pywal_file;
 	static char line[8];
+	char pywal_path[100];
 	int tmp = 0;
 
-	pywal_file = fopen("/home/shagbag913/.cache/wal/colors", "r");
+	strcpy(pywal_path, getenv("HOME"));
+	strcat(pywal_path, "/.cache/wal/colors");
+
+	pywal_file = fopen(pywal_path, "r");
 
 	if (pywal_file == NULL)
 		return fallback_color;
