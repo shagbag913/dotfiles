@@ -53,14 +53,7 @@ int main(int argc, char *argv[]) {
 			free(bspwm_status);
 		}
 	} else if (!strcmp(argv[1], "--charge-glyph")) {
-		char low_color[8];
-
-		if (argc > 2)
-			strncpy(low_color, argv[2], 7);
-		else
-			strcpy(low_color, "#FF3838");
-
-		printf("charge-glyph%s\n", battery_status(low_color));
+		printf("charge-glyph%s\n", battery_status());
 	} else if (!strcmp(argv[1], "--network-status")) {
 		printf("network-status%s\n", network_status());
 #ifdef SUPPORTS_ASOUNDLIB
@@ -222,24 +215,29 @@ failed_alloc:
  * Returns a glyph showing current battery charge status.
  */
 char *battery_status() {
-	int charging = is_charging(), charge = get_charge();
-	static char status[25] = "\0";
-	char *low_color = get_pywal_color_value(1, "#FFA3A3");
+	int charging, charge;
+	static char status[25];
+	char *low_color;
+
+	charging = is_charging();
+	charge = get_charge();
 
 	if (charge == UNAVAILABLE)
 		return "";
 
 	if (charge >= 90) {
-		strcat(status, "");
+		strcpy(status, "");
 	} else if (charge >= 70) {
-		strcat(status, "");
+		strcpy(status, "");
 	} else if (charge >= 45) {
-		strcat(status, "");
+		strcpy(status, "");
 	} else if (charge >= 15) {
-		strcat(status, "");
+		strcpy(status, "");
 	} else {
-		if (!charging)
+		if (!charging) {
+			low_color = get_pywal_color_value(1, "#FFA3A3");
 			sprintf(status, "%s%%{F%s}", status, low_color);
+		}
 		strcat(status, "");
 	}
 
