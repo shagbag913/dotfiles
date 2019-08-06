@@ -68,6 +68,10 @@ int main(int argc, char *argv[])
 		}
 
 		return_mem_str = malloc(amnt_dgts + 3);
+		if (return_mem_str == NULL) {
+			printf("Failed to allocate memory\n");
+			return 0;
+		}
 
 		switch (byte_type) {
 			case 0:
