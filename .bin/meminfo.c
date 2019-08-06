@@ -19,9 +19,9 @@ struct meminfo mem_stats();
 
 int main(int argc, char *argv[])
 {
-	int byte_type = 0, percentage_total = 0, quiet = 0, tmp;
+	int byte_type = 0, percentage_total = 0, quiet = 0, tmp, amnt_dgts = 0, amnt_mem_cpy;
 	float return_mem = 0;
-	char return_mem_str[30]; //TODO: dynammically allocate
+	char *return_mem_str;
 	struct meminfo mi = mem_stats();
 
 	if (argc < 2)
@@ -60,6 +60,15 @@ int main(int argc, char *argv[])
 	} else if (percentage_total) {
 		printf("%0.0f%%\n", return_mem / mi.total * 100);
 	} else {
+		amnt_mem_cpy = return_mem;
+
+		while (amnt_mem_cpy != 0) {
+			amnt_mem_cpy /= 10;
+			amnt_dgts++;
+		}
+
+		return_mem_str = malloc(amnt_dgts + 3);
+
 		switch (byte_type) {
 			case 0:
 				sprintf(return_mem_str, "%0.0fB", return_mem);
