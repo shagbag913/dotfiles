@@ -33,6 +33,10 @@
 !.config/fontconfig/*
 !.config/gtk-3.0
 !.config/gtk-3.0/*
+!.config/nvim/
+!.config/nvim/init.vim
+!.config/nvim/indent/
+!.config/nvim/indent/*
 !.config/sxhkd/
 !.config/sxhkd/*
 
@@ -45,11 +49,6 @@
 
 !.termux/
 !.termux/*
-
-!.vim/
-!.vim/*/
-!.vim/indent/
-!.vim/indent/*
 
 !Walls/
 !Walls/*
