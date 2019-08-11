@@ -24,6 +24,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'farmergreg/vim-lastplace'
 Plug 'Yggdroot/indentLine'
 Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 call plug#end()
 
 "Configure indention guide
