@@ -20,7 +20,7 @@ nnoremap <silent> <C-w> :noh<CR>
 
 "Plug
 call plug#begin()
-Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'farmergreg/vim-lastplace'
 Plug 'Yggdroot/indentLine'
 Plug 'junegunn/fzf.vim'
