@@ -23,6 +23,7 @@ call plug#begin()
 Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 Plug 'farmergreg/vim-lastplace'
 Plug 'Yggdroot/indentLine'
+Plug 'junegunn/fzf.vim'
 call plug#end()
 
 "Configure indention guide
