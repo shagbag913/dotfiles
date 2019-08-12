@@ -56,4 +56,4 @@ elif [[ $BRIGHTNESS -lt $BRIGHTNESS_ICON ]]; then
 fi
 
 notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/notification-display-brightness-$ICON.svg \
-        -R /tmp/brightness_notifyd_id "$BRIGHTNESS$PERCENT"
+        -R /tmp/brightness_notifyd_id "$BRIGHTNESS$PERCENT" -t 1000

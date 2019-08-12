@@ -28,4 +28,4 @@ fi
 [[ -z "$MUTED" ]] && NEW_VOLUME+=% || NEW_VOLUME+="% (muted)"
 
 notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/$ICON "$NEW_VOLUME" \
-        -R /tmp/volume_notify
+        -R /tmp/volume_notify -t 1000
