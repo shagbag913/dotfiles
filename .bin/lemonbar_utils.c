@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 		if (!(bspwm_stat && time_stat && net_stat && bat_stat && used_mem))
 			continue;
 
-		printf("%{l}%s%{c}%s%{r}%s    |    %s    |    %s    |    %s  \n", bspwm_stat,
+		printf("%{l}%s%{c}%s%{r}%s    |    %s    |    %s    |    %s    \n", bspwm_stat,
 				time_stat, used_mem, vol_slider, net_stat, bat_stat);
 		fflush(stdout);
 
