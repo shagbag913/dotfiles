@@ -71,42 +71,43 @@ int main(int argc, char *argv[]) {
 	/* TODO: handle incorrect arguments / number of arguments */
 	}
 
-	/* battery status */
+	/* Battery status */
 	function1_args.us = 5000000;
 	function1_args.function = battery_status;
 	pthread_create(&thread1, NULL, function_thread, &function1_args);
 
-	/* network status */
+	/* Network status */
 	function2_args.us = 10000000;
 	function2_args.function = network_status;
 	pthread_create(&thread2, NULL, function_thread, &function2_args);
 
-	/* bspwm status */
+	/* BSPWM status */
 	function3_args.us = 100000;
 	function3_args.function = build_bspwm_status;
 	pthread_create(&thread3, NULL, function_thread, &function3_args);
 
-	/* time */
+	/* Time */
 	function4_args.us = 10000000;
 	function4_args.function = formatted_time;
 	pthread_create(&thread4, NULL, function_thread, &function4_args);
 
-	/* volume slider */
+	/* Volume slider */
 	function5_args.us = 1000000;
 	function5_args.function = volume_slider;
 	pthread_create(&thread5, NULL, function_thread, &function5_args);
 
-	/* memory usage */
+	/* Memory usage */
 	function6_args.us = 4000000;
 	function6_args.function = used_memory_percentage;
 	pthread_create(&thread6, NULL, function_thread, &function6_args);
 
 	while (1) {
-		/* make sure all variables are not NULL or empty before printing */
-		if (!(bspwm_stat && time_stat && net_stat && bat_stat && used_mem))
+		/* Make sure all variables are set before printing anything */
+		if (bspwm_stat == NULL || !(strlen(time_stat) && strlen(net_stat) &&
+					strlen(bat_stat) && strlen(used_mem) && strlen(vol_slider)))
 			continue;
 
-		printf("%{l}%s%{c}%s%{r}%s    |    %s    |    %s    |    %s    \n", bspwm_stat,
+		printf("%%{l}%s%%{c}%s%%{r}%s    |    %s    |    %s    |    %s    \n", bspwm_stat,
 				time_stat, used_mem, vol_slider, net_stat, bat_stat);
 		fflush(stdout);
 
@@ -167,9 +168,7 @@ char *build_slider(int current_place) {
 	int net_length = 4, plc;
 	int current_small_place = (float) current_place / (float) (100 / net_length);
 
-	/* nuke old final_slider string */
-	if (final_slider)
-		memset(&final_slider, 0, strlen(final_slider));
+	memset(&final_slider, 0, strlen(final_slider));
 
 	final_slider[0] = '\0';
 
@@ -239,7 +238,7 @@ void build_bspwm_status() {
 
 			/* Add underline under active window numbers */
 			if (active_window)
-				sprintf(bspwm_return_status, "%s%{+u}%{U%s}", bspwm_return_status,
+				sprintf(bspwm_return_status, "%s%%{+u}%%{U%s}", bspwm_return_status,
 						get_pywal_color_value(15, "#FFFFFF"));
 
 			sprintf(bspwm_return_status,
@@ -385,8 +384,6 @@ struct volume volume_info() {
 	snd_mixer_close(handle);
 
 	volinfo.level = round((float) volume / (float) max * 100);
-
-	/* Invert this value */
 	volinfo.muted = !volinfo.muted;
 
 	return volinfo;
