@@ -52,7 +52,7 @@ char bat_stat[25];
 char net_stat[22];
 char *bspwm_stat = NULL;
 char time_stat[20];
-char vol_slider[22];
+char vol_slider[39];
 char used_mem[11];
 unsigned long shortest_sleep;
 
@@ -131,7 +131,7 @@ void *function_thread(void *function_args)
 char *get_pywal_color_value(int color_index, char *fallback_color)
 {
 	FILE *pywal_file;
-	static char line[8];
+	static char line[10];
 	char pywal_path[100];
 	const char *suffix_pywal_path = "/.cache/wal/colors";
 	int tmp = 0;
@@ -395,7 +395,8 @@ void volume_slider() {
 	struct volume volinfo = volume_info();
 
 	if (volinfo.muted || volinfo.level == 0)
-		sprintf(vol_slider, "  %s", build_slider(volinfo.level));
+		sprintf(vol_slider, "%%{F%s} %%{F-} %s", get_pywal_color_value(8, "#80FFFFFF"),
+				build_slider(volinfo.level));
 	else
 		sprintf(vol_slider, "  %s", build_slider(volinfo.level));
 }
