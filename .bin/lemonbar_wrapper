@@ -5,7 +5,7 @@ UTILS=$HOME/.bin/lemonbar_utils
 # Check if the wrapper for this is compiled
 if [ ! -f $UTILS ]; then
     cd $HOME/.bin
-    gcc -lpthread -lm -lasound -o lemonbar_utils lemonbar_utils.c
+    clang -lpthread -lm -lasound -o lemonbar_utils lemonbar_utils.c -flto -Ofast
     cd -
 fi
 

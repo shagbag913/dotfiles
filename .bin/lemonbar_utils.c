@@ -11,10 +11,6 @@
 
 #define SUPPORTS_ASOUNDLIB
 
-/* Audio devices for fetching volume */
-const char *card = "pulse";
-const char *selem_name = "Master";
-
 struct volume {
 	int muted;
 	int level;
@@ -37,6 +33,8 @@ struct meminfo {
         unsigned long shmem;
         unsigned long sreclaimable;
 };
+
+#define USEC_TO_SEC(x) (x * 1000000)
 
 char *build_slider(int current_place);
 void volume_slider();
@@ -73,12 +71,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* Battery status */
-	function1_args.us = 5000000;
+	function1_args.us = USEC_TO_SEC(5);
 	function1_args.function = battery_status;
 	pthread_create(&thread1, NULL, function_thread, &function1_args);
 
 	/* Network status */
-	function2_args.us = 10000000;
+	function2_args.us = USEC_TO_SEC(1);
 	function2_args.function = network_status;
 	pthread_create(&thread2, NULL, function_thread, &function2_args);
 
@@ -88,17 +86,17 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread3, NULL, function_thread, &function3_args);
 
 	/* Time */
-	function4_args.us = 10000000;
+	function4_args.us = USEC_TO_SEC(5);
 	function4_args.function = formatted_time;
 	pthread_create(&thread4, NULL, function_thread, &function4_args);
 
 	/* Volume slider */
-	function5_args.us = 1000000;
+	function5_args.us = USEC_TO_SEC(1);
 	function5_args.function = volume_slider;
 	pthread_create(&thread5, NULL, function_thread, &function5_args);
 
 	/* Memory usage */
-	function6_args.us = 4000000;
+	function6_args.us = USEC_TO_SEC(2);
 	function6_args.function = used_memory_percentage;
 	pthread_create(&thread6, NULL, function_thread, &function6_args);
 
@@ -361,6 +359,9 @@ void network_status() {
 struct volume volume_info() {
 	long volume, min, max;
 	struct volume volinfo;
+	const char *card = "pulse";
+	const char *selem_name = "Master";
+
 	snd_mixer_elem_t *elem;
 
 	snd_mixer_t *handle;
