@@ -58,18 +58,18 @@ static char vol_slider[22];
 static char used_mem[11];
 
 int main(int argc, char *argv[]) {
+	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
+	struct args function1_args, function2_args, function3_args, function4_args,
+		    function5_args, function6_args;
+
 	/* lemonbar_wrapper needs pywal color function */
 	if (argc == 4) {
 		if (!strcmp(argv[1], "--get-pywal-color")) {
 			printf("%s\n", get_pywal_color_value(atoi(argv[2]), argv[3]));
 			return 0;
 		}
-	// TODO: handle incorrect arguments / number of arguments
+	/* TODO: handle incorrect arguments / number of arguments */
 	}
-
-	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
-	struct args function1_args, function2_args, function3_args, function4_args,
-		    function5_args, function6_args;
 
 	/* battery status */
 	function1_args.us = 5000000;
@@ -123,7 +123,7 @@ void *function_thread(void *function_args)
 	struct args *arguments = function_args;
 
 	while (1) {
-		// Fill global variable
+		/* Fill global variable */
 		arguments->function();
 		usleep(arguments->us);
 	}
@@ -152,7 +152,7 @@ char *get_pywal_color_value(int color_index, char *fallback_color)
 
 	fclose(pywal_file);
 
-	// Make sure specified color index is within range
+	/* Make sure specified color index is within range */
 	if (line[0] != '#') {
 		printf("Specified color index (%i) not within range, returning fallback color\n",
 				color_index);
@@ -237,7 +237,7 @@ void build_bspwm_status() {
 				goto failed_alloc;
 			}
 
-			// Add underline under active window numbers
+			/* Add underline under active window numbers */
 			if (active_window)
 				sprintf(bspwm_return_status, "%s%{+u}%{U%s}", bspwm_return_status,
 						get_pywal_color_value(15, "#FFFFFF"));
@@ -362,6 +362,7 @@ void network_status() {
 struct volume volume_info() {
 	long volume, min, max;
 	struct volume volinfo;
+	snd_mixer_elem_t *elem;
 
 	snd_mixer_t *handle;
 	snd_mixer_selem_id_t *sid;
@@ -374,7 +375,8 @@ struct volume volume_info() {
 	snd_mixer_selem_id_alloca(&sid);
 	snd_mixer_selem_id_set_index(sid, 0);
 	snd_mixer_selem_id_set_name(sid, selem_name);
-	snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
+
+	elem = snd_mixer_find_selem(handle, sid);
 
 	snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_FRONT_LEFT, &volume);
 	snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
@@ -384,7 +386,7 @@ struct volume volume_info() {
 
 	volinfo.level = round((float) volume / (float) max * 100);
 
-	// Invert this value
+	/* Invert this value */
 	volinfo.muted = !volinfo.muted;
 
 	return volinfo;
