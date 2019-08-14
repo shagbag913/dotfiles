@@ -54,6 +54,7 @@ char *bspwm_stat = NULL;
 char time_stat[20];
 char vol_slider[39];
 char used_mem[11];
+char wm_status_test[80];
 unsigned long shortest_sleep;
 
 int main(int argc, char *argv[]) {
@@ -208,16 +209,20 @@ void build_bspwm_status() {
 	char *delim_ptr, *tmp_status, *bspwm_return_status, wm_status[80];
 	FILE *bspwm_status;
 
+	bspwm_status = popen("bspc wm --get-status", "r");
+	fscanf(bspwm_status, "%s", wm_status);
+	pclose(bspwm_status);
+
+	if (!strcmp(wm_status, wm_status_test))
+		return;
+	strcpy(wm_status_test, wm_status);
+
 	bspwm_return_status = malloc(2);
 
 	if (bspwm_return_status == NULL)
 		goto failed_alloc;
 
 	strcpy(bspwm_return_status, "\0");
-
-	bspwm_status = popen("bspc wm --get-status", "r");
-	fscanf(bspwm_status, "%s", wm_status);
-	pclose(bspwm_status);
 
 	delim_ptr = strtok(wm_status, ":");
 
