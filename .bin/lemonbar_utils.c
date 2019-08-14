@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread2, NULL, function_thread, &function2_args);
 
 	/* bspwm status */
-	function3_args.us = 150000;
+	function3_args.us = 100000;
 	function3_args.function = build_bspwm_status;
 	pthread_create(&thread3, NULL, function_thread, &function3_args);
 
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
 		 * The amount of time we sleep here should be the less than or
 		 * equal to the smallest sleep time in the threaded functions.
 		 */
-		usleep(150000);
+		usleep(100000);
 	}
 }
 
@@ -206,15 +206,15 @@ void formatted_time() {
 
 void build_bspwm_status() {
 	int active_window, bg_window, index = 0;
-	char *delim_ptr, *tmp_status, wm_status[80];
+	char *delim_ptr, *tmp_status, *bspwm_return_status, wm_status[80];
 	FILE *bspwm_status;
 
-	bspwm_stat = malloc(2);
+	bspwm_return_status = malloc(2);
 
-	if (bspwm_stat == NULL)
+	if (bspwm_return_status == NULL)
 		goto failed_alloc;
 
-	strcpy(bspwm_stat, "\0");
+	strcpy(bspwm_return_status, "\0");
 
 	bspwm_status = popen("bspc wm --get-status", "r");
 	fscanf(bspwm_status, "%s", wm_status);
@@ -228,31 +228,36 @@ void build_bspwm_status() {
 
 		if (active_window || bg_window) {
 			tmp_status = bspwm_stat;
-			bspwm_stat = realloc(bspwm_stat,
-					strlen(bspwm_stat) + 10 +
+			bspwm_return_status = realloc(bspwm_return_status,
+					strlen(bspwm_return_status) + 10 +
 					(index >= 10 ? 33 : 31) + (active_window ? 26 : 0) + 1);
 
-			if (bspwm_stat == NULL) {
+			if (bspwm_return_status == NULL) {
 				free(tmp_status);
 				goto failed_alloc;
 			}
 
 			// Add underline under active window numbers
 			if (active_window)
-				sprintf(bspwm_stat, "%s%{+u}%{U%s}", bspwm_stat,
+				sprintf(bspwm_return_status, "%s%{+u}%{U%s}", bspwm_return_status,
 						get_pywal_color_value(15, "#FFFFFF"));
 
-			sprintf(bspwm_stat,
+			sprintf(bspwm_return_status,
 					"%s%%{A:bspc desktop -f ^%i:}      %i      %%{A}",
-					bspwm_stat, index, index);
+					bspwm_return_status, index, index);
 
 			if (active_window)
-				strcat(bspwm_stat, "%{U-}%{-u}");
+				strcat(bspwm_return_status, "%{U-}%{-u}");
 		}
 
 		++index;
 		delim_ptr = strtok(NULL, ":");
 	}
+
+	free(bspwm_stat);
+	bspwm_stat = malloc(strlen(bspwm_return_status)+1);
+	strcpy(bspwm_stat, bspwm_return_status);
+	free(bspwm_return_status);
 
 	return;
 
