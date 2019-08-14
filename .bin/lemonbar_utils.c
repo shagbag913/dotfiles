@@ -257,7 +257,7 @@ void build_bspwm_status() {
 	if (bspwm_stat != NULL)
 		free(bspwm_stat);
 	bspwm_stat = malloc(strlen(bspwm_return_status)+1);
-	if (bspwm_stat != NULL)
+	if (bspwm_stat == NULL)
 		goto failed_alloc;
 	strcpy(bspwm_stat, bspwm_return_status);
 	free(bspwm_return_status);
