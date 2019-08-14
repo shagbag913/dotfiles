@@ -131,8 +131,7 @@ void *function_thread(void *function_args)
 char *get_pywal_color_value(int color_index, char *fallback_color)
 {
 	FILE *pywal_file;
-	static char line[10];
-	char pywal_path[100];
+	char pywal_path[100], *line;
 	const char *suffix_pywal_path = "/.cache/wal/colors";
 	int tmp = 0;
 
@@ -143,6 +142,8 @@ char *get_pywal_color_value(int color_index, char *fallback_color)
 
 	if (pywal_file == NULL)
 		return fallback_color;
+
+	line = malloc(strlen(fallback_color) > 6 ? 10 : 8);
 
 	while (fgets(line, sizeof(line), pywal_file) != NULL) {
 		if (tmp == color_index * 2)
