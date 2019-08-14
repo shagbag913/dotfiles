@@ -50,12 +50,13 @@ int is_charging();
 void *function_thread();
 void used_memory_percentage();
 
-static char bat_stat[25];
-static char net_stat[22];
-static char *bspwm_stat = NULL;
-static char time_stat[20];
-static char vol_slider[22];
-static char used_mem[11];
+char bat_stat[25];
+char net_stat[22];
+char *bspwm_stat = NULL;
+char time_stat[20];
+char vol_slider[22];
+char used_mem[11];
+unsigned long shortest_sleep;
 
 int main(int argc, char *argv[]) {
 	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
@@ -110,18 +111,17 @@ int main(int argc, char *argv[]) {
 		printf("%%{l}%s%%{c}%s%%{r}%s    |    %s    |    %s    |    %s    \n", bspwm_stat,
 				time_stat, used_mem, vol_slider, net_stat, bat_stat);
 		fflush(stdout);
-
-		/*
-		 * The amount of time we sleep here should be the less than or
-		 * equal to the smallest sleep time in the threaded functions.
-		 */
-		usleep(100000);
+		usleep(shortest_sleep);
 	}
 }
 
 void *function_thread(void *function_args)
 {
 	struct args *arguments = function_args;
+
+	/* Keep track of shortest sleep time */
+	if (!shortest_sleep || arguments->us < shortest_sleep)
+		shortest_sleep = arguments->us;
 
 	while (1) {
 		/* Fill global variable */
