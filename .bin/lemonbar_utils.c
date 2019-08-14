@@ -133,10 +133,11 @@ char *get_pywal_color_value(int color_index, char *fallback_color)
 	FILE *pywal_file;
 	static char line[8];
 	char pywal_path[100];
+	const char *suffix_pywal_path = "/.cache/wal/colors";
 	int tmp = 0;
 
-	strcpy(pywal_path, getenv("HOME"));
-	strcat(pywal_path, "/.cache/wal/colors");
+	strncpy(pywal_path, getenv("HOME"), sizeof(pywal_path) - strlen(suffix_pywal_path) - 1);
+	strcat(pywal_path, suffix_pywal_path);
 
 	pywal_file = fopen(pywal_path, "r");
 
