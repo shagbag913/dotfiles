@@ -1,24 +1,11 @@
 #!/usr/bin/env dash
-#
-# My lemonbar setup.
-# IMPORTANT:  This configuration is only compatible with
-#             a lemonbar fork with xft font compatibility.
-#
 
 UTILS=$HOME/.bin/lemonbar_utils
-MEMUTILS=$HOME/.bin/meminfo
 
 # Check if the wrapper for this is compiled
 if [ ! -f $UTILS ]; then
     cd $HOME/.bin
-    gcc -lm -lasound -o lemonbar_utils lemonbar_utils.c
-    cd -
-fi
-
-# Check if memory utils is compiled
-if [ ! -f $MEMUTILS ]; then
-    cd $HOME/.bin
-    gcc meminfo.c -o meminfo
+    gcc -lpthread -lm -lasound -o lemonbar_utils lemonbar_utils.c
     cd -
 fi
 
@@ -38,23 +25,6 @@ MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | s
 BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
 BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
 
-FIFO=/tmp/lemonfifo
-[ -e $FIFO ] && rm $FIFO
-mkfifo $FIFO
-
-meminfo() {
-    echo "memory  $($MEMUTILS -u -p)"
-}
-
-seperate() {
-    local items
-    for i in "$@"; do
-        [ -z "$i" ] && continue
-        items="$items    |    $i"
-    done
-    echo "$items" | sed 's/ \+|//'
-}
-
 fg_color() {
     echo "fg$($UTILS --get-pywal-color 15 '#FFFFFF')"
 }
@@ -63,62 +33,7 @@ bg_color() {
     echo "bg$($UTILS --get-pywal-color 0 '#FFFFFF')"
 }
 
-while :; do $UTILS --time; sleep 10; done > $FIFO &
-PID=$!
-while :; do meminfo; sleep 2; done > $FIFO &
-PID="$PID $!"
-while :; do $UTILS --bspwm-status; sleep .15; done > $FIFO &
-PID="$PID $!"
-while :; do $UTILS --network-status; sleep 10; done > $FIFO &
-PID="$PID $!"
-while :; do $UTILS --charge-glyph; sleep 4; done > $FIFO &
-PID="$PID $!"
-while :; do $UTILS --volume-slider; sleep 1.5; done > $FIFO &
-PID="$PID $!"
-while :; do fg_color; sleep 3; done > $FIFO &
-PID="$PID $!"
-while :; do bg_color; sleep 3; done > $FIFO &
-PID="$PID $!"
-
-while read -r line; do
-    case $line in
-        memory*)
-            MEMORY_USAGE=$(echo "$line" | tail -c+7)
-            ;;
-        time*)
-            TIME=$(echo "$line" | tail -c+5)
-            ;;
-        charge-glyph*)
-            BATTERY=$(echo "$line" | tail -c+13)
-            ;;
-        bspwm-status*)
-            BSPWM_STATUS=$(echo "$line" | tail -c+13)
-            ;;
-        network-status*)
-            NETWORK_STATUS=$(echo "$line" | tail -c+15)
-            ;;
-        volume-slider*)
-            VOLUME=$(echo "$line" | tail -c+14)
-            ;;
-        fg*)
-            FG=$(echo "$line" | tail -c+3)
-            ;;
-        bg*)
-            BG=$(echo "$line" | tail -c+3)
-            ;;
-    esac
-
-    if [ -n $BG ] && [ -n $FG ]; then
-        if [ ! $BG = $BACKGROUND ] || [ ! $FG = $FOREGROUND ]; then
-            kill $PID
-            killall lemonbar
-            $0 &
-            exit 0
-        fi
-    fi
-
-    echo "%{l}$BSPWM_STATUS%{c}$(seperate "$TIME")%{r}$(seperate "$VOLUME" "$NETWORK_STATUS" "$MEMORY_USAGE" "$BATTERY")    "
-done < $FIFO | lemonbar \
+$HOME/.bin/lemonbar_utils | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \

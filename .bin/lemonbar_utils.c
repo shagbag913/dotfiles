@@ -1,11 +1,10 @@
-/*
- * Lemonbar wrapper.
- */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <pthread.h>
+#include <unistd.h>
 
 #if __has_include(<alsa/asoundlib.h>)
 #include <alsa/asoundlib.h>
@@ -24,58 +23,112 @@ struct volume {
 struct volume volume_info();
 #endif
 
-enum {UNAVAILABLE = -1};
+struct args {
+	unsigned long us;
+	void (*function)();
+};
+
+struct meminfo {
+        unsigned long total;
+        unsigned long used;
+        unsigned long free;
+        unsigned long buffers;
+        unsigned long cached;
+        unsigned long shmem;
+        unsigned long sreclaimable;
+};
 
 char *build_slider(int current_place);
-char *build_volume_slider();
-char *battery_status();
-char *formatted_time();
-char *network_status();
+void volume_slider();
+void battery_status();
+void formatted_time();
+void network_status();
 char *get_pywal_color_value(int color_index, char *fallback_color);
-void *build_bspwm_status();
+void build_bspwm_status();
 int get_charge();
 int is_charging();
+void *function_thread();
+void used_memory_percentage();
+
+static char bat_stat[25];
+static char net_stat[22];
+static char *bspwm_stat = NULL;
+static char time_stat[20];
+static char vol_slider[22];
+static char used_mem[11];
 
 int main(int argc, char *argv[]) {
-
-	if (argc < 2) {
-		printf("Not enough arguments specified. You must specify one argument.\n");
-		return 1;
+	/* lemonbar_wrapper needs pywal color function */
+	if (argc == 4) {
+		if (!strcmp(argv[1], "--get-pywal-color")) {
+			printf("%s\n", get_pywal_color_value(atoi(argv[2]), argv[3]));
+			return 0;
+		}
+	// TODO: handle incorrect arguments / number of arguments
 	}
 
-	if (!strcmp(argv[1], "--time")) {
-		printf("time%s\n", formatted_time());
-	} else if (!strcmp(argv[1], "--bspwm-status")) {
-		char *bspwm_status = build_bspwm_status();
+	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
+	struct args function1_args, function2_args, function3_args, function4_args,
+		    function5_args, function6_args;
 
-		if (bspwm_status != NULL) {
-			printf("bspwm-status%s\n", bspwm_status);
-			free(bspwm_status);
-		}
-	} else if (!strcmp(argv[1], "--charge-glyph")) {
-		printf("charge-glyph%s\n", battery_status());
-	} else if (!strcmp(argv[1], "--network-status")) {
-		printf("network-status%s\n", network_status());
-#ifdef SUPPORTS_ASOUNDLIB
-	} else if (!strcmp(argv[1], "--volume-slider")) {
-		printf("volume-slider%s\n", build_volume_slider());
-#endif
-	} else if (!strcmp(argv[1], "--get-pywal-color")) {
-		if (argc < 4) {
-			printf("Not enough arguments.\n");
-			return 1;
-		}
+	/* battery status */
+	function1_args.us = 5000000;
+	function1_args.function = battery_status;
+	pthread_create(&thread1, NULL, function_thread, &function1_args);
 
-		printf("%s\n", get_pywal_color_value(atoi(argv[2]), argv[3]));
-	} else {
-		printf("Unknown argument: %s.\n", argv[1]);
-		return 1;
+	/* network status */
+	function2_args.us = 10000000;
+	function2_args.function = network_status;
+	pthread_create(&thread2, NULL, function_thread, &function2_args);
+
+	/* bspwm status */
+	function3_args.us = 150000;
+	function3_args.function = build_bspwm_status;
+	pthread_create(&thread3, NULL, function_thread, &function3_args);
+
+	/* time */
+	function4_args.us = 10000000;
+	function4_args.function = formatted_time;
+	pthread_create(&thread4, NULL, function_thread, &function4_args);
+
+	/* volume slider */
+	function5_args.us = 1000000;
+	function5_args.function = volume_slider;
+	pthread_create(&thread5, NULL, function_thread, &function5_args);
+
+	/* memory usage */
+	function6_args.us = 4000000;
+	function6_args.function = used_memory_percentage;
+	pthread_create(&thread6, NULL, function_thread, &function6_args);
+
+	while (1) {
+		/* make sure all variables are not NULL or empty before printing */
+		if (!(bspwm_stat && time_stat && net_stat && bat_stat && used_mem))
+			continue;
+
+		printf("%{l}%s%{c}%s%{r}%s    |    %s    |    %s    |    %s  \n", bspwm_stat,
+				time_stat, used_mem, vol_slider, net_stat, bat_stat);
+		fflush(stdout);
+
+		/*
+		 * The amount of time we sleep here should be the less than or
+		 * equal to the smallest sleep time in the threaded functions.
+		 */
+		usleep(150000);
 	}
 }
 
-/*
- * Fetch color_index value from pywal cache file, if it fails return fallback_color.
- */
+void *function_thread(void *function_args)
+{
+	struct args *arguments = function_args;
+
+	while (1) {
+		// Fill global variable
+		arguments->function();
+		usleep(arguments->us);
+	}
+}
+
 char *get_pywal_color_value(int color_index, char *fallback_color)
 {
 	FILE *pywal_file;
@@ -109,13 +162,16 @@ char *get_pywal_color_value(int color_index, char *fallback_color)
 	return line;
 }
 
-/*
- * Builds a visual slider representing something on a scale of 100.
- */
 char *build_slider(int current_place) {
-	static char final_slider[14] = "\0";
+	static char final_slider[14];
 	int net_length = 4, plc;
 	int current_small_place = (float) current_place / (float) (100 / net_length);
+
+	/* nuke old final_slider string */
+	if (final_slider)
+		memset(&final_slider, 0, strlen(final_slider));
+
+	final_slider[0] = '\0';
 
 	for (plc = 0; plc < current_small_place; plc++)
 		strcat(final_slider, "—");
@@ -128,12 +184,7 @@ char *build_slider(int current_place) {
 	return final_slider;
 }
 
-/*
- * Returns a char array with the 12 hour time in the following format:
- * HH:MM AM/PM
- */
-char *formatted_time() {
-	static char formatted_time[20];
+void formatted_time() {
 	char amorpm[3];
 
 	time_t t = time(NULL);
@@ -150,25 +201,20 @@ char *formatted_time() {
 	if (hours == 0)
 		hours = 12;
 
-	sprintf(formatted_time, "%i:%02i %s", hours, time->tm_min, amorpm);
-
-	return formatted_time;
+	sprintf(time_stat, "%i:%02i %s", hours, time->tm_min, amorpm);
 }
 
-/*
- * Retrieves BSPWM active/inactive desktops and sorts them into glyphs.
- */
-void *build_bspwm_status() {
+void build_bspwm_status() {
 	int active_window, bg_window, index = 0;
-	char *delim_ptr, *return_window_status, *tmp_status, wm_status[80];
+	char *delim_ptr, *tmp_status, wm_status[80];
 	FILE *bspwm_status;
 
-	return_window_status = malloc(2);
+	bspwm_stat = malloc(2);
 
-	if (return_window_status == NULL)
+	if (bspwm_stat == NULL)
 		goto failed_alloc;
 
-	strcpy(return_window_status, "\0");
+	strcpy(bspwm_stat, "\0");
 
 	bspwm_status = popen("bspc wm --get-status", "r");
 	fscanf(bspwm_status, "%s", wm_status);
@@ -181,85 +227,74 @@ void *build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
-			tmp_status = return_window_status;
-			return_window_status = realloc(return_window_status,
-					strlen(return_window_status) + 10 +
+			tmp_status = bspwm_stat;
+			bspwm_stat = realloc(bspwm_stat,
+					strlen(bspwm_stat) + 10 +
 					(index >= 10 ? 33 : 31) + (active_window ? 26 : 0) + 1);
 
-			if (return_window_status == NULL) {
+			if (bspwm_stat == NULL) {
 				free(tmp_status);
 				goto failed_alloc;
 			}
 
 			// Add underline under active window numbers
 			if (active_window)
-				sprintf(return_window_status, "%s%{+u}%{U%s}", return_window_status,
+				sprintf(bspwm_stat, "%s%{+u}%{U%s}", bspwm_stat,
 						get_pywal_color_value(15, "#FFFFFF"));
 
-			sprintf(return_window_status,
+			sprintf(bspwm_stat,
 					"%s%%{A:bspc desktop -f ^%i:}      %i      %%{A}",
-					return_window_status, index, index);
+					bspwm_stat, index, index);
 
 			if (active_window)
-				strcat(return_window_status, "%{U-}%{-u}");
+				strcat(bspwm_stat, "%{U-}%{-u}");
 		}
 
 		++index;
 		delim_ptr = strtok(NULL, ":");
 	}
 
-	return return_window_status;
+	return;
 
 failed_alloc:
 	printf("%s: Memory allocation failed!\n", __func__);
-	return NULL;
 }
 
-/*
- * Returns a glyph showing current battery charge status.
- */
-char *battery_status() {
+void battery_status() {
 	int charging, charge;
-	static char status[25];
 	char *low_color;
 
 	charging = is_charging();
 	charge = get_charge();
 
-	if (charge == UNAVAILABLE)
-		return "";
+	if (charge == -1)
+		return;
 
 	if (charge >= 90) {
-		strcpy(status, "");
+		strcpy(bat_stat, "");
 	} else if (charge >= 70) {
-		strcpy(status, "");
+		strcpy(bat_stat, "");
 	} else if (charge >= 45) {
-		strcpy(status, "");
+		strcpy(bat_stat, "");
 	} else if (charge >= 15) {
-		strcpy(status, "");
+		strcpy(bat_stat, "");
 	} else {
 		if (!charging) {
 			low_color = get_pywal_color_value(1, "#FFA3A3");
-			sprintf(status, "%s%%{F%s}", status, low_color);
+			sprintf(bat_stat, "%s%%{F%s}", bat_stat, low_color);
 		}
-		strcat(status, "");
+		strcat(bat_stat, "");
 	}
 
-	if (status[0] == '%')
-		strcat(status, "%{F-}");
+	if (bat_stat[0] == '%')
+		strcat(bat_stat, "%{F-}");
 
-	sprintf(status, "%s  %i%%", status, charge);
+	sprintf(bat_stat, "%s  %i%%", bat_stat, charge);
 
 	if (charging)
-		strcat(status, "+");
-
-	return status;
+		strcat(bat_stat, "+");
 }
 
-/*
- * Retrieves current battery charge in a range from 0 - 100.
- * -1 is returned if a battery is not available.
- */
 int get_charge() {
 	FILE *cap_file;
 	int charge;
@@ -267,7 +302,7 @@ int get_charge() {
 	cap_file = fopen("/sys/class/power_supply/BAT0/capacity", "r");
 
 	if (cap_file == NULL)
-		return UNAVAILABLE;
+		return -1;
 
 	fscanf(cap_file, "%i", &charge);
 	fclose(cap_file);
@@ -275,10 +310,6 @@ int get_charge() {
 	return charge;
 }
 
-/*
- * Returns 0 if the device is charging, and 1 if it's not charging.
- * -1 is returned if a battery is not available.
- */
 int is_charging() {
 	FILE *status_file;
 	char status[13];
@@ -286,7 +317,7 @@ int is_charging() {
 	status_file = fopen("/sys/class/power_supply/BAT0/status", "r");
 
 	if (status_file == NULL)
-		return UNAVAILABLE;
+		return -1;
 
 	fscanf(status_file, "%s", status);
 	fclose(status_file);
@@ -294,14 +325,7 @@ int is_charging() {
 	return strcmp(status, "Discharging");
 }
 
-/* Returns network status like so:
- * - WiFi available and connected: white WiFi glyph
- * - WiFi available but not connected and no ethernet available: greyed out WiFi glyph
- * - WiFi available but not connected but ethernet available: wired connection glyph
- * - Connected to Ethernet: wired connection glyph
- * - Else: no output
- */
-char *network_status() {
+void network_status() {
 	FILE *wifi_operstate, *ethernet_operstate;
 	static char wstate[5], estate[5];
 
@@ -319,19 +343,14 @@ char *network_status() {
 	}
 
 	if (!strcmp(wstate, "up"))
-		return "";
+		strcpy(net_stat,"");
 	else if (strcmp(estate, "up"))
-		return "%{F#99FFFFFF}%{F-}";
+		strcpy(net_stat,"%{F#99FFFFFF}%{F-}");
 	else if (!strcmp(estate, "up"))
-		return "";
-
-	return "";
+		strcpy(net_stat,"");
 }
 
 #ifdef SUPPORTS_ASOUNDLIB
-/*
- * Returns PulseAudio volume in percentage.
- */
 struct volume volume_info() {
 	long volume, min, max;
 	struct volume volinfo;
@@ -363,18 +382,78 @@ struct volume volume_info() {
 	return volinfo;
 }
 
-/*
- * Returns visual volume slider with glyph indicating volume level / status.
- */
-char *build_volume_slider() {
-	static char return_slider[22];
+void volume_slider() {
 	struct volume volinfo = volume_info();
 
 	if (volinfo.muted || volinfo.level == 0)
-		sprintf(return_slider, "  %s", build_slider(volinfo.level));
+		sprintf(vol_slider, "  %s", build_slider(volinfo.level));
 	else
-		sprintf(return_slider, "  %s", build_slider(volinfo.level));
-
-	return return_slider;
+		sprintf(vol_slider, "  %s", build_slider(volinfo.level));
 }
 #endif
+
+struct meminfo mem_stats()
+{
+        char file_content[20];
+        struct meminfo mi;
+        int loc = 0;
+
+        FILE *memfile = fopen("/proc/meminfo", "r");
+
+        while (fscanf(memfile, "%s", file_content) != EOF) {
+                if (!strcmp(file_content, "MemTotal:")) {
+                        loc = 1;
+                        continue;
+                } else if (!strcmp(file_content, "MemFree:")) {
+                        loc = 2;
+                        continue;
+                } else if (!strcmp(file_content, "Buffers:")) {
+                        loc = 3;
+                        continue;
+                } else if (!strcmp(file_content, "Cached:")) {
+                        loc = 4;
+                        continue;
+                } else if (!strcmp(file_content, "Shmem:")) {
+                        loc = 5;
+                        continue;
+                } else if (!strcmp(file_content, "SReclaimable:")) {
+                        loc = 6;
+                        continue;
+                }
+
+                switch (loc) {
+                        case 1:
+                                mi.total = (unsigned long)atoi(file_content);
+                        case 2:
+                                mi.free = (unsigned long)atoi(file_content);
+                        case 3:
+                                mi.buffers = (unsigned long)atoi(file_content);
+                        case 4:
+                                mi.cached = (unsigned long)atoi(file_content);
+                        case 5:
+                                mi.shmem = (unsigned long)atoi(file_content);
+                        case 6:
+                                mi.sreclaimable = (unsigned long)atoi(file_content);
+                }
+
+                loc = 0;
+        }
+
+        fclose(memfile);
+
+        mi.used = mi.total + mi.shmem - mi.free - mi.buffers - mi.cached - mi.sreclaimable;
+
+        return mi;
+}
+
+void used_memory_percentage()
+{
+	struct meminfo mi;
+	int used_mem_dec;
+
+	mi = mem_stats();
+
+	used_mem_dec = 100 * ((float)mi.used / (float)mi.total);
+
+	sprintf(used_mem, "  %i%%", used_mem_dec);
+}
