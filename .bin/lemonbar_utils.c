@@ -217,6 +217,9 @@ void build_bspwm_status() {
 		return;
 	strcpy(wm_status_test, wm_status);
 
+	if (bspwm_stat != NULL)
+		free(bspwm_stat);
+
 	bspwm_stat = malloc(2);
 
 	if (bspwm_stat == NULL)
