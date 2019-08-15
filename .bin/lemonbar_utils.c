@@ -205,7 +205,7 @@ void formatted_time() {
 }
 
 void build_bspwm_status() {
-	int active_window, bg_window, index = 0;
+	int active_window, bg_window, index = 0, bspwm_status_alloc_size = 0;
 	char *delim_ptr, *tmp_status, wm_status[80];
 	FILE *bspwm_status;
 
@@ -231,10 +231,10 @@ void build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
+			bspwm_status_alloc_size += 10 + (index >= 10 ? 33 : 31) +
+				(active_window ? 26 : 0) + 1;
 			tmp_status = bspwm_stat;
-			bspwm_stat = realloc(bspwm_stat,
-					strlen(bspwm_stat) + 10 +
-					(index >= 10 ? 33 : 31) + (active_window ? 26 : 0) + 1);
+			bspwm_stat = realloc(bspwm_stat, bspwm_status_alloc_size);
 
 			if (bspwm_stat == NULL) {
 				free(tmp_status);
