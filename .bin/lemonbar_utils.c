@@ -132,7 +132,7 @@ void *function_thread(void *function_args)
 char *get_pywal_color_value(int color_index, char *fallback_color)
 {
 	FILE *pywal_file;
-	static char line[10];
+	static char line[8];
 	char pywal_path[100];
 	const char *suffix_pywal_path = "/.cache/wal/colors";
 	int tmp = 0;
@@ -395,7 +395,7 @@ void volume_slider() {
 	struct volume volinfo = volume_info();
 
 	if (volinfo.muted || volinfo.level == 0)
-		sprintf(vol_slider, "%%{F%s} %%{F-} %s", get_pywal_color_value(8, "#80FFFFFF"),
+		sprintf(vol_slider, "%%{F%s} %%{F-} %s", get_pywal_color_value(8, "#303030"),
 				build_slider(volinfo.level));
 	else
 		sprintf(vol_slider, "  %s", build_slider(volinfo.level));
