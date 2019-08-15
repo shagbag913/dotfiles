@@ -49,7 +49,7 @@ void *function_thread();
 void used_memory_percentage();
 
 char bat_stat[25];
-char net_stat[22];
+char net_stat[20];
 char *bspwm_stat = NULL;
 char time_stat[20];
 char vol_slider[39];
@@ -351,7 +351,7 @@ void network_status() {
 	if (!strcmp(wstate, "up"))
 		strcpy(net_stat,"");
 	else if (strcmp(estate, "up"))
-		strcpy(net_stat,"%{F#99FFFFFF}%{F-}");
+		sprintf(net_stat,"%%{F%s}%%{F-}", get_pywal_color_value(8, "#303030"));
 	else if (!strcmp(estate, "up"))
 		strcpy(net_stat,"");
 }
