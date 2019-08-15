@@ -25,14 +25,6 @@ MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | s
 BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
 BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
 
-fg_color() {
-    echo "fg$($UTILS --get-pywal-color 15 '#FFFFFF')"
-}
-
-bg_color() {
-    echo "bg$($UTILS --get-pywal-color 0 '#FFFFFF')"
-}
-
 $HOME/.bin/lemonbar_utils | lemonbar \
             -f 'Font Awesome 5 Free Solid:style=Solid' \
             -f 'SF Pro Display:style=Bold:size=10' \
