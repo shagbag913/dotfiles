@@ -20,18 +20,18 @@ struct volume volume_info();
 #endif
 
 struct args {
-	unsigned long us;
+	unsigned int us;
 	void (*function)();
 };
 
 struct meminfo {
-        unsigned long total;
-        unsigned long used;
-        unsigned long free;
-        unsigned long buffers;
-        unsigned long cached;
-        unsigned long shmem;
-        unsigned long sreclaimable;
+        unsigned int total;
+        unsigned int used;
+        unsigned int free;
+        unsigned int buffers;
+        unsigned int cached;
+        unsigned int shmem;
+        unsigned int sreclaimable;
 };
 
 #define USEC_TO_SEC(x) (x * 1000000)
@@ -60,7 +60,7 @@ char used_mem[11];
 char wm_status_test[80];
 
 /* Used to track shortest sleep() time */
-unsigned long shortest_sleep;
+unsigned int shortest_sleep;
 
 /* Commonly used pywal color values */
 char off_glyph_color[COLOR_HEX_LENGTH];
@@ -447,17 +447,17 @@ struct meminfo mem_stats()
 
                 switch (loc) {
                         case 1:
-                                mi.total = (unsigned long)atoi(file_content);
+                                mi.total = atoi(file_content);
                         case 2:
-                                mi.free = (unsigned long)atoi(file_content);
+                                mi.free = atoi(file_content);
                         case 3:
-                                mi.buffers = (unsigned long)atoi(file_content);
+                                mi.buffers = atoi(file_content);
                         case 4:
-                                mi.cached = (unsigned long)atoi(file_content);
+                                mi.cached = atoi(file_content);
                         case 5:
-                                mi.shmem = (unsigned long)atoi(file_content);
+                                mi.shmem = atoi(file_content);
                         case 6:
-                                mi.sreclaimable = (unsigned long)atoi(file_content);
+                                mi.sreclaimable = atoi(file_content);
                 }
 
                 loc = 0;
