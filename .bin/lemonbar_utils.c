@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 	strcpy(low_battery_glyph_color, get_pywal_color_value(1, "#FFA3A3"));
 
 	/* Battery status */
-	function1_args.us = USEC_TO_SEC(5);
+	function1_args.us = USEC_TO_SEC(1.5);
 	function1_args.function = battery_status;
 	pthread_create(&thread1, NULL, function_thread, &function1_args);
 
@@ -289,28 +289,46 @@ failed_alloc:
 
 void battery_status() {
 	short charging, charge;
+	static unsigned short charging_battery_glyph = 0;
+	unsigned short battery_glyph = 0;
+	const char *battery_glyphs[] = {
+		"",
+		"",
+		"",
+		"",
+		""
+	};
 
 	charging = is_charging();
 	charge = get_charge();
 
+	memset(&bat_stat, 0, strlen(bat_stat));
+
 	if (charge == -1)
 		return;
 
-	memset(&bat_stat, 0, strlen(bat_stat));
+	if (charge >= 90)
+		battery_glyph = 4;
+	else if (charge >= 70)
+		battery_glyph = 3;
+	else if (charge >= 45)
+		battery_glyph = 2;
+	else if (charge >= 15)
+		battery_glyph = 1;
+	else
+		battery_glyph = 0;
 
-	if (charge >= 90) {
-		strcpy(bat_stat, "");
-	} else if (charge >= 70) {
-		strcpy(bat_stat, "");
-	} else if (charge >= 45) {
-		strcpy(bat_stat, "");
-	} else if (charge >= 15) {
-		strcpy(bat_stat, "");
+	if (!charging) {
+		sprintf(bat_stat, "%s%%{F%s}", bat_stat, low_battery_glyph_color);
+		charging_battery_glyph = battery_glyph;
 	} else {
-		if (!charging)
-			sprintf(bat_stat, "%s%%{F%s}", bat_stat, low_battery_glyph_color);
-		strcat(bat_stat, "");
+		if (charging_battery_glyph < sizeof(battery_glyphs)/sizeof(battery_glyphs[0]) - 1)
+			charging_battery_glyph++;
+		else
+			charging_battery_glyph = battery_glyph;
 	}
+
+	strcat(bat_stat, battery_glyphs[charging ? charging_battery_glyph : battery_glyph]);
 
 	if (bat_stat[0] == '%')
 		strcat(bat_stat, "%{F-}");
