@@ -44,8 +44,8 @@ void formatted_time();
 void network_status();
 char *get_pywal_color_value(int color_index, char *fallback_color);
 void build_bspwm_status();
-unsigned short get_charge();
-unsigned short is_charging();
+short get_charge();
+short is_charging();
 void *function_thread();
 void used_memory_percentage();
 
@@ -284,7 +284,7 @@ failed_alloc:
 }
 
 void battery_status() {
-	unsigned short charging, charge;
+	short charging, charge;
 
 	charging = is_charging();
 	charge = get_charge();
@@ -315,7 +315,7 @@ void battery_status() {
 		strcat(bat_stat, "+");
 }
 
-unsigned short get_charge() {
+short get_charge() {
 	FILE *cap_file;
 	int charge;
 
@@ -330,7 +330,7 @@ unsigned short get_charge() {
 	return charge;
 }
 
-unsigned short is_charging() {
+short is_charging() {
 	FILE *status_file;
 	char status[13];
 
