@@ -16,7 +16,6 @@
 !.bin/getimages
 !.bin/lemonbar_wrapper
 !.bin/lemonbar_utils.c
-!.bin/meminfo.c
 !.bin/vim
 !.bin/reinit_mouse
 !.bin/tg_bot
