@@ -35,6 +35,7 @@ struct meminfo {
 };
 
 #define USEC_TO_SEC(x) (x * 1000000)
+#define COLOR_HEX_LENGTH 8
 
 char *build_slider(int current_place);
 void volume_slider();
@@ -54,8 +55,17 @@ char *bspwm_stat = NULL;
 char time_stat[20];
 char vol_slider[39];
 char used_mem[11];
+
+/* Used to keep track of last `bspc wm --get-status` output */
 char wm_status_test[80];
+
+/* Used to track shortest sleep() time */
 unsigned long shortest_sleep;
+
+/* Commonly used pywal color values */
+char off_glyph_color[COLOR_HEX_LENGTH];
+char normal_glyph_color[COLOR_HEX_LENGTH];
+char low_battery_glyph_color[COLOR_HEX_LENGTH];
 
 int main(int argc, char *argv[]) {
 	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
@@ -70,6 +80,11 @@ int main(int argc, char *argv[]) {
 		}
 	/* TODO: handle incorrect arguments / number of arguments */
 	}
+
+	/* Set common color values */
+	strcpy(off_glyph_color, get_pywal_color_value(8, "#303030"));
+	strcpy(normal_glyph_color, get_pywal_color_value(15, "#FFFFFF"));
+	strcpy(low_battery_glyph_color, get_pywal_color_value(1, "#FFA3A3"));
 
 	/* Battery status */
 	function1_args.us = USEC_TO_SEC(5);
@@ -212,8 +227,10 @@ void build_bspwm_status() {
 	fscanf(bspwm_status, "%s", wm_status);
 	pclose(bspwm_status);
 
+	/* Don't proceed if bspwm_status is the same as the last check */
 	if (!strcmp(wm_status, wm_status_test))
 		return;
+
 	strcpy(wm_status_test, wm_status);
 
 	if (bspwm_stat != NULL)
@@ -246,7 +263,7 @@ void build_bspwm_status() {
 			/* Add underline under active window numbers */
 			if (active_window)
 				sprintf(bspwm_stat, "%s%%{+u}%%{U%s}", bspwm_stat,
-						get_pywal_color_value(15, "#FFFFFF"));
+						normal_glyph_color);
 
 			sprintf(bspwm_stat,
 					"%s%%{A:bspc desktop -f ^%i:}      %i      %%{A}",
@@ -268,7 +285,6 @@ failed_alloc:
 
 void battery_status() {
 	int charging, charge;
-	char *low_color;
 
 	charging = is_charging();
 	charge = get_charge();
@@ -285,10 +301,8 @@ void battery_status() {
 	} else if (charge >= 15) {
 		strcpy(bat_stat, "");
 	} else {
-		if (!charging) {
-			low_color = get_pywal_color_value(1, "#FFA3A3");
-			sprintf(bat_stat, "%s%%{F%s}", bat_stat, low_color);
-		}
+		if (!charging)
+			sprintf(bat_stat, "%s%%{F%s}", bat_stat, low_battery_glyph_color);
 		strcat(bat_stat, "");
 	}
 
@@ -351,7 +365,7 @@ void network_status() {
 	if (!strcmp(wstate, "up"))
 		strcpy(net_stat,"");
 	else if (strcmp(estate, "up"))
-		sprintf(net_stat,"%%{F%s}%%{F-}", get_pywal_color_value(8, "#303030"));
+		sprintf(net_stat,"%%{F%s}%%{F-}", off_glyph_color);
 	else if (!strcmp(estate, "up"))
 		strcpy(net_stat,"");
 }
@@ -395,7 +409,7 @@ void volume_slider() {
 	struct volume volinfo = volume_info();
 
 	if (volinfo.muted || volinfo.level == 0)
-		sprintf(vol_slider, "%%{F%s} %%{F-} %s", get_pywal_color_value(8, "#303030"),
+		sprintf(vol_slider, "%%{F%s} %%{F-} %s", off_glyph_color,
 				build_slider(volinfo.level));
 	else
 		sprintf(vol_slider, "  %s", build_slider(volinfo.level));
