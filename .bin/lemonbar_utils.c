@@ -246,6 +246,10 @@ void build_bspwm_status() {
 	delim_ptr = strtok(wm_status, ":");
 
 	while (delim_ptr != NULL) {
+		/* Break after completing the first monitor sequence */
+		if (*delim_ptr == 'G')
+			break;
+
 		active_window = delim_ptr[0] == 'O' || delim_ptr[0] == 'F';
 		bg_window = delim_ptr[0] == 'o';
 
