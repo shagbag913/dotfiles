@@ -292,6 +292,8 @@ void battery_status() {
 	if (charge == -1)
 		return;
 
+	memset(&bat_stat, 0, strlen(bat_stat));
+
 	if (charge >= 90) {
 		strcpy(bat_stat, "");
 	} else if (charge >= 70) {
