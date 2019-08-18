@@ -323,7 +323,8 @@ void battery_status() {
 		battery_glyph = 0;
 
 	if (!charging) {
-		sprintf(bat_stat, "%s%%{F%s}", bat_stat, low_battery_glyph_color);
+		if (!battery_glyph)
+			sprintf(bat_stat, "%s%%{F%s}", bat_stat, low_battery_glyph_color);
 		charging_battery_glyph = battery_glyph;
 
 		/* Slower sleep time */
