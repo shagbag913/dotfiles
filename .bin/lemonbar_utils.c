@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread2, NULL, function_thread, &function2_args);
 
 	/* BSPWM status */
-	function3_args.us = 100000;
+	function3_args.us = USEC_TO_SEC(.1);
 	function3_args.function = build_bspwm_status;
 	pthread_create(&thread3, NULL, function_thread, &function3_args);
 
