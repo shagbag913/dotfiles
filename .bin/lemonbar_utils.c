@@ -382,7 +382,7 @@ short is_charging() {
 
 void network_status() {
 	FILE *wifi_operstate, *ethernet_operstate;
-	static char wstate[5], estate[5];
+	char wstate[5], estate[5];
 
 	wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
 	ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
@@ -434,7 +434,7 @@ struct volume volume_info() {
 
 	snd_mixer_close(handle);
 
-	volinfo.level = round((float) volume / (float) max * 100);
+	volinfo.level = round((float)volume / (float)max * 100);
 	volinfo.muted = !volinfo.muted;
 
 	return volinfo;
@@ -449,7 +449,7 @@ void volume_slider() {
 	else
 		sprintf(vol_slider, "  %s", build_slider(volinfo.level));
 }
-#endif
+#endif /* SUPPORTS_ASOUNDLIB */
 
 struct meminfo mem_stats()
 {
