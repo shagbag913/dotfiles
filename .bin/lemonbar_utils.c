@@ -62,6 +62,9 @@ char wm_status_test[80];
 /* Used to track shortest sleep() time */
 unsigned int shortest_sleep;
 
+/* Used to change battery status sleep time dynamically */
+unsigned int *battery_status_sleep_time_ptr;
+
 /* Commonly used pywal color values */
 char off_glyph_color[COLOR_HEX_LENGTH];
 char normal_glyph_color[COLOR_HEX_LENGTH];
@@ -87,7 +90,8 @@ int main(int argc, char *argv[]) {
 	strcpy(low_battery_glyph_color, get_pywal_color_value(1, "#FFA3A3"));
 
 	/* Battery status */
-	function1_args.us = USEC_TO_SEC(1.5);
+	battery_status_sleep_time_ptr = &function1_args.us;
+	function1_args.us = USEC_TO_SEC(5);
 	function1_args.function = battery_status;
 	pthread_create(&thread1, NULL, function_thread, &function1_args);
 
@@ -321,11 +325,17 @@ void battery_status() {
 	if (!charging) {
 		sprintf(bat_stat, "%s%%{F%s}", bat_stat, low_battery_glyph_color);
 		charging_battery_glyph = battery_glyph;
+
+		/* Slower sleep time */
+		*battery_status_sleep_time_ptr = USEC_TO_SEC(5);
 	} else {
 		if (charging_battery_glyph < sizeof(battery_glyphs)/sizeof(battery_glyphs[0]) - 1)
 			charging_battery_glyph++;
 		else
 			charging_battery_glyph = battery_glyph;
+
+		/* Faster sleep time so charging animation isn't slow */
+		*battery_status_sleep_time_ptr = USEC_TO_SEC(1);
 	}
 
 	strcat(bat_stat, battery_glyphs[charging ? charging_battery_glyph : battery_glyph]);
