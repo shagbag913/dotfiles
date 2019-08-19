@@ -51,3 +51,6 @@
 
 !Walls/
 !Walls/*
+
+!.zsh/
+!.zsh/zsh-autosuggestions

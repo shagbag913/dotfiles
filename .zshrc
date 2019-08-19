@@ -12,7 +12,7 @@ autoload -U colors && colors
 
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 [[ -f $HOME/.cache/wal/sequences ]] && cat $HOME/.cache/wal/sequences
-. /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+. $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 ZSH_AUTOSUGGEST_STRATEGY=completion
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
