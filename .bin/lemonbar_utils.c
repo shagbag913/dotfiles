@@ -80,8 +80,16 @@ int main(int argc, char *argv[]) {
 		if (!strcmp(argv[1], "--get-pywal-color")) {
 			printf("%s\n", get_pywal_color_value(atoi(argv[2]), argv[3]));
 			return 0;
+		} else {
+			printf("Unknown arguments.\n");
+			return 1;
 		}
-	/* TODO: handle incorrect arguments / number of arguments */
+	} else if (argc > 4 && argc != 1) {
+		printf("Too many arguments.\n");
+		return 1;
+	} else if (argc != 1) {
+		printf("Not enough arguments.\n");
+		return 1;
 	}
 
 	/* Set common color values */
@@ -91,17 +99,16 @@ int main(int argc, char *argv[]) {
 
 	/* Battery status */
 	battery_status_sleep_time_ptr = &function1_args.us;
-	function1_args.us = USEC_TO_SEC(5);
 	function1_args.function = battery_status;
 	pthread_create(&thread1, NULL, function_thread, &function1_args);
 
 	/* Network status */
-	function2_args.us = USEC_TO_SEC(1);
+	function2_args.us = USEC_TO_SEC(5);
 	function2_args.function = network_status;
 	pthread_create(&thread2, NULL, function_thread, &function2_args);
 
 	/* BSPWM status */
-	function3_args.us = USEC_TO_SEC(.1);
+	function3_args.us = USEC_TO_SEC(.15);
 	function3_args.function = build_bspwm_status;
 	pthread_create(&thread3, NULL, function_thread, &function3_args);
 
@@ -135,7 +142,7 @@ int main(int argc, char *argv[]) {
 
 void *function_thread(void *function_args)
 {
-	struct args *arguments = function_args;
+	const struct args *arguments = function_args;
 
 	/* Keep track of shortest sleep time */
 	if (!shortest_sleep || arguments->us < shortest_sleep)
@@ -203,10 +210,9 @@ char *build_slider(int current_place) {
 }
 
 void formatted_time() {
-	char amorpm[3];
-
 	time_t t = time(NULL);
 	struct tm *time = localtime(&t);
+	char amorpm[3];
 	int hours = time->tm_hour;
 
 	if (hours < 12) {
@@ -225,9 +231,8 @@ void formatted_time() {
 void build_bspwm_status() {
 	int active_window, bg_window, index = 0, bspwm_status_alloc_size = 0;
 	char *delim_ptr, *tmp_status, wm_status[80];
-	FILE *bspwm_status;
+	FILE *bspwm_status = popen("bspc wm --get-status", "r");
 
-	bspwm_status = popen("bspc wm --get-status", "r");
 	fscanf(bspwm_status, "%s", wm_status);
 	pclose(bspwm_status);
 
@@ -292,7 +297,6 @@ failed_alloc:
 }
 
 void battery_status() {
-	short charging, charge;
 	static unsigned short charging_battery_glyph = 0;
 	unsigned short battery_glyph = 0;
 	const char *battery_glyphs[] = {
@@ -302,9 +306,8 @@ void battery_status() {
 		"",
 		""
 	};
-
-	charging = is_charging();
-	charge = get_charge();
+	const short charging = is_charging();
+	const short charge = get_charge();
 
 	memset(&bat_stat, 0, strlen(bat_stat));
 
@@ -351,10 +354,8 @@ void battery_status() {
 }
 
 short get_charge() {
-	FILE *cap_file;
 	int charge;
-
-	cap_file = fopen("/sys/class/power_supply/BAT0/capacity", "r");
+	FILE *cap_file = fopen("/sys/class/power_supply/BAT0/capacity", "r");
 
 	if (cap_file == NULL)
 		return -1;
@@ -366,10 +367,8 @@ short get_charge() {
 }
 
 short is_charging() {
-	FILE *status_file;
 	char status[13];
-
-	status_file = fopen("/sys/class/power_supply/BAT0/status", "r");
+	FILE *status_file = fopen("/sys/class/power_supply/BAT0/status", "r");
 
 	if (status_file == NULL)
 		return -1;
@@ -381,11 +380,9 @@ short is_charging() {
 }
 
 void network_status() {
-	FILE *wifi_operstate, *ethernet_operstate;
 	char wstate[5], estate[5];
-
-	wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
-	ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
+	FILE *wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
+	FILE *ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
 
 	if (wifi_operstate != NULL) {
 		fscanf(wifi_operstate, "%s", wstate);
@@ -454,9 +451,8 @@ void volume_slider() {
 struct meminfo mem_stats()
 {
         char file_content[20];
-        struct meminfo mi;
         int loc = 0;
-
+        struct meminfo mi;
         FILE *memfile = fopen("/proc/meminfo", "r");
 
         while (fscanf(memfile, "%s", file_content) != EOF) {
@@ -507,12 +503,8 @@ struct meminfo mem_stats()
 
 void used_memory_percentage()
 {
-	struct meminfo mi;
-	int used_mem_dec;
-
-	mi = mem_stats();
-
-	used_mem_dec = 100 * ((float)mi.used / (float)mi.total);
+	struct meminfo mi = mem_stats();
+	int used_mem_dec = 100 * ((float)mi.used / (float)mi.total);
 
 	sprintf(used_mem, "  %i%%", used_mem_dec);
 }

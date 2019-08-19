@@ -5,13 +5,12 @@
 #
 DUNSTRC=$HOME/.config/dunst/dunstrc
 
-. $HOME/.cache/wal/colors.sh
-
-if [[ -n "$background" ]]; then
+if [[ -f $HOME/.cache/wal/colors.sh ]]; then
+    . $HOME/.cache/wal/colors.sh
     sed -i 's/foreground = .*/foreground = \"'"$foreground"'\"/g' $DUNSTRC
     sed -i 's/background = .*/background = \"'"$background"'\"/g' $DUNSTRC
 else
-    echo "Couldn't source pywal config, not changing colors"
+    echo "pywal color cache not found, not changing foreground and background colors"
 fi
 
 # Vertical size in percentage of the bar

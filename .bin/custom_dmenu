@@ -7,9 +7,9 @@ if [[ -f $HOME/.cache/wal/colors.sh ]]; then
     . $HOME/.cache/wal/colors.sh
 fi
 
-[[ -z $foreground ]] && foreground='#FFFFFF'
-[[ -z $background ]] && background='#000000'
-[[ -z $color8 ]] && color8='#000000'
+foreground=${foreground:-#FFFFFF}
+background=${background:-#000000}
+color8=${color8:-#000000}
 
 MONITOR_WIDTH=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 1p)
 MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)

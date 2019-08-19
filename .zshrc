@@ -74,4 +74,4 @@ pre_cmd() {
 
 precmd_functions+=(pre_cmd)
 
-ps -e | grep -q Xorg && neofetch
+[[ -n "$DISPLAY" ]] && neofetch
