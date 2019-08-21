@@ -479,16 +479,22 @@ struct meminfo mem_stats()
                 switch (loc) {
                         case 1:
                                 mi.total = atoi(file_content);
+				break;
                         case 2:
                                 mi.free = atoi(file_content);
+				break;
                         case 3:
                                 mi.buffers = atoi(file_content);
+				break;
                         case 4:
                                 mi.cached = atoi(file_content);
+				break;
                         case 5:
                                 mi.shmem = atoi(file_content);
+				break;
                         case 6:
                                 mi.sreclaimable = atoi(file_content);
+				break;
                 }
 
                 loc = 0;
