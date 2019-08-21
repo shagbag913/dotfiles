@@ -25,13 +25,13 @@ struct args {
 };
 
 struct meminfo {
-        unsigned int total;
-        unsigned int used;
-        unsigned int free;
-        unsigned int buffers;
-        unsigned int cached;
-        unsigned int shmem;
-        unsigned int sreclaimable;
+	unsigned int total;
+	unsigned int used;
+	unsigned int free;
+	unsigned int buffers;
+	unsigned int cached;
+	unsigned int shmem;
+	unsigned int sreclaimable;
 };
 
 #define USEC_TO_SEC(x) (x * 1000000)
@@ -450,61 +450,61 @@ void volume_slider() {
 
 struct meminfo mem_stats()
 {
-        char file_content[20];
-        int loc = 0;
-        struct meminfo mi;
-        FILE *memfile = fopen("/proc/meminfo", "r");
+	char file_content[20];
+	int loc = 0;
+	struct meminfo mi;
+	FILE *memfile = fopen("/proc/meminfo", "r");
 
-        while (fscanf(memfile, "%s", file_content) != EOF) {
-                if (!strcmp(file_content, "MemTotal:")) {
-                        loc = 1;
-                        continue;
-                } else if (!strcmp(file_content, "MemFree:")) {
-                        loc = 2;
-                        continue;
-                } else if (!strcmp(file_content, "Buffers:")) {
-                        loc = 3;
-                        continue;
-                } else if (!strcmp(file_content, "Cached:")) {
-                        loc = 4;
-                        continue;
-                } else if (!strcmp(file_content, "Shmem:")) {
-                        loc = 5;
-                        continue;
-                } else if (!strcmp(file_content, "SReclaimable:")) {
-                        loc = 6;
-                        continue;
-                }
+	while (fscanf(memfile, "%s", file_content) != EOF) {
+		if (!strcmp(file_content, "MemTotal:")) {
+			loc = 1;
+			continue;
+		} else if (!strcmp(file_content, "MemFree:")) {
+			loc = 2;
+			continue;
+		} else if (!strcmp(file_content, "Buffers:")) {
+			loc = 3;
+			continue;
+		} else if (!strcmp(file_content, "Cached:")) {
+			loc = 4;
+			continue;
+		} else if (!strcmp(file_content, "Shmem:")) {
+			loc = 5;
+			continue;
+		} else if (!strcmp(file_content, "SReclaimable:")) {
+			loc = 6;
+			continue;
+		}
 
-                switch (loc) {
-                        case 1:
-                                mi.total = atoi(file_content);
+		switch (loc) {
+			case 1:
+				mi.total = atoi(file_content);
 				break;
-                        case 2:
-                                mi.free = atoi(file_content);
+			case 2:
+				mi.free = atoi(file_content);
 				break;
-                        case 3:
-                                mi.buffers = atoi(file_content);
+			case 3:
+				mi.buffers = atoi(file_content);
 				break;
-                        case 4:
-                                mi.cached = atoi(file_content);
+			case 4:
+				mi.cached = atoi(file_content);
 				break;
-                        case 5:
-                                mi.shmem = atoi(file_content);
+			case 5:
+				mi.shmem = atoi(file_content);
 				break;
-                        case 6:
-                                mi.sreclaimable = atoi(file_content);
+			case 6:
+				mi.sreclaimable = atoi(file_content);
 				break;
-                }
+		}
 
-                loc = 0;
-        }
+		loc = 0;
+	}
 
-        fclose(memfile);
+	fclose(memfile);
 
-        mi.used = mi.total + mi.shmem - mi.free - mi.buffers - mi.cached - mi.sreclaimable;
+	mi.used = mi.total + mi.shmem - mi.free - mi.buffers - mi.cached - mi.sreclaimable;
 
-        return mi;
+	return mi;
 }
 
 void used_memory_percentage()
