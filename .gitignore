@@ -17,6 +17,7 @@
 !.bin/lemonbar_wrapper
 !.bin/lemonbar_utils.c
 !.bin/lemonbar_utils.h
+!.bin/Makefile
 !.bin/vim
 !.bin/reinit_mouse
 !.bin/tg_bot

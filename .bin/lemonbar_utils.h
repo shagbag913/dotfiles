@@ -1,5 +1,4 @@
 #if __has_include(<alsa/asoundlib.h>)
-#include <alsa/asoundlib.h>
 
 #define SUPPORTS_ASOUNDLIB
 

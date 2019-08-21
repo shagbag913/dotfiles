@@ -9,6 +9,10 @@
 
 #include "lemonbar_utils.h"
 
+#ifdef SUPPORTS_ASOUNDLIB
+#include <alsa/asoundlib.h>
+#endif
+
 int main(int argc, char *argv[]) {
 	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
 	struct args function1_args, function2_args, function3_args, function4_args,
@@ -156,8 +160,9 @@ struct tm *get_time()
 
 void libnotify_notify(char *message)
 {
-	notify_init("lemonbar");
 	NotifyNotification *notification = notify_notification_new(message, "lemonbar", NULL);
+
+	notify_init("lemonbar");
 	notify_notification_set_timeout(notification, 2000);
 	notify_notification_show(notification, NULL);
 }
