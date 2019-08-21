@@ -220,12 +220,18 @@ void formatted_time() {
 }
 
 void build_bspwm_status() {
-	int active_window, bg_window, index = 0, bspwm_status_alloc_size = 0;
+	unsigned short ret, bg_window, active_window, index = 0;
+	unsigned int bspwm_status_alloc_size = 0;
 	char *delim_ptr, *tmp_status, wm_status[80];
 	FILE *bspwm_status = popen("bspc wm --get-status", "r");
 
 	fscanf(bspwm_status, "%s", wm_status);
-	pclose(bspwm_status);
+	ret = pclose(bspwm_status);
+
+	if (ret) {
+		printf("Command `bspm wm --get-status` failed\n");
+		return;
+	}
 
 	/* Don't proceed if bspwm_status is the same as the last check */
 	if (!strcmp(wm_status, wm_status_test))
