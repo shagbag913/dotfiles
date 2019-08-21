@@ -266,7 +266,8 @@ void build_bspwm_status() {
 			bspwm_stat = realloc(bspwm_stat, bspwm_status_alloc_size);
 
 			if (bspwm_stat == NULL) {
-				free(tmp_status);
+				if (tmp_status == NULL)
+					free(tmp_status);
 				goto failed_alloc;
 			}
 
