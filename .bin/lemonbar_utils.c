@@ -5,70 +5,9 @@
 #include <time.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <libnotify/notify.h>
 
-#if __has_include(<alsa/asoundlib.h>)
-#include <alsa/asoundlib.h>
-
-#define SUPPORTS_ASOUNDLIB
-
-struct volume {
-	int muted;
-	int level;
-};
-
-struct volume volume_info();
-#endif
-
-struct args {
-	unsigned int us;
-	void (*function)();
-};
-
-struct meminfo {
-	unsigned int total;
-	unsigned int used;
-	unsigned int free;
-	unsigned int buffers;
-	unsigned int cached;
-	unsigned int shmem;
-	unsigned int sreclaimable;
-};
-
-#define USEC_TO_SEC(x) (x * 1000000)
-#define COLOR_HEX_LENGTH 8
-
-char *build_slider(int current_place);
-void volume_slider();
-void battery_status();
-void formatted_time();
-void network_status();
-char *get_pywal_color_value(int color_index, char *fallback_color);
-void build_bspwm_status();
-short get_charge();
-short is_charging();
-void *function_thread();
-void used_memory_percentage();
-
-char bat_stat[25];
-char net_stat[20];
-char *bspwm_stat = NULL;
-char time_stat[20];
-char vol_slider[39];
-char used_mem[11];
-
-/* Used to keep track of last `bspc wm --get-status` output */
-char wm_status_test[80];
-
-/* Used to track shortest sleep() time */
-unsigned int shortest_sleep;
-
-/* Used to change battery status sleep time dynamically */
-unsigned int *battery_status_sleep_time_ptr;
-
-/* Commonly used pywal color values */
-char off_glyph_color[COLOR_HEX_LENGTH];
-char normal_glyph_color[COLOR_HEX_LENGTH];
-char low_battery_glyph_color[COLOR_HEX_LENGTH];
+#include "lemonbar_utils.h"
 
 int main(int argc, char *argv[]) {
 	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
@@ -80,16 +19,12 @@ int main(int argc, char *argv[]) {
 		if (!strcmp(argv[1], "--get-pywal-color")) {
 			printf("%s\n", get_pywal_color_value(atoi(argv[2]), argv[3]));
 			return 0;
-		} else {
-			printf("Unknown arguments.\n");
-			return 1;
 		}
-	} else if (argc > 4 && argc != 1) {
-		printf("Too many arguments.\n");
-		return 1;
-	} else if (argc != 1) {
-		printf("Not enough arguments.\n");
-		return 1;
+	} else if (argc == 2) {
+		if (!strcmp(argv[1], "--extended-time")) {
+			notify_extended_time();
+			return 0;
+		}
 	}
 
 	/* Set common color values */
@@ -133,7 +68,9 @@ int main(int argc, char *argv[]) {
 					strlen(bat_stat) && strlen(used_mem) && strlen(vol_slider)))
 			continue;
 
-		printf("%%{l}%s%%{c}%s%%{r}%s    |    %s    |    %s    |    %s    \n", bspwm_stat,
+		//TODO: this is starting to get messy
+		printf("%%{l}%s%%{c}%%{A:%s/.bin/lemonbar_utils --extended-time:}%s%%{A}%%{r}"
+				"%s    |    %s    |    %s    |    %s    \n", bspwm_stat, HOME,
 				time_stat, used_mem, vol_slider, net_stat, bat_stat);
 		fflush(stdout);
 		usleep(shortest_sleep);
@@ -158,12 +95,12 @@ void *function_thread(void *function_args)
 char *get_pywal_color_value(int color_index, char *fallback_color)
 {
 	FILE *pywal_file;
-	static char line[8];
+	static char line[COLOR_HEX_LENGTH];
 	char pywal_path[100];
 	const char *suffix_pywal_path = "/.cache/wal/colors";
 	int tmp = 0;
 
-	strncpy(pywal_path, getenv("HOME"), sizeof(pywal_path) - strlen(suffix_pywal_path) - 1);
+	strncpy(pywal_path, HOME, sizeof(pywal_path) - strlen(suffix_pywal_path) - 1);
 	strcat(pywal_path, suffix_pywal_path);
 
 	pywal_file = fopen(pywal_path, "r");
@@ -209,10 +146,59 @@ char *build_slider(int current_place) {
 	return final_slider;
 }
 
-void formatted_time() {
+struct tm *get_time()
+{
 	time_t t = time(NULL);
 	struct tm *time = localtime(&t);
+
+	return time;
+}
+
+void libnotify_notify(char *message)
+{
+	notify_init("lemonbar");
+	NotifyNotification *notification = notify_notification_new(message, "lemonbar", NULL);
+	notify_notification_set_timeout(notification, 2000);
+	notify_notification_show(notification, NULL);
+}
+
+void notify_extended_time()
+{
+	struct tm *time = get_time();
+	const char *weekday_names[] = {
+		"Sunday",
+		"Monday",
+		"Tuesday",
+		"Wednesday",
+		"Thursday",
+		"Friday",
+		"Saturday"
+	};
+	const char *month_names[] = {
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December"
+	};
+	char final_extended_time[30];
+
+	sprintf(final_extended_time, "%s, %s %i, %i", weekday_names[time->tm_wday],
+			month_names[time->tm_mon], time->tm_mday, time->tm_year + 1900);
+
+	libnotify_notify(final_extended_time);
+}
+
+void formatted_time() {
 	char amorpm[3];
+	struct tm *time = get_time();
 	int hours = time->tm_hour;
 
 	if (hours < 12) {
