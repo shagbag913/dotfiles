@@ -241,17 +241,25 @@ void build_bspwm_status() {
 	}
 
 	/* Don't proceed if bspwm_status is the same as the last check */
-	if (!strcmp(wm_status, wm_status_test))
-		return;
+	if (wm_status_test) {
+		if (!strcmp(wm_status, wm_status_test))
+			return;
+	}
+
+	if (wm_status_test)
+		free(wm_status_test);
+
+	wm_status_test = malloc(strlen(wm_status) + 1);
+	if (!wm_status_test)
+		goto failed_alloc;
 
 	strcpy(wm_status_test, wm_status);
 
-	if (bspwm_stat != NULL)
+	if (bspwm_stat)
 		free(bspwm_stat);
 
 	bspwm_stat = malloc(2);
-
-	if (bspwm_stat == NULL)
+	if (!bspwm_stat)
 		goto failed_alloc;
 
 	strcpy(bspwm_stat, "\0");
@@ -272,8 +280,8 @@ void build_bspwm_status() {
 			tmp_status = bspwm_stat;
 			bspwm_stat = realloc(bspwm_stat, bspwm_status_alloc_size);
 
-			if (bspwm_stat == NULL) {
-				if (tmp_status == NULL)
+			if (!bspwm_stat) {
+				if (!tmp_status)
 					free(tmp_status);
 				goto failed_alloc;
 			}

@@ -52,7 +52,7 @@ char vol_slider[39];
 char used_mem[11];
 
 /* Used to keep track of last `bspc wm --get-status` output */
-char wm_status_test[80];
+char *wm_status_test;
 
 /* Used to track shortest sleep() time */
 unsigned int shortest_sleep;
