@@ -72,10 +72,17 @@ int main(int argc, char *argv[]) {
 					strlen(bat_stat) && strlen(used_mem) && strlen(vol_slider)))
 			continue;
 
-		//TODO: this is starting to get messy
-		printf("%%{l}%s%%{c}%%{A:%s/.bin/lemonbar_utils --extended-time:}%s%%{A}%%{r}"
-				"%s    |    %s    |    %s    |    %s    \n", bspwm_stat, HOME,
-				time_stat, used_mem, vol_slider, net_stat, bat_stat);
+		/* Left of the bar */
+		printf("%%{l}%s", bspwm_stat);
+
+		/* Center of the bar */
+		printf("%%{c}%%{A:%s/.bin/lemonbar_utils --extended-time:}%s%%{A}",
+				HOME, time_stat);
+
+		/* Right of the bar */
+		printf("%%{r}%s    |    %s    |    %s    |    %s    \n",
+				used_mem, vol_slider, net_stat, bat_stat);
+
 		fflush(stdout);
 		usleep(shortest_sleep);
 	}
