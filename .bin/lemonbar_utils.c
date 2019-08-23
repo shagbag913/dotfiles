@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
 
 	/* Battery status */
 	battery_status_sleep_time_ptr = &function1_args.us;
+	function1_args.us = 0;
 	function1_args.function = battery_status;
 	pthread_create(&thread1, NULL, function_thread, &function1_args);
 
@@ -93,7 +94,7 @@ void *function_thread(void *function_args)
 	const struct args *arguments = function_args;
 
 	/* Keep track of shortest sleep time */
-	if (!shortest_sleep || arguments->us < shortest_sleep)
+	if ((!shortest_sleep || arguments->us < shortest_sleep) && arguments->us)
 		shortest_sleep = arguments->us;
 
 	while (1) {
