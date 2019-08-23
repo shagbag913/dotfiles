@@ -311,7 +311,7 @@ failed_alloc:
 }
 
 void battery_status() {
-	static unsigned short charging_battery_glyph = 0;
+	static unsigned short charging_battery_glyph = 6;
 	unsigned short battery_glyph = 0;
 	const char *battery_glyphs[] = {
 		"",
