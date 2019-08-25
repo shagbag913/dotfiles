@@ -248,7 +248,7 @@ void build_bspwm_status() {
 	}
 
 	wm_status_test = malloc(strlen(wm_status) + 1);
-	if (!wm_status_test)
+	if (wm_status_test == NULL)
 		goto failed_alloc;
 
 	strcpy(wm_status_test, wm_status);
@@ -470,12 +470,11 @@ void volume_slider() {
 struct meminfo mem_stats()
 {
 	char file_content[20];
+	unsigned short loc = 0;
 	struct meminfo mi;
 	FILE *memfile = fopen("/proc/meminfo", "r");
 
 	while (fscanf(memfile, "%s", file_content) != EOF) {
-		unsigned short loc = 0;
-
 		if (!strcmp(file_content, "MemTotal:")) {
 			loc = 1;
 			continue;
