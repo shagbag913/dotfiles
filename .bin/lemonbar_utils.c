@@ -140,8 +140,8 @@ char *get_pywal_color_value(int color_index, char *fallback_color)
 
 char *build_slider(int current_place) {
 	static char final_slider[14];
-	int net_length = 4, plc;
-	int current_small_place = (float) current_place / (float) (100 / net_length);
+	const unsigned short net_length = 4;
+	unsigned short plc, current_small_place = (float)current_place / (float)(100 / net_length);
 
 	memset(&final_slider, 0, strlen(final_slider));
 
@@ -177,7 +177,8 @@ void libnotify_notify(char *message)
 
 void notify_extended_time()
 {
-	struct tm *time = get_time();
+	const struct tm *time = get_time();
+	char final_extended_time[30];
 	const char *weekday_names[] = {
 		"Sunday",
 		"Monday",
@@ -201,7 +202,6 @@ void notify_extended_time()
 		"November",
 		"December"
 	};
-	char final_extended_time[30];
 
 	sprintf(final_extended_time, "%s, %s %i, %i", weekday_names[time->tm_wday],
 			month_names[time->tm_mon], time->tm_mday, time->tm_year + 1900);
@@ -211,8 +211,8 @@ void notify_extended_time()
 
 void formatted_time() {
 	char amorpm[3];
-	struct tm *time = get_time();
-	int hours = time->tm_hour;
+	const struct tm *time = get_time();
+	unsigned short hours = time->tm_hour;
 
 	if (hours < 12) {
 		strcpy(amorpm, "AM");
@@ -228,8 +228,7 @@ void formatted_time() {
 }
 
 void build_bspwm_status() {
-	unsigned short ret, bg_window, active_window, index = 0;
-	unsigned int bspwm_status_alloc_size = 0;
+	unsigned short ret, bspwm_status_alloc_size = 0, index = 0;
 	char *delim_ptr, *tmp_status, wm_status[80];
 	FILE *bspwm_status = popen("bspc wm --get-status", "r");
 
@@ -241,14 +240,12 @@ void build_bspwm_status() {
 		return;
 	}
 
-	/* Don't proceed if bspwm_status is the same as the last check */
-	if (wm_status_test) {
+	if (wm_status_test != NULL) {
+		/* Don't proceed if bspwm_status is the same as the last check */
 		if (!strcmp(wm_status, wm_status_test))
 			return;
-	}
-
-	if (wm_status_test)
 		free(wm_status_test);
+	}
 
 	wm_status_test = malloc(strlen(wm_status) + 1);
 	if (!wm_status_test)
@@ -256,11 +253,11 @@ void build_bspwm_status() {
 
 	strcpy(wm_status_test, wm_status);
 
-	if (bspwm_stat)
+	if (bspwm_stat != NULL)
 		free(bspwm_stat);
 
 	bspwm_stat = malloc(2);
-	if (!bspwm_stat)
+	if (bspwm_stat == NULL)
 		goto failed_alloc;
 
 	strcpy(bspwm_stat, "\0");
@@ -268,6 +265,8 @@ void build_bspwm_status() {
 	delim_ptr = strtok(wm_status, ":");
 
 	while (delim_ptr != NULL) {
+		unsigned short active_window, bg_window;
+
 		/* Break after completing the first monitor sequence */
 		if (*delim_ptr == 'G')
 			break;
@@ -311,8 +310,7 @@ failed_alloc:
 }
 
 void battery_status() {
-	static unsigned short charging_battery_glyph = 6;
-	unsigned short battery_glyph = 0;
+	unsigned short battery_glyph;
 	const char *battery_glyphs[] = {
 		"",
 		"",
@@ -340,23 +338,25 @@ void battery_status() {
 		battery_glyph = 0;
 
 	if (!charging) {
-		if (!battery_glyph)
+		if (battery_glyph < 1)
 			sprintf(bat_stat, "%s%%{F%s}", bat_stat, low_battery_glyph_color);
-		charging_battery_glyph = battery_glyph;
 
 		/* Slower sleep time */
 		*battery_status_sleep_time_ptr = USEC_TO_SEC(5);
 	} else {
+		static unsigned short charging_battery_glyph = 6;
+
 		if (charging_battery_glyph < sizeof(battery_glyphs)/sizeof(battery_glyphs[0]) - 1)
 			charging_battery_glyph++;
 		else
 			charging_battery_glyph = battery_glyph;
+		battery_glyph = charging_battery_glyph;
 
 		/* Faster sleep time so charging animation isn't slow */
 		*battery_status_sleep_time_ptr = USEC_TO_SEC(1);
 	}
 
-	strcat(bat_stat, battery_glyphs[charging ? charging_battery_glyph : battery_glyph]);
+	strcat(bat_stat, battery_glyphs[battery_glyph]);
 
 	if (bat_stat[0] == '%')
 		strcat(bat_stat, "%{F-}");
@@ -368,20 +368,20 @@ void battery_status() {
 }
 
 short get_charge() {
-	int charge;
+	unsigned short charge;
 	FILE *cap_file = fopen("/sys/class/power_supply/BAT0/capacity", "r");
 
 	if (cap_file == NULL)
 		return -1;
 
-	fscanf(cap_file, "%i", &charge);
+	fscanf(cap_file, "%hu", &charge);
 	fclose(cap_file);
 
 	return charge;
 }
 
 short is_charging() {
-	char status[13];
+	char status[12];
 	FILE *status_file = fopen("/sys/class/power_supply/BAT0/status", "r");
 
 	if (status_file == NULL)
@@ -394,34 +394,39 @@ short is_charging() {
 }
 
 void network_status() {
-	char wstate[5], estate[5];
 	FILE *wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
 	FILE *ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
 
-	if (wifi_operstate != NULL) {
-		fscanf(wifi_operstate, "%s", wstate);
-		fclose(wifi_operstate);
-	}
-
 	if (ethernet_operstate != NULL) {
+		char estate[5];
+
 		fscanf(ethernet_operstate, "%s", estate);
 		fclose(ethernet_operstate);
+
+		if (!strcmp(estate, "up")) {
+			strcpy(net_stat,"");
+			return;
+		}
 	}
 
-	if (!strcmp(wstate, "up"))
-		strcpy(net_stat,"");
-	else if (strcmp(estate, "up"))
-		sprintf(net_stat,"%%{F%s}%%{F-}", off_glyph_color);
-	else if (!strcmp(estate, "up"))
-		strcpy(net_stat,"");
+	if (wifi_operstate != NULL) {
+		char wstate[5];
+
+		fscanf(wifi_operstate, "%s", wstate);
+		fclose(wifi_operstate);
+
+		if (!strcmp(wstate, "up"))
+			strcpy(net_stat,"");
+		else
+			sprintf(net_stat,"%%{F%s}%%{F-}", off_glyph_color);
+	}
 }
 
 #ifdef SUPPORTS_ASOUNDLIB
 struct volume volume_info() {
 	long volume, min, max;
 	struct volume volinfo;
-	const char *card = "pulse";
-	const char *selem_name = "Master";
+	const char *card = "pulse", *selem_name = "Master";
 
 	snd_mixer_elem_t *elem;
 
@@ -465,11 +470,12 @@ void volume_slider() {
 struct meminfo mem_stats()
 {
 	char file_content[20];
-	int loc = 0;
 	struct meminfo mi;
 	FILE *memfile = fopen("/proc/meminfo", "r");
 
 	while (fscanf(memfile, "%s", file_content) != EOF) {
+		unsigned short loc = 0;
+
 		if (!strcmp(file_content, "MemTotal:")) {
 			loc = 1;
 			continue;
