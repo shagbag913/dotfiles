@@ -326,16 +326,7 @@ void battery_status() {
 	if (charge == -1)
 		return;
 
-	if (charge >= 90)
-		battery_glyph = 4;
-	else if (charge >= 70)
-		battery_glyph = 3;
-	else if (charge >= 45)
-		battery_glyph = 2;
-	else if (charge >= 15)
-		battery_glyph = 1;
-	else
-		battery_glyph = 0;
+	battery_glyph = round((float)charge / 25);
 
 	if (!charging) {
 		if (battery_glyph < 1)
