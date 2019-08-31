@@ -178,7 +178,7 @@ void libnotify_notify(char *message)
 void notify_extended_time()
 {
 	const struct tm *time = get_time();
-	char final_extended_time[30];
+	char final_extended_time[44];
 	const char *weekday_names[] = {
 		"Sunday",
 		"Monday",
@@ -203,8 +203,11 @@ void notify_extended_time()
 		"December"
 	};
 
-	sprintf(final_extended_time, "%s, %s %i, %i", weekday_names[time->tm_wday],
-			month_names[time->tm_mon], time->tm_mday, time->tm_year + 1900);
+	/* Fill time_stat with 12 hour time */
+	if (!strlen(time_stat))
+		formatted_time();
+	sprintf(final_extended_time, "%s, %s %i, %i   |   %s", weekday_names[time->tm_wday],
+			month_names[time->tm_mon], time->tm_mday, time->tm_year + 1900, time_stat);
 
 	libnotify_notify(final_extended_time);
 }
