@@ -28,8 +28,6 @@ endif
 call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'farmergreg/vim-lastplace'
-Plug 'junegunn/fzf.vim'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 call plug#end()
 
 "Persistent undo
