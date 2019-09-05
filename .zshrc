@@ -22,6 +22,7 @@ export LC_ALL=C
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export EDITOR=nvim
 export USE_CCACHE=1
+export CCACHE_EXEC=$(which ccache)
 
 if [[ $(uname -n) = ShagBox ]]; then
   alias tm='if ! tmux -u attach; then tmux -u; fi'
