@@ -38,7 +38,6 @@ void battery_status();
 void formatted_time();
 void network_status();
 void libnotify_notify(char *message);
-void notify_extended_time();
 void build_bspwm_status();
 void *function_thread();
 void used_memory_percentage();

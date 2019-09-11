@@ -24,11 +24,6 @@ int main(int argc, char *argv[]) {
 			printf("%s\n", get_pywal_color_value(atoi(argv[2]), argv[3]));
 			return 0;
 		}
-	} else if (argc == 2) {
-		if (!strcmp(argv[1], "--extended-time")) {
-			notify_extended_time();
-			return 0;
-		}
 	}
 
 	/* Set common color values */
@@ -173,43 +168,6 @@ void libnotify_notify(char *message)
 	notify_init("lemonbar");
 	notify_notification_set_timeout(notification, 2000);
 	notify_notification_show(notification, NULL);
-}
-
-void notify_extended_time()
-{
-	const struct tm *time = get_time();
-	char final_extended_time[44];
-	const char *weekday_names[] = {
-		"Sunday",
-		"Monday",
-		"Tuesday",
-		"Wednesday",
-		"Thursday",
-		"Friday",
-		"Saturday"
-	};
-	const char *month_names[] = {
-		"January",
-		"February",
-		"March",
-		"April",
-		"May",
-		"June",
-		"July",
-		"August",
-		"September",
-		"October",
-		"November",
-		"December"
-	};
-
-	/* Fill time_stat with 12 hour time */
-	if (!strlen(time_stat))
-		formatted_time();
-	sprintf(final_extended_time, "%s, %s %i, %i   |   %s", weekday_names[time->tm_wday],
-			month_names[time->tm_mon], time->tm_mday, time->tm_year + 1900, time_stat);
-
-	libnotify_notify(final_extended_time);
 }
 
 void formatted_time() {
