@@ -11,10 +11,8 @@ struct volume volume_info();
 #endif
 
 struct args {
-	/* Are functions allowed to return non-success? */
-	unsigned short failure_not_allowed;
 	unsigned int us;
-	int (*function)();
+	void (*function)();
 };
 
 struct meminfo {
@@ -35,15 +33,14 @@ char *build_slider(int current_place);
 char *get_pywal_color_value(int color_index, char *fallback_color);
 short get_charge();
 short is_charging();
-int volume_slider();
-int battery_status();
-int formatted_time();
-int network_status();
+void volume_slider();
+void battery_status();
+void formatted_time();
+void network_status();
 void libnotify_notify(char *message);
-int build_bspwm_status();
+void build_bspwm_status();
 void *function_thread();
-int used_memory_percentage();
-void evaluate_shortest_sleep(unsigned int us);
+void used_memory_percentage();
 struct tm *get_time();
 
 char bat_stat[25];
@@ -53,10 +50,14 @@ char time_stat[20];
 char vol_slider[39];
 char used_mem[11];
 
+/* Used to keep track of last `bspc wm --get-status` output */
 char *wm_status_test;
+
+/* Used to track shortest sleep() time */
 unsigned int shortest_sleep;
+
+/* Used to change battery status sleep time dynamically */
 unsigned int *battery_status_sleep_time_ptr;
-unsigned short reset_shortest_sleep;
 
 /* Commonly used pywal color values */
 char off_glyph_color[COLOR_HEX_LENGTH];

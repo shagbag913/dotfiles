@@ -45,7 +45,6 @@ int main(int argc, char *argv[]) {
 	/* BSPWM status */
 	function3_args.us = USEC_TO_SEC(.15);
 	function3_args.function = build_bspwm_status;
-	function3_args.failure_not_allowed = 1;
 	pthread_create(&thread3, NULL, function_thread, &function3_args);
 
 	/* Time */
@@ -64,50 +63,38 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread6, NULL, function_thread, &function6_args);
 
 	while (1) {
+		/* Make sure all variables are set before printing anything */
+		if (bspwm_stat == NULL || !(strlen(time_stat) && strlen(net_stat) &&
+					strlen(bat_stat) && strlen(used_mem) && strlen(vol_slider)))
+			continue;
+
 		/* Left of the bar */
-		if (bspwm_stat != NULL)
-			printf("%%{l}%s", bspwm_stat);
+		printf("%%{l}%s", bspwm_stat);
 
 		/* Center of the bar */
-		if (strlen(time_stat))
-			printf("%%{c}%s", time_stat);
+		printf("%%{c}%%{A:%s/.bin/lemonbar_utils --extended-time:}%s%%{A}",
+				HOME, time_stat);
 
 		/* Right of the bar */
-		if (strlen(net_stat) && strlen(bat_stat) && strlen(used_mem) && strlen(vol_slider))
-			printf("%%{r}%s    |    %s    |    %s    |    %s    ",
+		printf("%%{r}%s    |    %s    |    %s    |    %s    \n",
 				used_mem, vol_slider, net_stat, bat_stat);
-
-		printf("\n");
 
 		fflush(stdout);
 		usleep(shortest_sleep);
 	}
 }
 
-void evaluate_shortest_sleep(unsigned int us)
-{
-	if (us && (!shortest_sleep || us < shortest_sleep || reset_shortest_sleep))
-		shortest_sleep = us;
-
-	reset_shortest_sleep = 0;
-}
-
 void *function_thread(void *function_args)
 {
 	const struct args *arguments = function_args;
 
-	while (1) {
-		evaluate_shortest_sleep(arguments->us);
+	/* Keep track of shortest sleep time */
+	if ((!shortest_sleep || arguments->us < shortest_sleep) && arguments->us)
+		shortest_sleep = arguments->us;
 
+	while (1) {
 		/* Fill global variable */
-		if (arguments->failure_not_allowed) {
-			if (!arguments->function()) {
-				reset_shortest_sleep = 1;
-				return NULL;
-			}
-		} else {
-			arguments->function();
-		}
+		arguments->function();
 		usleep(arguments->us);
 	}
 }
@@ -183,7 +170,7 @@ void libnotify_notify(char *message)
 	notify_notification_show(notification, NULL);
 }
 
-int formatted_time() {
+void formatted_time() {
 	char amorpm[3];
 	const struct tm *time = get_time();
 	unsigned short hours = time->tm_hour;
@@ -199,11 +186,9 @@ int formatted_time() {
 		hours = 12;
 
 	sprintf(time_stat, "%i:%02i %s", hours, time->tm_min, amorpm);
-
-	return 1;
 }
 
-int build_bspwm_status() {
+void build_bspwm_status() {
 	unsigned short ret, bspwm_status_alloc_size = 0, index = 0;
 	char *delim_ptr, *tmp_status, wm_status[80];
 	FILE *bspwm_status = popen("bspc wm --get-status", "r");
@@ -213,13 +198,13 @@ int build_bspwm_status() {
 
 	if (ret) {
 		printf("Command `bspm wm --get-status` failed\n");
-		return 0;
+		return;
 	}
 
 	if (wm_status_test != NULL) {
 		/* Don't proceed if bspwm_status is the same as the last check */
 		if (!strcmp(wm_status, wm_status_test))
-			return 1;
+			return;
 		free(wm_status_test);
 	}
 
@@ -279,14 +264,13 @@ int build_bspwm_status() {
 		delim_ptr = strtok(NULL, ":");
 	}
 
-	return 1;
+	return;
 
 failed_alloc:
 	printf("%s: Memory allocation failed!\n", __func__);
-	return 0;
 }
 
-int battery_status() {
+void battery_status() {
 	unsigned short battery_glyph;
 	const char *battery_glyphs[] = {
 		"",
@@ -300,8 +284,8 @@ int battery_status() {
 
 	memset(&bat_stat, 0, strlen(bat_stat));
 
-	if (charge < 0)
-		return 0;
+	if (charge == -1)
+		return;
 
 	battery_glyph = round((float)charge / 25);
 
@@ -333,8 +317,6 @@ int battery_status() {
 
 	if (charging)
 		strcat(bat_stat, "+");
-
-	return 1;
 }
 
 short get_charge() {
@@ -363,7 +345,7 @@ short is_charging() {
 	return strcmp(status, "Discharging");
 }
 
-int network_status() {
+void network_status() {
 	FILE *wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
 	FILE *ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
 
@@ -375,7 +357,7 @@ int network_status() {
 
 		if (!strcmp(estate, "up")) {
 			strcpy(net_stat,"");
-			return 1;
+			return;
 		}
 	}
 
@@ -385,16 +367,11 @@ int network_status() {
 		fscanf(wifi_operstate, "%s", wstate);
 		fclose(wifi_operstate);
 
-		if (!strcmp(wstate, "up")) {
+		if (!strcmp(wstate, "up"))
 			strcpy(net_stat,"");
-			return 1;
-		} else {
+		else
 			sprintf(net_stat,"%%{F%s}%%{F-}", off_glyph_color);
-			return 1;
-		}
 	}
-
-	return 0;
 }
 
 #ifdef SUPPORTS_ASOUNDLIB
@@ -431,7 +408,7 @@ struct volume volume_info() {
 	return volinfo;
 }
 
-int volume_slider() {
+void volume_slider() {
 	struct volume volinfo = volume_info();
 
 	if (volinfo.muted || volinfo.level == 0)
@@ -439,8 +416,6 @@ int volume_slider() {
 				build_slider(volinfo.level));
 	else
 		sprintf(vol_slider, "  %s", build_slider(volinfo.level));
-
-	return 1;
 }
 #endif /* SUPPORTS_ASOUNDLIB */
 
@@ -503,12 +478,10 @@ struct meminfo mem_stats()
 	return mi;
 }
 
-int used_memory_percentage()
+void used_memory_percentage()
 {
 	struct meminfo mi = mem_stats();
 	int used_mem_dec = 100 * ((float)mi.used / (float)mi.total);
 
 	sprintf(used_mem, "  %i%%", used_mem_dec);
-
-	return 1;
 }
