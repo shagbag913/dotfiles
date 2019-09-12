@@ -63,21 +63,19 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread6, NULL, function_thread, &function6_args);
 
 	while (1) {
-		/* Make sure all variables are set before printing anything */
-		if (bspwm_stat == NULL || !(strlen(time_stat) && strlen(net_stat) &&
-					strlen(bat_stat) && strlen(used_mem) && strlen(vol_slider)))
-			continue;
-
 		/* Left of the bar */
-		printf("%%{l}%s", bspwm_stat);
+		if (bspwm_stat != NULL)
+			printf("%%{l}%s", bspwm_stat);
 
 		/* Center of the bar */
-		printf("%%{c}%%{A:%s/.bin/lemonbar_utils --extended-time:}%s%%{A}",
-				HOME, time_stat);
+		if (!strlen(time_stat))
+			printf("%%{c}%%{A:%s/.bin/lemonbar_utils --extended-time:}%s%%{A}",
+					HOME, time_stat);
 
 		/* Right of the bar */
-		printf("%%{r}%s    |    %s    |    %s    |    %s    \n",
-				used_mem, vol_slider, net_stat, bat_stat);
+		if (!(strlen(used_mem) && strlen(vol_slider) && strlen(bat_stat)))
+			printf("%%{r}%s    |    %s    |    %s    |    %s    \n",
+					used_mem, vol_slider, net_stat, bat_stat);
 
 		fflush(stdout);
 		usleep(shortest_sleep);
