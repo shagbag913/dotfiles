@@ -12,7 +12,7 @@ struct volume volume_info();
 
 struct args {
 	unsigned int us;
-	void (*function)();
+	int (*function)();
 };
 
 struct meminfo {
@@ -28,6 +28,7 @@ struct meminfo {
 #define USEC_TO_SEC(x) (x * 1000000)
 #define COLOR_HEX_LENGTH 8
 #define HOME getenv("HOME")
+#define TIMEOUT_SLEEP_TIME USEC_TO_SEC(10)
 #define PRINTD(...) \
 	do { \
 		if (debug_enable) printf(__VA_ARGS__); \
@@ -37,14 +38,14 @@ char *build_slider(int current_place);
 char *get_pywal_color_value(int color_index, char *fallback_color);
 short get_charge();
 short is_charging();
-void volume_slider();
-void battery_status();
-void formatted_time();
-void network_status();
+int volume_slider();
+int battery_status();
+int formatted_time();
+int network_status();
+int used_memory_percentage();
+int build_bspwm_status();
 void libnotify_notify(char *message);
-void build_bspwm_status();
 void *function_thread();
-void used_memory_percentage();
 struct tm *get_time();
 
 char bat_stat[25];

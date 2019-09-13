@@ -81,8 +81,7 @@ int main(int argc, char *argv[]) {
 
 		/* Center of the bar */
 		if (!strlen(time_stat))
-			printf("%%{c}%%{A:%s/.bin/lemonbar_utils --extended-time:}%s%%{A}",
-					HOME, time_stat);
+			printf("%%{c}%s", time_stat);
 
 		/* Right of the bar */
 		if (!(strlen(used_mem) && strlen(vol_slider) && strlen(bat_stat)))
@@ -104,8 +103,16 @@ void *function_thread(void *function_args)
 
 	while (1) {
 		/* Fill global variable */
-		arguments->function();
-		usleep(arguments->us);
+		if (arguments->function())
+			/*
+			 * If function fails, sleep for a longer period of time.
+			 * This was inspired by build_bspwm_status taking up loads
+			 * of CPU time because it was failing over and over due to
+			 * display being off.
+			 */
+			usleep(arguments->us);
+		else
+			usleep(TIMEOUT_SLEEP_TIME);
 	}
 }
 
@@ -180,7 +187,7 @@ void libnotify_notify(char *message)
 	notify_notification_show(notification, NULL);
 }
 
-void formatted_time() {
+int formatted_time() {
 	char amorpm[3];
 	const struct tm *time = get_time();
 	unsigned short hours = time->tm_hour;
@@ -196,9 +203,11 @@ void formatted_time() {
 		hours = 12;
 
 	sprintf(time_stat, "%i:%02i %s", hours, time->tm_min, amorpm);
+
+	return 1;
 }
 
-void build_bspwm_status() {
+int build_bspwm_status() {
 	unsigned short ret, bspwm_status_alloc_size = 0, index = 0;
 	char *delim_ptr, *tmp_status, wm_status[80];
 	FILE *bspwm_status;
@@ -213,13 +222,13 @@ void build_bspwm_status() {
 
 	if (ret) {
 		PRINTD("Command `bspm wm --get-status` failed\n");
-		return;
+		return 0;
 	}
 
 	if (wm_status_test != NULL) {
 		/* Don't proceed if bspwm_status is the same as the last check */
 		if (!strcmp(wm_status, wm_status_test))
-			return;
+			return 1;
 		free(wm_status_test);
 	}
 
@@ -279,13 +288,15 @@ void build_bspwm_status() {
 		delim_ptr = strtok(NULL, ":");
 	}
 
-	return;
+	return 1;
 
 failed_alloc:
 	PRINTD("%s: Memory allocation failed!\n", __func__);
+
+	return 0;
 }
 
-void battery_status() {
+int battery_status() {
 	unsigned short battery_glyph;
 	const char *battery_glyphs[] = {
 		"",
@@ -300,7 +311,7 @@ void battery_status() {
 	memset(&bat_stat, 0, strlen(bat_stat));
 
 	if (charge == -1)
-		return;
+		return 0;
 
 	battery_glyph = round((float)charge / 25);
 
@@ -332,6 +343,8 @@ void battery_status() {
 
 	if (charging)
 		strcat(bat_stat, "+");
+
+	return 1;
 }
 
 short get_charge() {
@@ -360,7 +373,7 @@ short is_charging() {
 	return strcmp(status, "Discharging");
 }
 
-void network_status() {
+int network_status() {
 	FILE *wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
 	FILE *ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
 
@@ -372,7 +385,7 @@ void network_status() {
 
 		if (!strcmp(estate, "up")) {
 			strcpy(net_stat,"");
-			return;
+			return 1;
 		}
 	}
 
@@ -386,7 +399,11 @@ void network_status() {
 			strcpy(net_stat,"");
 		else
 			sprintf(net_stat,"%%{F%s}%%{F-}", off_glyph_color);
+
+		return 1;
 	}
+
+	return 0;
 }
 
 #ifdef SUPPORTS_ASOUNDLIB
@@ -423,7 +440,7 @@ struct volume volume_info() {
 	return volinfo;
 }
 
-void volume_slider() {
+int volume_slider() {
 	struct volume volinfo = volume_info();
 
 	if (volinfo.muted || volinfo.level == 0)
@@ -431,6 +448,8 @@ void volume_slider() {
 				build_slider(volinfo.level));
 	else
 		sprintf(vol_slider, "  %s", build_slider(volinfo.level));
+
+	return 1;
 }
 #endif /* SUPPORTS_ASOUNDLIB */
 
@@ -493,10 +512,12 @@ struct meminfo mem_stats()
 	return mi;
 }
 
-void used_memory_percentage()
+int used_memory_percentage()
 {
 	struct meminfo mi = mem_stats();
 	int used_mem_dec = 100 * ((float)mi.used / (float)mi.total);
 
 	sprintf(used_mem, "  %i%%", used_mem_dec);
+
+	return 1;
 }
