@@ -17,11 +17,12 @@ int main(int argc, char *argv[]) {
 	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
 	struct args function1_args, function2_args, function3_args, function4_args,
 		    function5_args, function6_args;
-	unsigned short iter, pywal_index;
+	unsigned short iter;
 
 	for (iter = 1; iter < argc; iter++) {
 		if (!strcmp(argv[iter], "--get-pywal-color")) {
 			char pywal_fallback[] = "#000000";
+			unsigned short pywal_index;
 
 			if (argv[iter + 1] != NULL) {
 				pywal_index = atoi(argv[iter + 1]);
