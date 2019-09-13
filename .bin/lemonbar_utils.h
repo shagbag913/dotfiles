@@ -12,7 +12,7 @@ struct volume volume_info();
 
 struct args {
 	unsigned int us;
-	int (*function)();
+	unsigned short (*function)();
 };
 
 struct meminfo {
@@ -38,12 +38,12 @@ char *build_slider(int current_place);
 char *get_pywal_color_value(int color_index, char *fallback_color);
 short get_charge();
 short is_charging();
-int volume_slider();
-int battery_status();
-int formatted_time();
-int network_status();
-int used_memory_percentage();
-int build_bspwm_status();
+unsigned short volume_slider();
+unsigned short battery_status();
+unsigned short formatted_time();
+unsigned short network_status();
+unsigned short used_memory_percentage();
+unsigned short build_bspwm_status();
 void libnotify_notify(char *message);
 void *function_thread();
 struct tm *get_time();

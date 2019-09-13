@@ -187,7 +187,7 @@ void libnotify_notify(char *message)
 	notify_notification_show(notification, NULL);
 }
 
-int formatted_time() {
+unsigned short formatted_time() {
 	char amorpm[3];
 	const struct tm *time = get_time();
 	unsigned short hours = time->tm_hour;
@@ -207,7 +207,7 @@ int formatted_time() {
 	return 1;
 }
 
-int build_bspwm_status() {
+unsigned short build_bspwm_status() {
 	unsigned short ret, bspwm_status_alloc_size = 0, index = 0;
 	char *delim_ptr, *tmp_status, wm_status[80];
 	FILE *bspwm_status;
@@ -296,7 +296,7 @@ failed_alloc:
 	return 0;
 }
 
-int battery_status() {
+unsigned short battery_status() {
 	unsigned short battery_glyph;
 	const char *battery_glyphs[] = {
 		"",
@@ -373,7 +373,7 @@ short is_charging() {
 	return strcmp(status, "Discharging");
 }
 
-int network_status() {
+unsigned short network_status() {
 	FILE *wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
 	FILE *ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
 
@@ -440,7 +440,7 @@ struct volume volume_info() {
 	return volinfo;
 }
 
-int volume_slider() {
+unsigned short volume_slider() {
 	struct volume volinfo = volume_info();
 
 	if (volinfo.muted || volinfo.level == 0)
@@ -512,7 +512,7 @@ struct meminfo mem_stats()
 	return mi;
 }
 
-int used_memory_percentage()
+unsigned short used_memory_percentage()
 {
 	struct meminfo mi = mem_stats();
 	int used_mem_dec = 100 * ((float)mi.used / (float)mi.total);
