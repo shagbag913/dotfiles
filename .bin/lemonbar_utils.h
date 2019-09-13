@@ -28,6 +28,10 @@ struct meminfo {
 #define USEC_TO_SEC(x) (x * 1000000)
 #define COLOR_HEX_LENGTH 8
 #define HOME getenv("HOME")
+#define PRINTD(...) \
+	do { \
+		if (debug_enable) printf(__VA_ARGS__); \
+	} while (0)
 
 char *build_slider(int current_place);
 char *get_pywal_color_value(int color_index, char *fallback_color);
@@ -50,16 +54,10 @@ char time_stat[20];
 char vol_slider[39];
 char used_mem[11];
 
-/* Used to keep track of last `bspc wm --get-status` output */
 char *wm_status_test;
-
-/* Used to track shortest sleep() time */
 unsigned int shortest_sleep;
-
-/* Used to change battery status sleep time dynamically */
 unsigned int *battery_status_sleep_time_ptr;
-
-/* Commonly used pywal color values */
+unsigned short debug_enable;
 char off_glyph_color[COLOR_HEX_LENGTH];
 char normal_glyph_color[COLOR_HEX_LENGTH];
 char low_battery_glyph_color[COLOR_HEX_LENGTH];

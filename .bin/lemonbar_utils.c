@@ -17,13 +17,24 @@ int main(int argc, char *argv[]) {
 	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
 	struct args function1_args, function2_args, function3_args, function4_args,
 		    function5_args, function6_args;
+	unsigned short iter, pywal_index;
 
-	/* lemonbar_wrapper needs pywal color function */
-	if (argc == 4) {
-		if (!strcmp(argv[1], "--get-pywal-color")) {
-			printf("%s\n", get_pywal_color_value(atoi(argv[2]), argv[3]));
+	for (iter = 1; iter < argc; iter++) {
+		if (!strcmp(argv[iter], "--get-pywal-color")) {
+			char pywal_fallback[] = "#000000";
+
+			if (argv[iter + 1] != NULL) {
+				pywal_index = atoi(argv[iter + 1]);
+			} else {
+				printf("Color index must be specified for pywal function, aborting\n");
+				return 1;
+			}
+			if (argv[iter + 2] != NULL)
+				strncpy(pywal_fallback, argv[iter + 2], sizeof(pywal_fallback));
+			printf("%s\n", get_pywal_color_value(pywal_index, pywal_fallback));
 			return 0;
-		}
+		} else if (!strcmp(argv[iter], "--debug"))
+			debug_enable = 1;
 	}
 
 	/* Set common color values */
@@ -123,7 +134,7 @@ char *get_pywal_color_value(int color_index, char *fallback_color)
 
 	/* Make sure specified color index is within range */
 	if (line[0] != '#') {
-		printf("Specified color index (%i) not within range, returning fallback color\n",
+		PRINTD("Specified color index (%i) not within range, returning fallback color\n",
 				color_index);
 		strcpy(line, fallback_color);
 	}
@@ -189,13 +200,18 @@ void formatted_time() {
 void build_bspwm_status() {
 	unsigned short ret, bspwm_status_alloc_size = 0, index = 0;
 	char *delim_ptr, *tmp_status, wm_status[80];
-	FILE *bspwm_status = popen("bspc wm --get-status", "r");
+	FILE *bspwm_status;
+
+	if (debug_enable)
+		bspwm_status = popen("bspc wm --get-status", "r");
+	else
+		bspwm_status = popen("bspc wm --get-status 2>/dev/null", "r");
 
 	fscanf(bspwm_status, "%s", wm_status);
 	ret = pclose(bspwm_status);
 
 	if (ret) {
-		printf("Command `bspm wm --get-status` failed\n");
+		PRINTD("Command `bspm wm --get-status` failed\n");
 		return;
 	}
 
@@ -265,7 +281,7 @@ void build_bspwm_status() {
 	return;
 
 failed_alloc:
-	printf("%s: Memory allocation failed!\n", __func__);
+	PRINTD("%s: Memory allocation failed!\n", __func__);
 }
 
 void battery_status() {
