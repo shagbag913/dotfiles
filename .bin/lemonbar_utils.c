@@ -103,16 +103,16 @@ void *function_thread(void *function_args)
 
 	while (1) {
 		/* Fill global variable */
-		if (arguments->function())
+		if (!arguments->function())
 			/*
 			 * If function fails, sleep for a longer period of time.
 			 * This was inspired by build_bspwm_status taking up loads
 			 * of CPU time because it was failing over and over due to
 			 * display being off.
 			 */
-			usleep(arguments->us);
-		else
 			usleep(TIMEOUT_SLEEP_TIME);
+		else
+			usleep(arguments->us);
 	}
 }
 
