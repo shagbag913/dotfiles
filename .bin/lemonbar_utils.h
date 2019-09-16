@@ -28,7 +28,7 @@ struct meminfo {
 #define USEC_TO_SEC(x) (x * 1000000)
 #define COLOR_HEX_LENGTH 8
 #define HOME getenv("HOME")
-#define TIMEOUT_SLEEP_TIME USEC_TO_SEC(10)
+#define FAIL_SLEEP_TIME USEC_TO_SEC(5)
 #define PRINTD(...) \
 	do { \
 		if (debug_enable) printf(__VA_ARGS__); \

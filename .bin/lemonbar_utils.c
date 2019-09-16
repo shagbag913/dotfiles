@@ -14,9 +14,8 @@
 #endif
 
 int main(int argc, char *argv[]) {
-	pthread_t thread1, thread2, thread3, thread4, thread5, thread6;
-	struct args function1_args, function2_args, function3_args, function4_args,
-		    function5_args, function6_args;
+	pthread_t thread[6];
+	struct args function_args[6];
 	unsigned short iter;
 
 	for (iter = 1; iter < argc; iter++) {
@@ -44,35 +43,35 @@ int main(int argc, char *argv[]) {
 	strcpy(low_battery_glyph_color, get_pywal_color_value(1, "#FFA3A3"));
 
 	/* Battery status */
-	battery_status_sleep_time_ptr = &function1_args.us;
-	function1_args.us = 0;
-	function1_args.function = battery_status;
-	pthread_create(&thread1, NULL, function_thread, &function1_args);
+	battery_status_sleep_time_ptr = &function_args[0].us;
+	function_args[0].us = 0;
+	function_args[0].function = battery_status;
+	pthread_create(&thread[0], NULL, function_thread, &function_args[0]);
 
 	/* Network status */
-	function2_args.us = USEC_TO_SEC(5);
-	function2_args.function = network_status;
-	pthread_create(&thread2, NULL, function_thread, &function2_args);
+	function_args[1].us = USEC_TO_SEC(5);
+	function_args[1].function = network_status;
+	pthread_create(&thread[1], NULL, function_thread, &function_args[1]);
 
 	/* BSPWM status */
-	function3_args.us = USEC_TO_SEC(.15);
-	function3_args.function = build_bspwm_status;
-	pthread_create(&thread3, NULL, function_thread, &function3_args);
+	function_args[2].us = USEC_TO_SEC(.15);
+	function_args[2].function = build_bspwm_status;
+	pthread_create(&thread[2], NULL, function_thread, &function_args[2]);
 
 	/* Time */
-	function4_args.us = USEC_TO_SEC(5);
-	function4_args.function = formatted_time;
-	pthread_create(&thread4, NULL, function_thread, &function4_args);
+	function_args[3].us = USEC_TO_SEC(5);
+	function_args[3].function = formatted_time;
+	pthread_create(&thread[3], NULL, function_thread, &function_args[3]);
 
 	/* Volume slider */
-	function5_args.us = USEC_TO_SEC(1);
-	function5_args.function = volume_slider;
-	pthread_create(&thread5, NULL, function_thread, &function5_args);
+	function_args[4].us = USEC_TO_SEC(1);
+	function_args[4].function = volume_slider;
+	pthread_create(&thread[4], NULL, function_thread, &function_args[4]);
 
 	/* Memory usage */
-	function6_args.us = USEC_TO_SEC(2);
-	function6_args.function = used_memory_percentage;
-	pthread_create(&thread6, NULL, function_thread, &function6_args);
+	function_args[5].us = USEC_TO_SEC(2);
+	function_args[5].function = used_memory_percentage;
+	pthread_create(&thread[5], NULL, function_thread, &function_args[5]);
 
 	while (1) {
 		/* Left of the bar */
@@ -80,13 +79,15 @@ int main(int argc, char *argv[]) {
 			printf("%%{l}%s", bspwm_stat);
 
 		/* Center of the bar */
-		if (!strlen(time_stat))
+		if (strlen(time_stat))
 			printf("%%{c}%s", time_stat);
 
 		/* Right of the bar */
-		if (!(strlen(used_mem) && strlen(vol_slider) && strlen(bat_stat)))
-			printf("%%{r}%s    |    %s    |    %s    |    %s    \n",
+		if (strlen(used_mem) && strlen(vol_slider) && strlen(bat_stat))
+			printf("%%{r}%s    |    %s    |    %s    |    %s    ",
 					used_mem, vol_slider, net_stat, bat_stat);
+
+		printf("\n");
 
 		fflush(stdout);
 		usleep(shortest_sleep);
@@ -110,7 +111,7 @@ void *function_thread(void *function_args)
 			 * of CPU time because it was failing over and over due to
 			 * display being off.
 			 */
-			usleep(TIMEOUT_SLEEP_TIME);
+			usleep(FAIL_SLEEP_TIME);
 		else
 			usleep(arguments->us);
 	}
@@ -456,53 +457,40 @@ unsigned short volume_slider() {
 struct meminfo mem_stats()
 {
 	char file_content[20];
-	unsigned short loc = 0;
+	unsigned short iter = 0;
 	struct meminfo mi;
 	FILE *memfile = fopen("/proc/meminfo", "r");
+	unsigned int *mem_value[] = {
+		&mi.total,
+		&mi.free,
+		&mi.buffers,
+		&mi.cached,
+		&mi.shmem,
+		&mi.sreclaimable
+	};
 
 	while (fscanf(memfile, "%s", file_content) != EOF) {
-		if (!strcmp(file_content, "MemTotal:")) {
-			loc = 1;
+		if (!strcmp(file_content, "MemTotal:"))
+			iter = 1;
+		else if (!strcmp(file_content, "MemFree:"))
+			iter = 2;
+		else if (!strcmp(file_content, "Buffers:"))
+			iter = 3;
+		else if (!strcmp(file_content, "Cached:"))
+			iter = 4;
+		else if (!strcmp(file_content, "Shmem:"))
+			iter = 5;
+		else if (!strcmp(file_content, "SReclaimable:"))
+			iter = 6;
+		else
 			continue;
-		} else if (!strcmp(file_content, "MemFree:")) {
-			loc = 2;
-			continue;
-		} else if (!strcmp(file_content, "Buffers:")) {
-			loc = 3;
-			continue;
-		} else if (!strcmp(file_content, "Cached:")) {
-			loc = 4;
-			continue;
-		} else if (!strcmp(file_content, "Shmem:")) {
-			loc = 5;
-			continue;
-		} else if (!strcmp(file_content, "SReclaimable:")) {
-			loc = 6;
-			continue;
+
+		if (iter) {
+			fscanf(memfile, "%s", file_content);
+			*mem_value[iter - 1] = atoi(file_content);
 		}
 
-		switch (loc) {
-			case 1:
-				mi.total = atoi(file_content);
-				break;
-			case 2:
-				mi.free = atoi(file_content);
-				break;
-			case 3:
-				mi.buffers = atoi(file_content);
-				break;
-			case 4:
-				mi.cached = atoi(file_content);
-				break;
-			case 5:
-				mi.shmem = atoi(file_content);
-				break;
-			case 6:
-				mi.sreclaimable = atoi(file_content);
-				break;
-		}
-
-		loc = 0;
+		iter = 0;
 	}
 
 	fclose(memfile);
