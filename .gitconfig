@@ -14,14 +14,14 @@
 [alias]
 	aa = add --all
 	ap = add --all --patch
-	c = commit --gpg-sign --signoff
-	ca = commit --gpg-sign --amend --signoff
-	cad = commit --gpg-sign --amend --date=now --signoff
+	c = commit --gpg-sign
+	ca = commit --gpg-sign --amend
+	cad = commit --gpg-sign --amend --date=now
 	cl = clean -fxd
-	cp = cherry-pick --gpg-sign --signoff
+	cp = cherry-pick --gpg-sign
 	cpa = cherry-pick --abort
 	cpc = cherry-pick --continue
-	cpe = cherry-pick --edit --signoff
+	cpe = cherry-pick --edit
 	f = fetch
 	m = merge --log=1000
 	ma = merge --abort
