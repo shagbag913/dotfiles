@@ -73,23 +73,24 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread[5], NULL, function_thread, &function_args[5]);
 
 	while (1) {
-		/* Left of the bar */
-		if (bspwm_stat != NULL)
+		if (bspwm_stat != NULL && strlen(time_stat) && strlen(used_mem) &&
+				strlen(vol_slider) && strlen(bat_stat)) {
+
+			/* Left of the bar */
 			printf("%%{l}%s", bspwm_stat);
 
-		/* Center of the bar */
-		if (strlen(time_stat))
+			/* Center of the bar */
 			printf("%%{c}%s", time_stat);
 
-		/* Right of the bar */
-		if (strlen(used_mem) && strlen(vol_slider) && strlen(bat_stat))
+			/* Right of the bar */
 			printf("%%{r}%s    |    %s    |    %s    |    %s    ",
 					used_mem, vol_slider, net_stat, bat_stat);
 
-		printf("\n");
+			printf("\n");
 
-		fflush(stdout);
-		usleep(shortest_sleep);
+			fflush(stdout);
+			usleep(shortest_sleep);
+		}
 	}
 }
 
