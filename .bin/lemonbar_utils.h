@@ -29,10 +29,6 @@ struct meminfo {
 #define COLOR_HEX_LENGTH 8
 #define HOME getenv("HOME")
 #define FAIL_SLEEP_TIME USEC_TO_SEC(5)
-#define PRINTD(...) \
-	do { \
-		if (debug_enable) printf(__VA_ARGS__); \
-	} while (0)
 
 char *build_slider(int current_place);
 char *get_pywal_color_value(int color_index, char *fallback_color);
@@ -58,7 +54,6 @@ char used_mem[11];
 char *wm_status_test;
 unsigned int shortest_sleep;
 unsigned int *battery_status_sleep_time_ptr;
-unsigned short debug_enable;
 char off_glyph_color[COLOR_HEX_LENGTH];
 char normal_glyph_color[COLOR_HEX_LENGTH];
 char low_battery_glyph_color[COLOR_HEX_LENGTH];

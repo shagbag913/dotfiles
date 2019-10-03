@@ -33,8 +33,7 @@ int main(int argc, char *argv[]) {
 				strncpy(pywal_fallback, argv[iter + 2], sizeof(pywal_fallback));
 			printf("%s\n", get_pywal_color_value(pywal_index, pywal_fallback));
 			return 0;
-		} else if (!strcmp(argv[iter], "--debug"))
-			debug_enable = 1;
+		}
 	}
 
 	/* Set common color values */
@@ -143,7 +142,7 @@ char *get_pywal_color_value(int color_index, char *fallback_color)
 
 	/* Make sure specified color index is within range */
 	if (line[0] != '#') {
-		PRINTD("Specified color index (%i) not within range, returning fallback color\n",
+		printf("Specified color index (%i) not within range, returning fallback color\n",
 				color_index);
 		strcpy(line, fallback_color);
 	}
@@ -211,18 +210,13 @@ unsigned short formatted_time() {
 unsigned short build_bspwm_status() {
 	unsigned short ret, bspwm_status_alloc_size = 0, index = 0;
 	char *delim_ptr, *tmp_status, wm_status[80];
-	FILE *bspwm_status;
-
-	if (debug_enable)
-		bspwm_status = popen("bspc wm --get-status", "r");
-	else
-		bspwm_status = popen("bspc wm --get-status 2>/dev/null", "r");
+	FILE *bspwm_status = popen("bspc wm --get-status", "r");
 
 	fscanf(bspwm_status, "%s", wm_status);
 	ret = pclose(bspwm_status);
 
 	if (ret) {
-		PRINTD("Command `bspm wm --get-status` failed\n");
+		printf("Command `bspm wm --get-status` failed\n");
 		return 0;
 	}
 
@@ -292,7 +286,7 @@ unsigned short build_bspwm_status() {
 	return 1;
 
 failed_alloc:
-	PRINTD("%s: Memory allocation failed!\n", __func__);
+	printf("%s: Memory allocation failed!\n", __func__);
 
 	return 0;
 }
