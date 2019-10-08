@@ -41,6 +41,8 @@ int main(int argc, char *argv[]) {
 	strcpy(normal_glyph_color, get_pywal_color_value(15, "#FFFFFF"));
 	strcpy(low_battery_glyph_color, get_pywal_color_value(1, "#FFA3A3"));
 
+	function_exec_count = 0;
+
 	/* Battery status */
 	battery_status_sleep_time_ptr = &function_args[0].us;
 	function_args[0].us = 0;
@@ -73,30 +75,36 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread[5], NULL, function_thread, &function_args[5]);
 
 	while (1) {
-		if (bspwm_stat != NULL && strlen(time_stat) && strlen(used_mem) &&
-				strlen(vol_slider) && strlen(bat_stat)) {
-
-			/* Left of the bar */
+		/* Left of the bar */
+		if (bspwm_stat != NULL)
 			printf("%%{l}%s", bspwm_stat);
 
-			/* Center of the bar */
+		/* Center of the bar */
+		if (strlen(time_stat))
 			printf("%%{c}%s", time_stat);
 
-			/* Right of the bar */
+		/* Right of the bar */
+		if (strlen(used_mem) && strlen(vol_slider) && strlen(bat_stat))
 			printf("%%{r}%s    |    %s    |    %s    |    %s    ",
 					used_mem, vol_slider, net_stat, bat_stat);
 
-			printf("\n");
+		printf("\n");
 
-			fflush(stdout);
+		fflush(stdout);
+
+		/* Only honor shortest_sleep value if all functions have had a chance to set it */
+		if (function_exec_count == sizeof(function_args) / sizeof(function_args[0]))
 			usleep(shortest_sleep);
-		}
+		else
+			usleep(100000);
 	}
 }
 
 void *function_thread(void *function_args)
 {
 	const struct args *arguments = function_args;
+
+	function_exec_count++;
 
 	/* Keep track of shortest sleep time */
 	if ((!shortest_sleep || arguments->us < shortest_sleep) && arguments->us)

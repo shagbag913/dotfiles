@@ -57,3 +57,4 @@ unsigned int *battery_status_sleep_time_ptr;
 char off_glyph_color[COLOR_HEX_LENGTH];
 char normal_glyph_color[COLOR_HEX_LENGTH];
 char low_battery_glyph_color[COLOR_HEX_LENGTH];
+unsigned short function_exec_count;
