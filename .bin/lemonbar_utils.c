@@ -217,59 +217,54 @@ unsigned short formatted_time() {
 }
 
 unsigned short build_bspwm_status() {
-	unsigned short ret, bspwm_status_alloc_size = 0, index = 0, pipe_read_alloc_size = 1;
-	char *delim_ptr, *tmp_status, *wm_status = NULL, *old_alloc, iter;
+	unsigned short ret, bspwm_status_alloc_size = 0, index = 0;
+	char *delim_ptr, *wm_status = NULL, *old_alloc, iter;
 	FILE *bspwm_status = popen("bspc wm --get-status", "r");
 
 	while ((iter = fgetc(bspwm_status)) != EOF) {
-		pipe_read_alloc_size++;
-
 		old_alloc = wm_status;
-		wm_status = realloc(wm_status, pipe_read_alloc_size);
+		wm_status = realloc(wm_status, index + 2);
 		if (wm_status == NULL) {
 			if (old_alloc != NULL)
 				free(old_alloc);
 			return 0;
 		}
 
-		wm_status = old_alloc;
-
-		wm_status[pipe_read_alloc_size-2] = iter;
-		wm_status[pipe_read_alloc_size-1] = '\0';
+		wm_status[index] = iter;
+		index++;
 	}
 
-	fscanf(bspwm_status, "%s", wm_status);
-	ret = pclose(bspwm_status);
+	wm_status[index] = '\0';
+	index = 0;
 
+	ret = pclose(bspwm_status);
 	if (ret) {
 		printf("Command `bspm wm --get-status` failed\n");
 		free(wm_status);
 		return 0;
 	}
 
-	if (wm_status_test != NULL) {
-		/* Don't proceed if bspwm_status is the same as the last check */
-		if (!strcmp(wm_status, wm_status_test)) {
+	if (old_wm_status != NULL) {
+		if (!strcmp(old_wm_status, wm_status)) {
 			free(wm_status);
 			return 1;
 		}
-		free(wm_status_test);
 	}
 
-	wm_status_test = malloc(strlen(wm_status) + 1);
-	if (wm_status_test == NULL)
+	if (old_wm_status != NULL)
+		free(old_wm_status);
+	old_wm_status = malloc(strlen(wm_status) + 1);
+	if (old_wm_status == NULL)
 		goto failed_alloc;
-
-	strcpy(wm_status_test, wm_status);
+	strcpy(old_wm_status, wm_status);
 
 	if (bspwm_stat != NULL)
 		free(bspwm_stat);
-
-	bspwm_stat = malloc(2);
+	bspwm_stat = malloc(1);
 	if (bspwm_stat == NULL)
 		goto failed_alloc;
 
-	strcpy(bspwm_stat, "\0");
+	bspwm_stat[0] = '\0';
 
 	delim_ptr = strtok(wm_status, ":");
 
@@ -284,14 +279,13 @@ unsigned short build_bspwm_status() {
 		bg_window = delim_ptr[0] == 'o';
 
 		if (active_window || bg_window) {
-			bspwm_status_alloc_size += 10 + (index >= 10 ? 33 : 31) +
+			bspwm_status_alloc_size += (index >= 10 ? 43 : 41) +
 				(active_window ? 26 : 0) + 1;
-			tmp_status = bspwm_stat;
+			old_alloc = bspwm_stat;
 			bspwm_stat = realloc(bspwm_stat, bspwm_status_alloc_size);
-
-			if (!bspwm_stat) {
-				if (!tmp_status)
-					free(tmp_status);
+			if (bspwm_stat == NULL) {
+				if (!old_alloc)
+					free(old_alloc);
 				goto failed_alloc;
 			}
 
@@ -308,7 +302,7 @@ unsigned short build_bspwm_status() {
 				strcat(bspwm_stat, "%{U-}%{-u}");
 		}
 
-		++index;
+		index++;
 		delim_ptr = strtok(NULL, ":");
 	}
 
@@ -317,7 +311,7 @@ unsigned short build_bspwm_status() {
 
 failed_alloc:
 	printf("%s: Memory allocation failed!\n", __func__);
-cleanup_fail:
+
 	if (wm_status != NULL)
 		free(wm_status);
 

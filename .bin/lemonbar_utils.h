@@ -51,7 +51,7 @@ char time_stat[20];
 char vol_slider[39];
 char used_mem[11];
 
-char *wm_status_test;
+char *old_wm_status;
 unsigned int shortest_sleep;
 unsigned int *battery_status_sleep_time_ptr;
 char off_glyph_color[COLOR_HEX_LENGTH];
