@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread[1], NULL, function_thread, &function_args[1]);
 
 	/* BSPWM status */
-	function_args[2].us = USEC_TO_SEC(.15);
+	function_args[2].us = USEC_TO_SEC(.1);
 	function_args[2].function = build_bspwm_status;
 	pthread_create(&thread[2], NULL, function_thread, &function_args[2]);
 
@@ -217,22 +217,42 @@ unsigned short formatted_time() {
 }
 
 unsigned short build_bspwm_status() {
-	unsigned short ret, bspwm_status_alloc_size = 0, index = 0;
-	char *delim_ptr, *tmp_status, wm_status[80];
+	unsigned short ret, bspwm_status_alloc_size = 0, index = 0, pipe_read_alloc_size = 1;
+	char *delim_ptr, *tmp_status, *wm_status = NULL, *old_alloc, iter;
 	FILE *bspwm_status = popen("bspc wm --get-status", "r");
+
+	while ((iter = fgetc(bspwm_status)) != EOF) {
+		pipe_read_alloc_size++;
+
+		old_alloc = wm_status;
+		wm_status = realloc(wm_status, pipe_read_alloc_size);
+		if (wm_status == NULL) {
+			if (old_alloc != NULL)
+				free(old_alloc);
+			return 0;
+		}
+
+		wm_status = old_alloc;
+
+		wm_status[pipe_read_alloc_size-2] = iter;
+		wm_status[pipe_read_alloc_size-1] = '\0';
+	}
 
 	fscanf(bspwm_status, "%s", wm_status);
 	ret = pclose(bspwm_status);
 
 	if (ret) {
 		printf("Command `bspm wm --get-status` failed\n");
+		free(wm_status);
 		return 0;
 	}
 
 	if (wm_status_test != NULL) {
 		/* Don't proceed if bspwm_status is the same as the last check */
-		if (!strcmp(wm_status, wm_status_test))
+		if (!strcmp(wm_status, wm_status_test)) {
+			free(wm_status);
 			return 1;
+		}
 		free(wm_status_test);
 	}
 
@@ -292,10 +312,14 @@ unsigned short build_bspwm_status() {
 		delim_ptr = strtok(NULL, ":");
 	}
 
+	free(wm_status);
 	return 1;
 
 failed_alloc:
 	printf("%s: Memory allocation failed!\n", __func__);
+cleanup_fail:
+	if (wm_status != NULL)
+		free(wm_status);
 
 	return 0;
 }
