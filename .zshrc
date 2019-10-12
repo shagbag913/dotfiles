@@ -16,6 +16,11 @@ autoload -U colors && colors
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 ZSH_AUTOSUGGEST_STRATEGY=completion
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+
+. /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
 export FZF_DEFAULT_COMMAND='rg --files --hidden'
 export PATH="$HOME/.bin:$HOME/Android/Sdk/build-tools/29.0.1:$PATH"
 export LC_ALL=C

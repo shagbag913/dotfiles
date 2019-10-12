@@ -249,10 +249,10 @@ unsigned short build_bspwm_status() {
 			free(wm_status);
 			return 1;
 		}
+
+		free(old_wm_status);
 	}
 
-	if (old_wm_status != NULL)
-		free(old_wm_status);
 	old_wm_status = malloc(strlen(wm_status) + 1);
 	if (old_wm_status == NULL)
 		goto failed_alloc;
