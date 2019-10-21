@@ -28,6 +28,7 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 export EDITOR=nvim
 export USE_CCACHE=1
 export CCACHE_EXEC=$(which ccache)
+export KEYTIMEOUT=1
 
 if [[ $(uname -n) = ShagBox ]]; then
   alias tm='if ! tmux -u attach; then tmux -u; fi'
@@ -69,12 +70,20 @@ prompt_git_branch() {
     [[ -n $branch ]] && echo "($branch) "
 }
 
-prompt () {
-    PS1="%F{red}%m%k %F{cyan}$(prompt_git_branch)$(basename "$(dirs)") %F{green}$ %f"
+function zle-line-init zle-keymap-select {
+    VIMODE="%F{cyan}${${KEYMAP/vicmd/N}/(main|viins)/I}"
+    PROMPT="$VIMODE $(get_prompt)"
+    zle reset-prompt
 }
 
+get_prompt() {
+    echo "%F{red}%m%k %F{cyan}$(prompt_git_branch)$(basename "$(dirs)") %F{green}$ %f"
+}
+
+zle -N zle-line-init
+zle -N zle-keymap-select
+
 pre_cmd() {
-    prompt
     [[ -f $HOME/.secret ]] && . $HOME/.secret
 }
 
