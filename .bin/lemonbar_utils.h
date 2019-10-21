@@ -5,6 +5,7 @@
 struct volume {
 	int muted;
 	int level;
+	int ret;
 };
 
 struct volume volume_info();

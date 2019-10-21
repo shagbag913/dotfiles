@@ -84,12 +84,32 @@ int main(int argc, char *argv[]) {
 			printf("%%{c}%s", time_stat);
 
 		/* Right of the bar */
-		if (strlen(used_mem) && strlen(vol_slider) && strlen(bat_stat))
-			printf("%%{r}%s    |    %s    |    %s    |    %s    ",
-					used_mem, vol_slider, net_stat, bat_stat);
+		printf("%%{r}");
+		if (strlen(used_mem)) {
+			printf("%s", used_mem);
 
-		printf("\n");
+			if (strlen(vol_slider) || strlen(net_stat) || strlen(bat_stat))
+				printf("   |   ");
+		}
 
+		if (strlen(vol_slider)) {
+			printf("%s", vol_slider);
+
+			if (strlen(net_stat) || strlen(bat_stat))
+				printf("   |   ");
+		}
+
+		if (strlen(net_stat)) {
+			printf("%s", net_stat);
+
+			if (strlen(bat_stat))
+				printf("   |   ");
+		}
+
+		if (strlen(bat_stat))
+			printf("%s", bat_stat);
+
+		printf("   \n");
 		fflush(stdout);
 
 		/* Only honor shortest_sleep value if all functions have had a chance to set it */
@@ -440,7 +460,11 @@ struct volume volume_info() {
 	snd_mixer_selem_id_t *sid;
 
 	snd_mixer_open(&handle, 0);
-	snd_mixer_attach(handle, card);
+
+	volinfo.ret = snd_mixer_attach(handle, card);
+	if (volinfo.ret < 0)
+		goto ret;
+
 	snd_mixer_selem_register(handle, NULL, NULL);
 	snd_mixer_load(handle);
 
@@ -458,12 +482,16 @@ struct volume volume_info() {
 
 	volinfo.level = round((float)volume / (float)max * 100);
 	volinfo.muted = !volinfo.muted;
+	volinfo.ret = 1;
 
+ret:
 	return volinfo;
 }
 
 unsigned short volume_slider() {
 	struct volume volinfo = volume_info();
+	if (volinfo.ret < 0)
+		return 0;
 
 	if (volinfo.muted || volinfo.level == 0)
 		sprintf(vol_slider, "%%{F%s} %%{F-} %s", off_glyph_color,
