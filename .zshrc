@@ -65,7 +65,7 @@ device_zip_list() {
 }
 
 prompt_git_branch() {
-    branch="$(git branch |& grep -v fatal | grep '*' | sed 's/[()]//g; s/^* //')"
+    branch="$(git branch 2>/dev/null | sed -n 's/['\*\ '()]//gp')"
     [[ -n $branch ]] && echo "($branch) "
 }
 
