@@ -48,8 +48,7 @@ alias trizen='trizen --skipinteg --noconfirm'
 alias wget='wget -c'
 
 reposync() {
-    repo sync -j$(($(nproc --all)*2)) --no-clone-bundle --prune --no-tags -c \
-        --optimized-fetch -f "$@"
+    repo sync --no-clone-bundle --prune --no-tags --no-clone-bundle -c --optimized-fetch -f "$@"
 }
 
 rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
