@@ -65,8 +65,9 @@ device_zip_list() {
 }
 
 prompt_git_branch() {
-    branch="$(git branch 2>/dev/null | sed -n 's/['\*\ '()]//gp')"
-    [[ -n $branch ]] && echo "($branch) "
+    branch="$(git branch 2>/dev/null | sed -n 's/^* //p')"
+    if grep -q 'HEAD detached' <<< $branch; then branch=""; fi
+    [[ -n $branch ]] && echo "git:($branch) "
 }
 
 function zle-line-init zle-keymap-select {
