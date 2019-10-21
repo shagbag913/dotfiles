@@ -89,21 +89,21 @@ int main(int argc, char *argv[]) {
 			printf("%s", used_mem);
 
 			if (strlen(vol_slider) || strlen(net_stat) || strlen(bat_stat))
-				printf("   |   ");
+				printf("   I   ");
 		}
 
 		if (strlen(vol_slider)) {
 			printf("%s", vol_slider);
 
 			if (strlen(net_stat) || strlen(bat_stat))
-				printf("   |   ");
+				printf("   I   ");
 		}
 
 		if (strlen(net_stat)) {
 			printf("%s", net_stat);
 
 			if (strlen(bat_stat))
-				printf("   |   ");
+				printf("   I   ");
 		}
 
 		if (strlen(bat_stat))
