@@ -72,18 +72,19 @@ prompt_git_branch() {
 
 function zle-line-init zle-keymap-select {
     VIMODE="%F{cyan}${${KEYMAP/vicmd/N}/(main|viins)/I}"
-    PROMPT="$VIMODE $(get_prompt)"
+    set_prompt
     zle reset-prompt
 }
 
-get_prompt() {
-    echo "%F{red}%m%k %F{cyan}$(prompt_git_branch)$(basename "$(dirs)") %F{green}$ %f"
+set_prompt() {
+    PROMPT="$VIMODE %F{red}%m%k %F{cyan}$(prompt_git_branch)$(basename "$(dirs)") %F{green}$ %f"
 }
 
 zle -N zle-line-init
 zle -N zle-keymap-select
 
 pre_cmd() {
+    set_prompt
     [[ -f $HOME/.secret ]] && . $HOME/.secret
 }
 
