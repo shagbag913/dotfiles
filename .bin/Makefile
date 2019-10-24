@@ -1,4 +1,4 @@
-CC	:= clang
+CC	:= gcc
 LFLAGS	:= -lm -lasound -lpthread -lnotify
 CFLAGS	:= -Wall -Wextra -Wpedantic -O3 -flto
 DEBUG_CFLAGS := -Wall -Wextra -Wpedantic -g3 -fsanitize=address

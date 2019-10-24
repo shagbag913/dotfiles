@@ -254,15 +254,15 @@ unsigned short build_bspwm_status() {
 		index++;
 	}
 
-	wm_status[index] = '\0';
-	index = 0;
-
 	ret = pclose(bspwm_status);
 	if (ret) {
 		printf("Command `bspm wm --get-status` failed\n");
 		free(wm_status);
 		return 0;
 	}
+
+	wm_status[index] = '\0';
+	index = 0;
 
 	if (old_wm_status != NULL) {
 		if (!strcmp(old_wm_status, wm_status)) {
