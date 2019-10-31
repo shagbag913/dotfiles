@@ -6,12 +6,12 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <libnotify/notify.h>
-
-#include "lemonbar_utils.h"
-
+#include <dirent.h>
 #ifdef SUPPORTS_ASOUNDLIB
 #include <alsa/asoundlib.h>
 #endif
+
+#include "lemonbar_utils.h"
 
 int main(int argc, char *argv[]) {
 	pthread_t thread[6];
@@ -416,7 +416,6 @@ short is_charging() {
 }
 
 unsigned short network_status() {
-	FILE *wifi_operstate = fopen("/sys/class/net/wlp2s0/operstate", "r");
 	FILE *ethernet_operstate = fopen("/sys/class/net/enp3s0/operstate", "r");
 
 	if (ethernet_operstate != NULL) {
@@ -431,21 +430,44 @@ unsigned short network_status() {
 		}
 	}
 
-	if (wifi_operstate != NULL) {
-		char wstate[5];
+	char *wl_ptr, wstate[5];
+	struct dirent *dir;
+	DIR *d = opendir("/sys/class/net");
+	if (d == NULL)
+		return 0;
 
-		fscanf(wifi_operstate, "%s", wstate);
-		fclose(wifi_operstate);
-
-		if (!strcmp(wstate, "up"))
-			strcpy(net_stat,"");
-		else
-			sprintf(net_stat,"%%{F%s}%%{F-}", off_glyph_color);
-
-		return 1;
+	while ((dir = readdir(d)) != NULL) {
+		wl_ptr = strstr(dir->d_name, "wl");
+		if (wl_ptr != NULL)
+			break;
 	}
 
-	return 0;
+	if (wl_ptr == NULL)
+		return 0;
+
+	char *wlan_operstate_name = malloc(sizeof("/sys/class/net/") + strlen(dir->d_name) +
+				sizeof("/operstate") + 1);
+	if (wlan_operstate_name == NULL)
+		return 0;
+
+	strcpy(wlan_operstate_name, "/sys/class/net/");	
+	strcat(wlan_operstate_name, dir->d_name);
+	strcat(wlan_operstate_name, "/operstate");
+
+	FILE *wlan_operstate = fopen(wlan_operstate_name, "r");
+	free(wlan_operstate_name);
+	if (wlan_operstate == NULL)
+		return 0;
+
+	fscanf(wlan_operstate, "%s", wstate);
+	fclose(wlan_operstate);
+
+	if (!strcmp(wstate, "up"))
+		strcpy(net_stat,"");
+	else
+		sprintf(net_stat,"%%{F%s}%%{F-}", off_glyph_color);
+
+	return 1;
 }
 
 #ifdef SUPPORTS_ASOUNDLIB

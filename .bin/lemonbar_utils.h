@@ -1,7 +1,4 @@
-#if __has_include(<alsa/asoundlib.h>)
-
-#define SUPPORTS_ASOUNDLIB
-
+#ifdef SUPPORTS_ASOUNDLIB
 struct volume {
 	int muted;
 	int level;

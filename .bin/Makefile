@@ -1,6 +1,6 @@
 CC	:= gcc
 LFLAGS	:= -lm -lasound -lpthread -lnotify
-CFLAGS	:= -Wall -Wextra -Wpedantic -O3 -flto
+CFLAGS	:= -Wall -Wextra -Wpedantic -O3 -flto -DSUPPORTS_ASOUNDLIB
 DEBUG_CFLAGS := -Wall -Wextra -Wpedantic -g3 -fsanitize=address
 
 INCLUDE := $(shell pkg-config --cflags glib-2.0)
