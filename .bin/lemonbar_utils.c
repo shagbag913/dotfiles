@@ -245,11 +245,13 @@ unsigned short build_bspwm_status() {
 
 	while ((iter = fgetc(bspwm_status)) != EOF) {
 		old_alloc = wm_status;
-		wm_status = realloc(wm_status, index + 2);
-		if (wm_status == NULL) {
-			if (old_alloc != NULL)
-				free(old_alloc);
-			return 0;
+		if (index == 0 || index % 5 == 0) {
+			wm_status = realloc(wm_status, index + 6);
+			if (wm_status == NULL) {
+				if (old_alloc != NULL)
+					free(old_alloc);
+				return 0;
+			}
 		}
 
 		wm_status[index] = iter;
