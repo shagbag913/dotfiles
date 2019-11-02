@@ -1,4 +1,4 @@
-#ifdef SUPPORTS_ASOUNDLIB
+#ifdef SUPPORTS_ALSA
 struct volume {
 	int muted;
 	int level;

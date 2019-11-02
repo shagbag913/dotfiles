@@ -1,7 +1,13 @@
 CC	:= gcc
-LFLAGS	:= -lm -lasound -lpthread -lnotify
-CFLAGS	:= -Wall -Wextra -Wpedantic -O3 -flto -DSUPPORTS_ASOUNDLIB
+LFLAGS	:= -lm -lpthread -lnotify
+CFLAGS	:= -Wall -Wextra -Wpedantic -O3 -flto
 DEBUG_CFLAGS := -Wall -Wextra -Wpedantic -g3 -fsanitize=address
+
+LALSAFLAGS := $(strip $(shell pkg-config --libs alsa))
+ifeq ($(LALSAFLAGS),-lasound)
+CFLAGS += -DSUPPORTS_ALSA
+LFLAGS += -lasound
+endif
 
 INCLUDE := $(shell pkg-config --cflags glib-2.0)
 INCLUDE += $(shell pkg-config --cflags gdk-pixbuf-2.0)

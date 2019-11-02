@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <libnotify/notify.h>
 #include <dirent.h>
-#ifdef SUPPORTS_ASOUNDLIB
+#ifdef SUPPORTS_ALSA
 #include <alsa/asoundlib.h>
 #endif
 
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread[3], NULL, function_thread, &function_args[3]);
 
 	/* Volume slider */
-#ifdef SUPPORTS_ASOUNDLIB
+#ifdef SUPPORTS_ALSA
 	function_args[4].us = USEC_TO_SEC(1);
 	function_args[4].function = volume_slider;
 	pthread_create(&thread[4], NULL, function_thread, &function_args[4]);
@@ -472,7 +472,7 @@ unsigned short network_status() {
 	return 1;
 }
 
-#ifdef SUPPORTS_ASOUNDLIB
+#ifdef SUPPORTS_ALSA
 struct volume volume_info() {
 	long volume, min, max;
 	struct volume volinfo;
@@ -525,7 +525,7 @@ unsigned short volume_slider() {
 
 	return 1;
 }
-#endif /* SUPPORTS_ASOUNDLIB */
+#endif /* SUPPORTS_ALSA */
 
 struct meminfo mem_stats()
 {
