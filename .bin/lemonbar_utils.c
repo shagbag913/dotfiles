@@ -65,9 +65,11 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread[3], NULL, function_thread, &function_args[3]);
 
 	/* Volume slider */
+#ifdef SUPPORTS_ASOUNDLIB
 	function_args[4].us = USEC_TO_SEC(1);
 	function_args[4].function = volume_slider;
 	pthread_create(&thread[4], NULL, function_thread, &function_args[4]);
+#endif
 
 	/* Memory usage */
 	function_args[5].us = USEC_TO_SEC(2);
