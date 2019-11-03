@@ -282,8 +282,10 @@ unsigned short build_bspwm_status() {
 		goto failed_alloc;
 	strcpy(old_wm_status, wm_status);
 
-	if (bspwm_stat != NULL)
+	if (bspwm_stat != NULL) {
 		free(bspwm_stat);
+		bspwm_stat = NULL;
+	}
 	bspwm_stat = malloc(1);
 	if (bspwm_stat == NULL)
 		goto failed_alloc;
