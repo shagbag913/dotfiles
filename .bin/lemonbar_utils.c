@@ -243,6 +243,9 @@ unsigned short build_bspwm_status() {
 	char *delim_ptr, *wm_status = NULL, *old_alloc, iter;
 	FILE *bspwm_status = popen("bspc wm --get-status", "r");
 
+	if (bspwm_status == NULL)
+		return 0;
+
 	while ((iter = fgetc(bspwm_status)) != EOF) {
 		old_alloc = wm_status;
 		if (index == 0 || index % 5 == 0) {
