@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <libnotify/notify.h>
 #include <dirent.h>
+#include <linux/un.h>
+#include <sys/socket.h>
 #ifdef SUPPORTS_ALSA
 #include <alsa/asoundlib.h>
 #endif
@@ -238,51 +240,41 @@ unsigned short formatted_time() {
 	return 1;
 }
 
+unsigned short get_bspwm_status_from_socket(char *buf)
+{
+        struct sockaddr_un addr;
+        int sock = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (sock < 0)
+		return 0;
+
+        addr.sun_family = AF_UNIX;
+        strcpy(addr.sun_path, "/tmp/bspwm_0_0-socket");
+
+        if (connect(sock, (struct sockaddr*) &addr, sizeof(struct sockaddr_un)) < 0)
+		return 0;
+        if (write(sock, "wm", sizeof("wm")) < 0
+			|| write(sock, "--get-status", sizeof("--get-status")) < 0)
+		return 0;
+        if (read(sock, buf, WM_STATUS_SIZE) < 0)
+		return 0;
+        close(sock);
+	return 1;
+}
+
 unsigned short build_bspwm_status() {
-	unsigned short ret, bspwm_status_alloc_size = 0, index = 0;
-	char *delim_ptr, *wm_status = NULL, *old_alloc, iter;
-	FILE *bspwm_status = popen("bspc wm --get-status", "r");
+	unsigned short bspwm_status_alloc_size = 0, index = 0;
+	char *delim_ptr, *old_alloc, wm_status[WM_STATUS_SIZE];
 
-	if (bspwm_status == NULL)
+	if (!get_bspwm_status_from_socket(wm_status))
 		return 0;
 
-	while ((iter = fgetc(bspwm_status)) != EOF) {
-		old_alloc = wm_status;
-		if (index == 0 || index % 5 == 0) {
-			wm_status = realloc(wm_status, index + 6);
-			if (wm_status == NULL) {
-				if (old_alloc != NULL)
-					free(old_alloc);
-				return 0;
-			}
-		}
-
-		wm_status[index] = iter;
-		index++;
+	if (!strcmp(old_wm_status, wm_status)) {
+		/* Same wm_status as before, no need to continue */
+		return 1;
 	}
 
-	ret = pclose(bspwm_status);
-	if (ret) {
-		printf("Command `bspm wm --get-status` failed\n");
-		free(wm_status);
-		return 0;
-	}
-
-	wm_status[index] = '\0';
-	index = 0;
-
-	if (old_wm_status != NULL) {
-		if (!strcmp(old_wm_status, wm_status)) {
-			free(wm_status);
-			return 1;
-		}
-
-		free(old_wm_status);
-	}
-
-	old_wm_status = malloc(strlen(wm_status) + 1);
-	if (old_wm_status == NULL)
-		goto failed_alloc;
+	/* Copy new wm_status to old_wm_status */
+	memset(old_wm_status, 0, sizeof(old_wm_status));
 	strcpy(old_wm_status, wm_status);
 
 	if (bspwm_stat != NULL) {
@@ -335,14 +327,10 @@ unsigned short build_bspwm_status() {
 		delim_ptr = strtok(NULL, ":");
 	}
 
-	free(wm_status);
 	return 1;
 
 failed_alloc:
 	printf("%s: Memory allocation failed!\n", __func__);
-
-	if (wm_status != NULL)
-		free(wm_status);
 
 	return 0;
 }
