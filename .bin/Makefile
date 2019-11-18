@@ -16,4 +16,4 @@ default:
 	$(CC) $(LFLAGS) $(CFLAGS) $(INCLUDE) -o lemonbar_utils lemonbar_utils.c
 
 debug:
-	$(CC) $(LFLAGS) $(CFLAGS) $(INCLUDE) $(DEBUG_CFLAGS) -o lemonbar_utils lemonbar_utils.c
+	$(CC) $(LFLAGS) $(INCLUDE) $(DEBUG_CFLAGS) -o lemonbar_utils lemonbar_utils.c
