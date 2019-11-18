@@ -41,9 +41,6 @@
 !.config/sxhkd/
 !.config/sxhkd/*
 
-!.external-tools/
-!.external-tools/*
-
 !.icons/
 !.icons/default/
 !.icons/default/index.theme
