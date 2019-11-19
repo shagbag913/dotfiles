@@ -11,7 +11,6 @@ compinit
 autoload -U colors && colors
 
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
-[[ -f $HOME/.cache/wal/sequences ]] && cat $HOME/.cache/wal/sequences
 . $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 ZSH_AUTOSUGGEST_STRATEGY=completion
