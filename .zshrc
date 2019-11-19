@@ -90,4 +90,4 @@ pre_cmd() {
 
 precmd_functions+=(pre_cmd)
 
-[[ -n "$SSH_TTY" ]] || ps -e | grep -q Xorg && neofetch
+neofetch
