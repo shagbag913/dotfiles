@@ -62,9 +62,8 @@ device_zip_list() {
 }
 
 prompt_git_branch() {
-    branch="$(git branch 2>/dev/null | sed -n 's/^* //p')"
-    if grep -q 'HEAD detached' <<< $branch; then branch=""; fi
-    [[ -n $branch ]] && echo "\e[3m$branch\e[0m "
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || return)
+    echo "\e[3m$branch\e[0m "
 }
 
 set_prompts() {
