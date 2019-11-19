@@ -17,11 +17,10 @@ ZSH_AUTOSUGGEST_USE_ASYNC=true
 ZSH_AUTOSUGGEST_STRATEGY=completion
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
-. /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+. $HOME/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
-export FZF_DEFAULT_COMMAND='rg --files --hidden'
 export PATH="$HOME/.bin:$HOME/Android/Sdk/build-tools/29.0.1:$PATH"
 export LC_ALL=C
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -44,11 +43,10 @@ alias l='ls'
 alias la='ls -a'
 alias ls='ls --color=auto'
 alias mirror='sudo reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist'
-alias trizen='trizen --skipinteg --noconfirm'
 alias wget='wget -c'
 
 reposync() {
-    repo sync --no-clone-bundle --prune --no-tags --no-clone-bundle -c --optimized-fetch -j4 "$@"
+    repo sync --no-clone-bundle --prune --no-tags --no-clone-bundle -c --optimized-fetch -j8 "$@"
 }
 
 rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
@@ -67,24 +65,21 @@ device_zip_list() {
 prompt_git_branch() {
     branch="$(git branch 2>/dev/null | sed -n 's/^* //p')"
     if grep -q 'HEAD detached' <<< $branch; then branch=""; fi
-    [[ -n $branch ]] && echo "git:($branch) "
+    [[ -n $branch ]] && echo "\e[3m$branch\e[0m "
 }
 
-function zle-line-init zle-keymap-select {
-    VIMODE="%F{cyan}${${KEYMAP/vicmd/N}/(main|viins)/I}"
-    set_prompt
-    zle reset-prompt
+set_prompts() {
+    OLDRET=$?
+    if [[ "$OLDRET" != 0 ]]; then
+        RPROMPT="%F{red}$OLDRET :("
+    else
+        RPROMPT=""
+    fi
+    PROMPT=" %F{cyan}↳  %F{red}%n%F{cyan}@%F{red}%m %F{cyan}$(prompt_git_branch)%F{cyan}$(dirs)"$'\n'" %F{green}$%f "
 }
-
-set_prompt() {
-    PROMPT="$VIMODE %F{red}%m%k %F{cyan}$(prompt_git_branch)$(basename "$(dirs)") %F{green}$ %f"
-}
-
-zle -N zle-line-init
-zle -N zle-keymap-select
 
 pre_cmd() {
-    set_prompt
+    set_prompts
     [[ -f $HOME/.secret ]] && . $HOME/.secret
 }
 
