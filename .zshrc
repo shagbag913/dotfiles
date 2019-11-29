@@ -10,7 +10,6 @@ compinit
 
 autoload -U colors && colors
 
-[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 . $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 ZSH_AUTOSUGGEST_STRATEGY=completion
@@ -19,6 +18,8 @@ ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 . $HOME/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
+
+. $HOME/.misc_funcs
 
 export PATH="$HOME/.bin:$HOME/Android/Sdk/build-tools/29.0.1:$PATH"
 export LC_ALL=C
@@ -35,6 +36,8 @@ else
             "if ! tmux -u attach; then tmux -u; fi"'
 fi
 alias .='source'
+alias ..='cd ..'
+alias ...='cd ../..'
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
 alias zrc='source ~/.zshrc'
 alias grep='grep --color=auto'
@@ -43,23 +46,6 @@ alias la='ls -a'
 alias ls='ls --color=auto'
 alias mirror='sudo reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist'
 alias wget='wget -c'
-
-reposync() {
-    repo sync --no-clone-bundle --prune --no-tags --no-clone-bundle -c --optimized-fetch -j8 "$@"
-}
-
-rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
-rmul() { rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2" }
-
-device_zip_list() {
-    if [ -n "$1" ]; then
-        curl -s https://developers.google.com/android/images | sed -n 's/<td><a href="//p' \
-            | sed -n 's/[", ]//gp' | grep $1 | sort
-    else
-        curl -s https://developers.google.com/android/images | sed -n 's/<td><a href="//p' \
-            | sed -n 's/[", ]//gp' | sort
-    fi
-}
 
 prompt_git_branch() {
     branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || return)

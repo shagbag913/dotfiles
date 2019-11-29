@@ -2,6 +2,7 @@
 !.compton.conf
 !.gitconfig
 !.gitignore
+!.misc_funcs
 !.tmux.conf
 !.xinitrc
 !.zshrc
