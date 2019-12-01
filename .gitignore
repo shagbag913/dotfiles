@@ -1,6 +1,8 @@
 *
 !.compton.conf
 !.gitconfig
+!.gitconfigs/
+!.gitconfigs/**/*
 !.gitignore
 !.misc_funcs
 !.tmux.conf

@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+
+RAND=$(echo $RANDOM | git hash-object --stdin)
+DEST="$1.tmp.$RAND"
+
+trap 'rm -f $DEST' EXIT
+
+# Strip comments from commit message
+if ! git stripspace --strip-comments < "$1" > "$DEST" ; then
+    echo "Cannot strip comments from $1"
+    exit 1
+fi
+
+if [[ ! -s "$DEST" ]]; then
+    echo "File is empty: $1"
+    exit 1
+fi
+
+# ChangeID trailer
+if [[ $(git config --bool --get gerrit.createChangeId) != false ]]; then
+    if ! git -c trailer.ifexists=doNothing interpret-trailers \
+            --trailer "Change-Id: I${RAND}" < "$1" > "$DEST" ; then
+        echo "Cannot insert change-id line in $1"
+        exit 1
+    fi
+fi
+
+if ! mv "$DEST" "$1" ; then
+    echo "Cannot mv $DEST to $1"
+    exit 1
+fi
+

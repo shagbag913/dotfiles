@@ -38,6 +38,7 @@ fi
 alias .='source'
 alias ..='cd ..'
 alias ...='cd ../..'
+alias ....='cd ../../..'
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
 alias zrc='source ~/.zshrc'
 alias grep='grep --color=auto'

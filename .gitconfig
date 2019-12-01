@@ -41,3 +41,5 @@
 	clean = git-lfs clean -- %f
 [review "review.lineageos.org"]
 	username = shagbag913
+[core]
+	hooksPath = /home/shagbag913/.gitconfigs/hooks
