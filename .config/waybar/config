@@ -1,0 +1,26 @@
+{
+    "layer": "top",
+    "position": "bottom",
+    "height": 35,
+    "margin-right": 15,
+    "margin-left": 15,
+    "modules-left": ["sway/workspaces"],
+    "modules-center": ["clock"],
+    "modules-right": ["memory","pulseaudio","battery"],
+
+    "memory": {
+        "format": "MEM: {}"
+    },
+
+    "pulseaudio": {
+        "format": "VOL: {}"
+    },
+
+    "battery": {
+        "format": "BAT: {}"
+    },
+
+    "clock": {
+        "format": "{:%l:%M}"
+    }
+}

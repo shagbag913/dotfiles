@@ -1,14 +1,14 @@
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
+setopt share_history
 unsetopt beep
 bindkey -v
 zstyle :compinstall filename '/home/shagbag913/.zshrc'
 
 autoload -Uz compinit
-compinit
-
 autoload -U colors && colors
+compinit
 
 . $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_USE_ASYNC=true
