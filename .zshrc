@@ -22,6 +22,7 @@ bindkey '^[[B' history-substring-search-down
 . $HOME/.misc_funcs
 
 export PATH="$HOME/.bin:$HOME/Android/Sdk/build-tools/29.0.1:$PATH"
+[[ -d $HOME/.depot_tools ]] && export PATH="$PATH:$HOME/.depot_tools"
 export LC_ALL=C
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export EDITOR=nvim
