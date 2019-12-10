@@ -1,3 +1,3 @@
-[[ -z "$DISPLAY" && -z "$SSH_CLIENT" ]] && ! ps -e | grep sway; then
+if [[ -z "$DISPLAY" && -z "$SSH_CLIENT" ]] && ! ps -e | grep sway; then
     sway
 fi

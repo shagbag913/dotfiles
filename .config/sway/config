@@ -3,8 +3,10 @@ gaps outer 10
 
 default_border none
 
-set $mod Mod4
 output * bg $HOME/Walls/pinkish-mountain.png fill
+
+exec --no-startup-id waybar
+exec --no-startup-id dunst
 
 input "1267:85:Elan_Touchpad" {
     dwt enabled
@@ -18,8 +20,9 @@ output eDP-1 {
     scale 1.2
 }
 
+set $mod Mod4
 bindsym $mod+Return exec kitty
-bindsym $mod+d exec j4-dmenu-desktop --dmenu="bemenu -i" | xargs swaymsg exec --
+bindsym $mod+d exec j4-dmenu-desktop --dmenu="bemenu -p '' --fn 'Google Sans Medium 14' --fb '#17171b' --ff '#ededed' --nb '#17171b' --nf '#ededed' --hb '#1b1b1e' --hf '#ffffff' --sb '#17171b' --sf '#ededed' -l 4" | xargs swaymsg exec --
 bindsym $mod+q kill
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exec swaymsg exit
@@ -65,6 +68,8 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
+bindsym XF86AudioRaiseVolume exec $HOME/.bin/volume +
+bindsym XF86AudioLowerVolume exec $HOME/.bin/volume -
 
 #
 # Resizing containers:
