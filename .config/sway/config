@@ -8,6 +8,10 @@ output * bg $HOME/Walls/pinkish-mountain.png fill
 exec --no-startup-id waybar
 exec --no-startup-id dunst
 
+input "1:1:AT_Translated_Set_2_keyboard" {
+    xkb_model chromebook
+}
+
 input "1267:85:Elan_Touchpad" {
     dwt enabled
     tap enabled
