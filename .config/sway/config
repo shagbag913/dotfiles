@@ -74,6 +74,9 @@ bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 bindsym XF86AudioRaiseVolume exec $HOME/.bin/volume +
 bindsym XF86AudioLowerVolume exec $HOME/.bin/volume -
+bindsym XF86AudioMute exec $HOME/.bin/volume -mute
+bindsym XF86MonBrightnessUp exec $HOME/.bin/brightness -inc
+bindsym XF86MonBrightnessDown exec $HOME/.bin/brightness -dec
 
 #
 # Resizing containers:
