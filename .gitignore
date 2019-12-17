@@ -11,6 +11,7 @@
 !.bin/
 !.bin/apktool.jar
 !.bin/brightness
+!.bin/build-signed
 !.bin/deldog
 !.bin/dunstrc_update
 !.bin/reinit_mouse

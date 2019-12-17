@@ -1,0 +1,31 @@
+#!/usr/bin/env zsh
+set -e
+
+# $1: Product name
+PRODUCT=$1
+
+# $2: Keys directory
+KEYS=${KEYS:-$2}
+
+[[ -z "$PRODUCT" ]] && { echo "ERROR: \$PRODUCT undefined."; exit 1; }
+[[ -z "$KEYS" ]] && { echo "ERROR: \$KEYS undefined."; exit 1; }
+
+DATE=$(date +%s)
+
+. build/envsetup.sh
+lunch $PRODUCT
+make $MAKEFLAGS otatools target-files-package
+
+[[ ! -d "$OUT/obj/PACKAGING/target_files_intermediates-signed" ]] && \
+        mkdir $OUT/obj/PACKAGING/target_files_intermediates-signed
+
+python2 ./build/tools/releasetools/sign_target_files_apks \
+    -o \
+    -d $KEYS \
+    $OUT/obj/PACKAGING/target_files_intermediates/*-target_files-*.zip \
+    $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip
+
+python2 ./build/tools/releasetools/ota_from_target_files \
+    -k $KEYS/releasekey \
+    $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip \
+    $OUT/$TARGET_PRODUCT-$DATE-signed.zip;
