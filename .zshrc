@@ -29,6 +29,7 @@ export EDITOR=nvim
 export USE_CCACHE=1
 export CCACHE_EXEC=$(which ccache)
 export KEYTIMEOUT=1
+export MAKEFLAGS="-j40"
 
 if [[ $(uname -n) = ShagBox ]]; then
   alias tm='if ! tmux -u attach; then tmux -u; fi'
