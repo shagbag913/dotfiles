@@ -27,10 +27,10 @@
 !.config/gtk-3.0/*
 !.config/kitty/
 !.config/kitty/*
-!.config/nvim/
-!.config/nvim/init.vim
-!.config/nvim/indent/
-!.config/nvim/indent/*
+!.vim/
+!.vim/*/
+!.vim/indent/*
+!.vimrc
 !.config/sway/
 !.config/sway/*
 !.config/waybar/
