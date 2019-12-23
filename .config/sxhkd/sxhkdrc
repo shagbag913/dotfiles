@@ -1,0 +1,19 @@
+# Terminal emulator
+super + Return
+    alacritty
+
+# Reload sxhkd config
+super + Escape
+	pkill -USR1 -x sxhkd
+
+# Quit / restart bspwm
+super + alt + {q,r}
+    bspc {quit,wm -r}
+
+# Close / kill
+super + {_,shift + }q
+    bspc node -{c,k}
+
+# Focus / send to the given desktop
+super + {_,shift + }{1-9,0}
+    bspc {desktop -f,node -d} '^{1-9,10}'

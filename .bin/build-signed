@@ -14,7 +14,7 @@ DATE=$(date +%s)
 
 . build/envsetup.sh
 lunch $PRODUCT
-make $MAKEFLAGS otatools target-files-package
+m $MAKEFLAGS otatools target-files-package
 
 [[ ! -d "$OUT/obj/PACKAGING/target_files_intermediates-signed" ]] && \
         mkdir $OUT/obj/PACKAGING/target_files_intermediates-signed

@@ -1,0 +1,25 @@
+#!/usr/bin/env zsh
+#
+# Resign an APK with specified certificate/key
+# resign_apk [APK] [KEYNAME]
+#
+
+[[ -z "$1" || -z "$2" ]] && { echo "Missing arguments"; exit 1; }
+
+APK=$PWD/$1
+CERTKEY_BASE=$2
+APK_BASENAME=$(basename $1 | sed 's/\..*//')
+TMP="/tmp/$APK_BASENAME-signer-$(date +%s)"
+
+mkdir $TMP
+cd $TMP
+
+cp $APK $APK_BASENAME.zip
+unzip -d $TMP $APK_BASENAME.zip
+rm -rf META-INF $APK_BASENAME.zip
+cd $TMP
+zip -rD $APK_BASENAME.nzu *
+zipalign 4 $APK_BASENAME.nzu $APK_BASENAME.apk
+/opt/android-sdk/build-tools/29.0.2/apksigner sign --key $CERTKEY_BASE.pk8 --cert $CERTKEY_BASE.x509.pem $APK_BASENAME.apk
+mv $APK_BASENAME.apk $APK
+cd && rm -rf $TMP

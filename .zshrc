@@ -19,8 +19,6 @@ ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
-. $HOME/.misc_funcs
-
 export PATH="$HOME/.bin:$HOME/Android/Sdk/build-tools/29.0.1:$PATH"
 [[ -d $HOME/.depot_tools ]] && export PATH="$PATH:$HOME/.depot_tools"
 export LC_ALL=C
@@ -29,7 +27,6 @@ export EDITOR=vim
 export USE_CCACHE=1
 export CCACHE_EXEC=$(which ccache)
 export KEYTIMEOUT=1
-export MAKEFLAGS="-j40"
 
 if [[ $(uname -n) = ShagBox ]]; then
   alias tm='if ! tmux -u attach; then tmux -u; fi'
@@ -38,9 +35,9 @@ else
             "if ! tmux -u attach; then tmux -u; fi"'
 fi
 alias .='source'
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
+alias b='cd ..'
+alias bb='cd ../..'
+alias bbb='cd ../../..'
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
 alias zrc='source ~/.zshrc'
 alias grep='grep --color=auto'
@@ -48,7 +45,12 @@ alias l='ls'
 alias la='ls -a'
 alias ls='ls --color=auto'
 alias mirror='sudo reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist'
+alias rs='repo sync --no-clone-bundle --prune --no-tags --no-clone-bundle -c --optimized-fetch -j8'
+alias s!='sudo $(fc -ln -1)'
 alias wget='wget -c'
+
+rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
+rmul() { rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2" }
 
 prompt_git_branch() {
     branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || return)
@@ -62,7 +64,7 @@ set_prompts() {
     else
         RPROMPT=""
     fi
-    PROMPT=" %F{cyan}↳  %F{red}%n%F{cyan}@%F{red}%m %F{cyan}$(prompt_git_branch)%F{cyan}$(dirs)"$'\n'" %F{green}$%f "
+    PROMPT=" %F{red}%n%F{cyan}@%F{red}%m %F{cyan}$(prompt_git_branch)%F{cyan}$(dirs)"$'\n'" %F{green}$%f "
 }
 
 pre_cmd() {

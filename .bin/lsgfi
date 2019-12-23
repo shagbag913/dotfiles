@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+#
+# List factory image links from Google
+#
+
+if [ -n "$1" ]; then
+    curl -s https://developers.google.com/android/images | sed -n 's/<td><a href="//p' \
+        | sed -n 's/[", ]//gp' | grep $1 | sort
+else
+    curl -s https://developers.google.com/android/images | sed -n 's/<td><a href="//p' \
+        | sed -n 's/[", ]//gp' | sort
+fi
