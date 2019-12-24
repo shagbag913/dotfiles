@@ -17,3 +17,19 @@ super + {_,shift + }q
 # Focus / send to the given desktop
 super + {_,shift + }{1-9,0}
     bspc {desktop -f,node -d} '^{1-9,10}'
+
+# Start Rofi
+super + d
+    rofi -show drun -modi drun
+
+# Set window state
+super + {t,shift + t,s,f}
+    bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+# Alternate between tiled / monocle layout
+super + m
+    bspc desktop -l next
+
+# Focus next / previous node in the current desktop
+super + {_,shift + }c
+    bspc node -f {next,prev}.local
