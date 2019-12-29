@@ -28,6 +28,7 @@ export USE_CCACHE=1
 export CCACHE_EXEC=$(which ccache)
 export KEYTIMEOUT=1
 
+# ALIAS'S
 if [[ $(uname -n) = ShagBox ]]; then
   alias tm='if ! tmux -u attach; then tmux -u; fi'
 else
@@ -35,9 +36,6 @@ else
             "if ! tmux -u attach; then tmux -u; fi"'
 fi
 alias .='source'
-alias b='cd ..'
-alias bb='cd ../..'
-alias bbb='cd ../../..'
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
 alias zrc='source ~/.zshrc'
 alias grep='grep --color=auto'
@@ -48,7 +46,27 @@ alias mirror='sudo reflector --protocol https --latest 50 --number 20 --sort rat
 alias rs='repo sync --no-clone-bundle --prune --no-tags --no-clone-bundle -c --optimized-fetch -j8'
 alias s!='sudo $(fc -ln -1)'
 alias wget='wget -c'
+alias gaa='git add --all'
+alias gap='git add --all --patch'
+alias gc='git commit --gpg-sign'
+alias gca='git commit --gpg-sign --amend'
+alias gcad='git commit --gpg-sign --amend --date=now'
+alias gcp='git cherry-pick --gpg-sign'
+alias gcpa='git cherry-pick --abort'
+alias gcpc='git cherry-pick --continue'
+alias gf='git fetch'
+alias gm='git merge'
+alias gma='git merge --abort'
+alias gma='git merge --continue'
+alias gp='git push'
+alias gs='git status'
+alias gr='git revert'
 
+ghp() {
+    [[ -z "$1" || -z "$2" ]] && { echo "Missing args (./$0 <repo> <branch>)"; return 1; }
+    git push https://github.com/$1 HEAD:refs/heads/$2
+}
+b() { for ((i=0;i<$1;i++)); do cd ..; done }
 rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
 rmul() { rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2" }
 

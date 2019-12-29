@@ -25,7 +25,12 @@ python2 ./build/tools/releasetools/sign_target_files_apks \
     $OUT/obj/PACKAGING/target_files_intermediates/*-target_files-*.zip \
     $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip
 
-python2 ./build/tools/releasetools/ota_from_target_files \
-    -k $KEYS/releasekey \
+python2 ./build/make/tools/releasetools/img_from_target_files \
     $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip \
-    $OUT/$TARGET_PRODUCT-$DATE-signed.zip;
+    $OUT/$TARGET_PRODUCT-$DATE-imgs-signed.zip
+#
+#
+#python2 ./build/tools/releasetools/ota_from_target_files \
+#    -k $KEYS/releasekey \
+#    $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip \
+#    $OUT/$TARGET_PRODUCT-$DATE-signed.zip;
