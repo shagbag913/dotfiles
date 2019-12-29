@@ -1,19 +1,39 @@
 #!/usr/bin/env zsh
 set -e
 
-# $1: Product name
-PRODUCT=$1
+[[ -f build/envsetup.sh ]] || { echo "ERROR: Not in ROM directory."; exit 1; }
 
-# $2: Keys directory
-KEYS=${KEYS:-$2}
+while [[ "$#" > 0 ]]; do
+    case "$1" in
+        -k|--keys)
+            KEYS=${KEYS:-$2}
+            ;;
+        -t|--target)
+            TARGET=$2
+            ;;
+        -i|--images)
+            IMAGES_PACKAGE=true
+            ;;
+        -o|--otapackage)
+            OTA_PACKAGE=true
+            ;;
+    esac
+    shift
+done
 
-[[ -z "$PRODUCT" ]] && { echo "ERROR: \$PRODUCT undefined."; exit 1; }
+[[ -z "$TARGET" ]] && { echo "ERROR: \$TARGET undefined."; exit 1; }
 [[ -z "$KEYS" ]] && { echo "ERROR: \$KEYS undefined."; exit 1; }
+
+if [[ -z "$IMAGES_PACKAGE" && -z "$OTA_PACKAGE" ]]; then
+    echo "ERROR: \$IMAGES_PACKAGE and \$OTA_PACKAGE undefined. You must specify at least one" \
+         "package to build."
+    exit 1
+fi
 
 DATE=$(date +%s)
 
 . build/envsetup.sh
-lunch $PRODUCT
+lunch $TARGET
 m $MAKEFLAGS otatools target-files-package
 
 [[ ! -d "$OUT/obj/PACKAGING/target_files_intermediates-signed" ]] && \
@@ -25,12 +45,15 @@ python2 ./build/tools/releasetools/sign_target_files_apks \
     $OUT/obj/PACKAGING/target_files_intermediates/*-target_files-*.zip \
     $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip
 
-python2 ./build/make/tools/releasetools/img_from_target_files \
-    $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip \
-    $OUT/$TARGET_PRODUCT-$DATE-imgs-signed.zip
-#
-#
-#python2 ./build/tools/releasetools/ota_from_target_files \
-#    -k $KEYS/releasekey \
-#    $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip \
-#    $OUT/$TARGET_PRODUCT-$DATE-signed.zip;
+if [[ "$IMAGES_PACKAGE" == true ]]; then
+    python2 ./build/make/tools/releasetools/img_from_target_files \
+        $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip \
+        $OUT/$TARGET_PRODUCT-$DATE-imgs-signed.zip
+fi
+
+if [[ "$OTA_PACKAGE" == true ]]; then
+    python2 ./build/tools/releasetools/ota_from_target_files \
+        -k $KEYS/releasekey \
+        $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip \
+        $OUT/$TARGET_PRODUCT-$DATE-signed.zip;
+fi
