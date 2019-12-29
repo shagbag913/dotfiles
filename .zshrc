@@ -61,6 +61,8 @@ alias gma='git merge --continue'
 alias gp='git push'
 alias gs='git status'
 alias gr='git revert'
+alias gl='git log'
+alias glo='git log --oneline'
 
 ghp() {
     [[ -z "$1" || -z "$2" ]] && { echo "Missing args (./$0 <repo> <branch>)"; return 1; }
