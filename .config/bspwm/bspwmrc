@@ -2,10 +2,8 @@
 
 pkill sxhkd
 pkill picom
-pkill twmnd
 
 sxhkd &
-twmnd &
 nitrogen --set-scaled $HOME/.walls/pinkish-mountain.png &
 picom --experimental-backends &
 xrandr --output eDP-1 --mode 1600x900 &
@@ -13,6 +11,7 @@ for mf in 'Middle Emulation' 'Natural Scrolling' 'Tapping'; do
     xinput set-prop "Elan Touchpad" "libinput $mf Enabled" 1 &
 done &
 xsetroot -cursor_name top_left_arrow &
+$HOME/.bin/lemonbar_wrapper &
 
 bspc monitor -d I II III IV V VI &
 

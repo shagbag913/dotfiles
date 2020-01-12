@@ -1,0 +1,27 @@
+#!/usr/bin/env dash
+
+killall lemonbar gobar
+
+# Vertical size in percentage of the bar
+BAR_HEIGHT_RATIO=04
+
+# Find bspwm gap ratio
+BSPWM_GAP=$(awk '/window_gap/{print $4}' $HOME/.config/bspwm/bspwmrc)
+if [ $(echo $BSPWM | wc -l) -gt 1 ]; then BSPWM_GAP=0$BSPWM_GAP; fi
+
+MONITOR_WIDTH=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 1p)
+MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)
+BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
+BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
+
+go run $HOME/.bin/gobar.go | lemonbar \
+            -f 'Font Awesome 5 Free Solid:style=Solid' \
+            -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
+            -B "#000000" \
+            -F "#FFFFFF" \
+            -b \
+            -u 2 \
+            -p | dash &
+
+sleep 1
+xdo above -t $(xdo id -n root) $(xdo id -n lemonbar)
