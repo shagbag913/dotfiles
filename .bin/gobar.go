@@ -17,42 +17,33 @@ var bspwmStatus string
 /* Other */
 var lastBspwmStatus []byte
 
-/* All goroutines must set this if their corresponding global variable is changed */
-var shouldMainPrint bool
-
 func main() {
     /* Initialize goroutines */
     go setTimeString()
     go setChargeString()
     go setBspwmStatus()
 
-    /* Main loop */
-    for {
-        if shouldMainPrint == false {
-            time.Sleep(100 * time.Millisecond)
-        }
+    select {}
+}
 
-        printBuffer := ""
+func printBuffer() {
+    printBuffer := ""
 
-        if bspwmStatus != "" {
-            printBuffer += "%{l}" + bspwmStatus
-        }
+    if bspwmStatus != "" {
+        printBuffer += "%{l}" + bspwmStatus
+    }
 
-        if timeString != "" {
-            printBuffer += "%{c}" + timeString
-        }
+    if timeString != "" {
+        printBuffer += "%{c}" + timeString
+    }
 
-        if chargeString != "" {
-            printBuffer += "%{r}" + chargeString
-        }
+    if chargeString != "" {
+        printBuffer += "%{r}" + chargeString
+    }
 
-        if printBuffer != "" {
-            printBuffer = "    " + printBuffer + "    "
-            fmt.Println(printBuffer)
-        }
-
-        shouldMainPrint = false
-        time.Sleep(100 * time.Millisecond)
+    if printBuffer != "" {
+        printBuffer = "    " + printBuffer + "    "
+        fmt.Println(printBuffer)
     }
 }
 
@@ -75,7 +66,7 @@ func setTimeString() {
 
         if newTimeString != timeString {
             timeString = newTimeString
-            shouldMainPrint = true
+            printBuffer()
         }
 
         time.Sleep(10 * time.Second)
@@ -96,7 +87,7 @@ func setChargeString() {
 
         if newChargeString != chargeString {
             chargeString = newChargeString
-            shouldMainPrint = true
+            printBuffer()
         }
 
         time.Sleep(10 * time.Second)
@@ -152,7 +143,7 @@ func setBspwmStatus() {
         newBspwmStatus = newBspwmStatus[:len(newBspwmStatus)-1]
 
         bspwmStatus = newBspwmStatus
-        shouldMainPrint = true
+        printBuffer()
         time.Sleep(100 * time.Millisecond)
     }
 }
