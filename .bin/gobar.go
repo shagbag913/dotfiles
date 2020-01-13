@@ -6,7 +6,7 @@ import (
     "strconv"
     "io/ioutil"
     "os/exec"
-    "strings"
+    "regexp"
 )
 
 /* Printed bar strings */
@@ -15,7 +15,7 @@ var chargeString string
 var bspwmStatus string
 
 /* Other */
-var lastBspwmStatus []byte
+var lastBspwmStatus string
 
 func main() {
     /* Initialize goroutines */
@@ -94,48 +94,31 @@ func setChargeString() {
     }
 }
 
-func testEqual(a, b []byte) bool {
-    if (a == nil) != (b == nil) {
-        return false
-    }
-
-    if len(a) != len(b) {
-        return false
-    }
-
-    for i := range a {
-        if a[i] != b[i] {
-            return false
-        }
-    }
-
-    return true
-}
-
 func setBspwmStatus() {
+    reg := regexp.MustCompile("[^oOfF]*")
+
     for {
         /* TODO: talk directly to socket */
         socketStatus, _ := exec.Command("bspc", "wm", "--get-status").Output()
+        socketStatusFormatted := reg.ReplaceAllString(string(socketStatus), "")
 
         /* Don't continue if socketStatus hasn't changed */
-        if testEqual(socketStatus, lastBspwmStatus) == true {
-            time.Sleep(100 * time.Millisecond)
+        if socketStatusFormatted == lastBspwmStatus {
+            time.Sleep(200 * time.Millisecond)
             continue
         }
-        lastBspwmStatus = socketStatus
+        lastBspwmStatus = socketStatusFormatted
 
-        socketStatusSplit := strings.Split(string(socketStatus), ":")
         newBspwmStatus := ""
 
-        for i := 0; i < len(socketStatusSplit); i++ {
-            socketStatusEl := string(socketStatusSplit[i])
-            switch socketStatusEl[:1] {
-            case "F":
+        for i := 0; i < len(socketStatusFormatted); i++ {
+            switch socketStatusFormatted[i] {
+            case 'F':
                 fallthrough
-            case "O":
-                newBspwmStatus += " %{+u}  " + strconv.Itoa(i) + "  %{-u} |"
-            case "o":
-                newBspwmStatus += "   " + strconv.Itoa(i) + "   |"
+            case 'O':
+                newBspwmStatus += " %{+u}  " + strconv.Itoa(i+1) + "  %{-u} |"
+            case 'o':
+                newBspwmStatus += "   " + strconv.Itoa(i+1) + "   |"
             }
         }
 
@@ -144,6 +127,6 @@ func setBspwmStatus() {
 
         bspwmStatus = newBspwmStatus
         printBuffer()
-        time.Sleep(100 * time.Millisecond)
+        time.Sleep(200 * time.Millisecond)
     }
 }
