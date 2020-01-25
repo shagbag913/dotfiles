@@ -14,6 +14,9 @@ import (
 /* Whether to use 12 or 24 hour time */
 var use12HourTime bool = true
 
+/* Enable charging animation */
+var animateChargeGlyphWhenCharging = true
+
 // END CONFIGURATION FLAGS
 
 /* Printed bar strings */
@@ -132,8 +135,8 @@ func setChargeString() {
         }
         chargeInt, _ := strconv.Atoi(string(charge[:len(charge)-1]))
 
-        isCharging := isCharging()
-        if isCharging == false {
+        animate := isCharging() && animateChargeGlyphWhenCharging
+        if animate == false {
             /* Reset index counter */
             chargingIndexCounter = -1
         } else {
