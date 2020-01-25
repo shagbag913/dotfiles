@@ -15,10 +15,13 @@ BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
 BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
 
 go run $HOME/.bin/gobar.go | lemonbar \
-            -f 'Font Awesome 5 Free Solid:style=Solid' \
+            -o 1 \
+            -f 'Google Sans,Google Sans Medium:style=Medium,Regular:size=12' \
+            -o -1 \
+            -f 'Font Awesome 5 Free,Font Awesome 5 Free Solid:style=Solid' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
-            -B "#000000" \
-            -F "#FFFFFF" \
+            -B '#000000' \
+            -F '#FFFFFF' \
             -b \
             -u 2 \
             -p | dash &

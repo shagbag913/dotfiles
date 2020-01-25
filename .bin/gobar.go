@@ -9,6 +9,13 @@ import (
     "regexp"
 )
 
+// CONFIGURATION FLAGS
+
+/* Whether to use 12 or 24 hour time */
+var use12HourTime bool = true
+
+// END CONFIGURATION FLAGS
+
 /* Printed bar strings */
 var timeString string
 var chargeString string
@@ -23,7 +30,8 @@ func main() {
     go setChargeString()
     go setBspwmStatus()
 
-    select {}
+    /* Block main thread and let goroutines do everything */
+    select { }
 }
 
 func printBuffer() {
@@ -52,45 +60,98 @@ func setTimeString() {
         tNow := time.Now()
         minute, hour := tNow.Minute(), tNow.Hour()
 
-        if hour > 12 {
-            hour -= 12
+        /* 12 hour time */
+        if use12HourTime == true {
+            if hour > 12 {
+                hour -= 12
+            } else if hour == 0 {
+                hour = 12
+            }
         }
 
         newTimeString := strconv.Itoa(hour) + ":"
-
         if minute < 10 {
-            newTimeString += "0" + strconv.Itoa(minute)
-        } else {
-            newTimeString += strconv.Itoa(minute)
+            newTimeString += "0"
         }
+        newTimeString += strconv.Itoa(minute)
 
         if newTimeString != timeString {
             timeString = newTimeString
             printBuffer()
         }
 
-        time.Sleep(10 * time.Second)
+        time.Sleep(2 * time.Second)
     }
 }
 
+func getBatteryPercentGlyphIndex(batteryPercentage int, overrideIndex int) int {
+    if overrideIndex >= 0 {
+        return overrideIndex
+    }
+
+    if batteryPercentage >= 90 {
+        return 4
+    } else if batteryPercentage >= 75 {
+        return 3
+    } else if batteryPercentage >= 50 {
+        return 2
+    } else if batteryPercentage >= 25 {
+        return 1
+    } else {
+        return 0
+    }
+}
+
+func getBatteryPercentWithGlyph(batteryPercentage int, overrideIndex int) string {
+    batteryGlyphs := []string{"", "", "", "", ""}
+    glyphIndex := getBatteryPercentGlyphIndex(batteryPercentage, overrideIndex)
+
+    return batteryGlyphs[glyphIndex] + "  " + strconv.Itoa(batteryPercentage) + "%"
+}
+
+func isCharging() bool {
+    status, err := ioutil.ReadFile("/sys/class/power_supply/BAT0/status")
+    if err != nil {
+        return false
+    }
+
+    if string(status[:len(status) - 1]) == "Discharging" {
+        return false
+    }
+
+    return true
+}
+
 func setChargeString() {
+    chargingIndexCounter := -1
     for {
         /* TODO: unhardcode */
         charge, err := ioutil.ReadFile("/sys/class/power_supply/BAT0/capacity")
-
         if err != nil {
-            /* DNE, break */
             break
         }
+        chargeInt, _ := strconv.Atoi(string(charge[:len(charge)-1]))
 
-        newChargeString := string(charge[:len(charge) - 1]) + "%"
+        isCharging := isCharging()
+        if isCharging == false {
+            /* Reset index counter */
+            chargingIndexCounter = -1
+        } else {
+            if chargingIndexCounter == 4 || chargingIndexCounter < 0 {
+                chargingIndexCounter = getBatteryPercentGlyphIndex(chargeInt, -1)
+            } else {
+                chargingIndexCounter++
+            }
+        }
+
+        newChargeString := getBatteryPercentWithGlyph(chargeInt, chargingIndexCounter)
 
         if newChargeString != chargeString {
             chargeString = newChargeString
             printBuffer()
         }
 
-        time.Sleep(10 * time.Second)
+        time.Sleep(2 * time.Second)
     }
 }
 
@@ -104,7 +165,7 @@ func setBspwmStatus() {
 
         /* Don't continue if socketStatus hasn't changed */
         if socketStatusFormatted == lastBspwmStatus {
-            time.Sleep(200 * time.Millisecond)
+            time.Sleep(150 * time.Millisecond)
             continue
         }
         lastBspwmStatus = socketStatusFormatted
@@ -127,6 +188,6 @@ func setBspwmStatus() {
 
         bspwmStatus = newBspwmStatus
         printBuffer()
-        time.Sleep(200 * time.Millisecond)
+        time.Sleep(150 * time.Millisecond)
     }
 }
