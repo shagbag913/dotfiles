@@ -46,6 +46,7 @@ alias mirror='sudo reflector --protocol https --latest 50 --number 20 --sort rat
 alias rs='repo sync --no-clone-bundle --prune --no-tags --no-clone-bundle -c --optimized-fetch -j8'
 alias s!='sudo $(fc -ln -1)'
 alias wget='wget -c'
+alias ga='git add'
 alias gaa='git add --all'
 alias gap='git add --all --patch'
 alias gc='git commit --gpg-sign'
@@ -64,10 +65,15 @@ alias gs='git status'
 alias gr='git revert'
 alias gl='git log'
 alias glo='git log --oneline'
+alias glp='git log -p'
+alias rg='rg -j8'
 
 ghp() {
     [[ -z "$1" || -z "$2" ]] && { echo "Missing args (./$0 <repo> <branch>)"; return 1; }
     git push https://github.com/$1 HEAD:refs/heads/$2
+}
+reposync() {
+    repo sync -j6 -c --no-clone-bundle "$@"
 }
 b() { for ((i=0;i<$1;i++)); do cd ..; done }
 rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
