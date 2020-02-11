@@ -30,16 +30,16 @@
 !.config/fontconfig/*
 !.config/gtk-3.0/
 !.config/gtk-3.0/*
+!.config/nvim/
+!.config/nvim/init.vim
+!.config/nvim/indent/
+!.config/nvim/indent/*
 !.config/pacman/
 !.config/pacman/*
 !.config/picom/
 !.config/picom/*
 !.config/sxhkd/
 !.config/sxhkd/*
-
-!.vim/
-!.vim/*/
-!.vim/indent/*
 
 !.icons/
 !.icons/default/
