@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 set -e
+setopt shwordsplit
 
 [[ -f build/envsetup.sh ]] || { echo "ERROR: Not in ROM directory."; exit 1; }
 
