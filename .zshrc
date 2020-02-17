@@ -24,9 +24,13 @@ export PATH="$HOME/.bin:$HOME/Android/Sdk/build-tools/29.0.1:$PATH"
 export LC_ALL=C
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export EDITOR=nvim
+export KEYTIMEOUT=1
+
+# Ccache
 export USE_CCACHE=1
 export CCACHE_EXEC=$(which ccache)
-export KEYTIMEOUT=1
+export CCACHE_MAXSIZE=100G
+export CCACHE_SLOPPINESS=locale
 
 # ALIAS'S
 if [[ $(uname -n) = ShagBox ]]; then
