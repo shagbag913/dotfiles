@@ -66,7 +66,7 @@ alias gr='git revert'
 alias gl='git log'
 alias glo='git log --oneline'
 alias glp='git log -p'
-alias rg='rg -j8'
+alias rg="rg -j$(($(nproc --all)*2))"
 
 ghp() {
     [[ -z "$1" || -z "$2" ]] && { echo "Missing args (./$0 <repo> <branch>)"; return 1; }
