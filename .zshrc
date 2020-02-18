@@ -47,13 +47,10 @@ alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
 alias e='nvim'
 alias zrc='source ~/.zshrc'
 alias grep='grep --color=auto'
-alias l='ls'
-alias la='ls -a'
-alias ls='ls --color=auto'
-alias mirror='sudo reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist'
+alias l='ls --color=auto'
+alias la='l -a'
+alias mirror='reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist'
 alias rs='repo sync --no-clone-bundle --prune --no-tags --no-clone-bundle -c --optimized-fetch -j8'
-alias s!='sudo $(fc -ln -1)'
-alias wget='wget -c'
 alias ga='git add'
 alias gaa='git add --all'
 alias gap='git add --all --patch'
@@ -74,22 +71,16 @@ alias gr='git revert'
 alias gl='git log'
 alias glo='git log --oneline'
 alias glp='git log -p'
+alias gd='git diff'
 alias rg="rg -j$(($(nproc --all)*2))"
 
-ghp() {
-    [[ -z "$1" || -z "$2" ]] && { echo "Missing args (./$0 <repo> <branch>)"; return 1; }
-    git push https://github.com/$1 HEAD:refs/heads/$2
-}
-reposync() {
-    repo sync -j6 -c --no-clone-bundle "$@"
-}
-b() { for ((i=0;i<$1;i++)); do cd ..; done }
+b() { cd $(for ((i=0;i<$1;i++)); do printf '%s' '../'; done) }
 rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
 rmul() { rsync -Pvre "ssh -p$SSHPORT" "$1" $SSHNAME:"$2" }
 
 prompt_git_branch() {
     branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || return)
-    echo "\e[3m$branch\e[0m "
+    echo " %F{cyan}\e[3m$branch\e[0m%f "
 }
 
 set_prompts() {
@@ -99,7 +90,7 @@ set_prompts() {
     else
         RPROMPT=""
     fi
-    PROMPT=" %F{red}%n%F{cyan}@%F{red}%m %F{cyan}$(prompt_git_branch)%F{cyan}$(dirs)"$'\n'" %F{green}$%f "
+    PROMPT=" %F{red}%n%F{cyan}@%F{red}%m$(prompt_git_branch)%F{cyan}$(dirs)"$'\n'" %F{green}$%f "
 }
 
 pre_cmd() {
