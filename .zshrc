@@ -32,6 +32,9 @@ export CCACHE_EXEC=$(which ccache)
 export CCACHE_MAXSIZE=100G
 export CCACHE_SLOPPINESS=locale
 
+# Set OUT_DIR to /mnt/romout (mounted in fstab)
+export OUT_DIR=/mnt/romout
+
 # ALIAS'S
 if [[ $(uname -n) = ShagBox ]]; then
   alias tm='if ! tmux -u attach; then tmux -u; fi'
