@@ -52,8 +52,5 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-" Toggle NERDTree
-nmap <C-N> :NERDTreeToggle<CR>
-
 " NERD Commenter
 let g:NERDSpaceDelims = 1
