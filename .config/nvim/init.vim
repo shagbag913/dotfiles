@@ -54,3 +54,8 @@ endfunction
 
 " NERD Commenter
 let g:NERDSpaceDelims = 1
+
+" Jump to last place
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
