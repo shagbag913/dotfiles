@@ -32,8 +32,6 @@ endif
 
 call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'farmergreg/vim-lastplace'
-Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/nerdcommenter'
 call plug#end()
 
