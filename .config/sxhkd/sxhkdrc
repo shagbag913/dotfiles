@@ -20,7 +20,7 @@ super + {_,shift + }{1-9,0}
 
 # Start Rofi
 super + d
-    rofi -show drun -modi drun
+    custom_dmenu
 
 # Set window state
 super + {t,shift + t,s,f}

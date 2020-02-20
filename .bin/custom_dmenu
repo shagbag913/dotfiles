@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+
+# Vertical size in percentage, must match lemonbar_wrapper value!
+BAR_HEIGHT_RATIO=04
+
+foreground=${foreground:-#FFFFFF}
+background=${background:-#000000}
+color8=${color8:-#000000}
+
+MONITOR_WIDTH=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 1p)
+MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)
+BSPWM_GAP=$(awk '/window_gap/{print $4}' $HOME/.config/bspwm/bspwmrc)
+DMENU_WIDTH=$(echo "$MONITOR_WIDTH - $BSPWM_GAP * 2" | bc -l | sed 's/\..*//')
+DMENU_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
+
+
+dmenu_run -fn 'Noto Sans-13' -x $BSPWM_GAP -y $((MONITOR_HEIGHT - DMENU_HEIGHT - (BSPWM_GAP / 2))) \
+    -w $DMENU_WIDTH -h $DMENU_HEIGHT -nb $background -nf $foreground -sb $color8
