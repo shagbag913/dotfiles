@@ -20,5 +20,5 @@ else
     done
 fi
 
-dmenu_run -fn 'Noto Sans-13' -x $BSPWM_GAP -y $DMENU_Y -w $DMENU_WIDTH -h $DMENU_HEIGHT \
+dmenu_run -fn 'Google Sans Medium-13' -x $BSPWM_GAP -y $DMENU_Y -w $DMENU_WIDTH -h $DMENU_HEIGHT \
         -nb '#000000' -nf '#FFFFFF' -sb '#000000'
