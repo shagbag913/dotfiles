@@ -1,2 +1,7 @@
-[[ "$HOST" = ShagBox ]] && newout # Create initial out directory
-[[ -z "$SSH_CLIENT" && "$TTY" = "/dev/tty1" && "$HOST" != ShagBox ]] && exec startx
+if [[ $HOST = ShagBox ]]; then
+    $HOME/.bin/newout &>/dev/null
+fi
+
+if [[ -z "$SSH_CLIENT" && "$TTY" = "/dev/tty1" ]]; then
+    exec startx
+fi
