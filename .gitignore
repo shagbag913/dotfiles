@@ -18,6 +18,7 @@
 !.bin/gobar.go
 !.bin/lemonbar_wrapper
 !.bin/lsgfi
+!.bin/newout
 !.bin/reinit_mouse
 !.bin/resign_apk
 !.bin/tg_bot

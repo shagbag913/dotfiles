@@ -1,0 +1,5 @@
+#/usr/bin/env bash
+
+sudo umount /mnt/out 2>/dev/null
+sudo mkfs.ext4 -O ^has_journal -E root_owner=1000:1000,discard -F -L out /dev/disk/by-partuuid/ebd406be-eb32-a948-8892-e91fea2b78c5
+sudo mount -t ext4 -o nobarrier,noatime /dev/disk/by-partuuid/ebd406be-eb32-a948-8892-e91fea2b78c5 /mnt/out
