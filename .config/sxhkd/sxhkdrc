@@ -18,9 +18,9 @@ super + {_,shift + }q
 super + {_,shift + }{1-9,0}
     bspc {desktop -f,node -d} '^{1-9,10}'
 
-# Start Rofi
+# Start dmenu
 super + d
-    custom_dmenu
+    $HOME/.bin/custom_dmenu
 
 # Set window state
 super + {t,shift + t,s,f}
