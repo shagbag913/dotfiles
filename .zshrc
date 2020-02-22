@@ -35,17 +35,17 @@ export CCACHE_SLOPPINESS=locale
 # Set OUT_DIR to /mnt/romout (mounted in fstab)
 export OUT_DIR=/mnt/romout
 
-tmux_attach() {
+TMUX_ATTACH_FUNC="
     if ! tmux -f $HOME/.config/tmux/tmux.conf -u attach; then
         tmux -f $HOME/.config/tmux/tmux.conf -u
     fi
-}
+"
 
 # ALIAS'S
 if [[ $(uname -n) = ShagBox ]]; then
-  alias tm='tmux_attach'
+  alias tm='eval $TMUX_ATTACH_FUNC'
 else
-  alias tm='ssh -t $SSHNAME -p $SSHPORT "tmux_attach"'
+  alias tm='ssh -t $SSHNAME -p $SSHPORT "eval $TMUX_ATTACH_FUNC"'
 fi
 alias .='source'
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
