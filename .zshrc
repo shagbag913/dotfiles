@@ -32,8 +32,8 @@ export CCACHE_EXEC=$(which ccache)
 export CCACHE_MAXSIZE=100G
 export CCACHE_SLOPPINESS=locale
 
-# Set OUT_DIR to /mnt/romout (mounted in fstab)
-export OUT_DIR=/mnt/romout
+# Set OUT_DIR to /mnt/out
+export OUT_DIR=/mnt/out
 
 TMUX_ATTACH_FUNC="
     if ! tmux -f $HOME/.config/tmux/tmux.conf -u attach; then
