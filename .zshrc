@@ -33,7 +33,8 @@ export CCACHE_MAXSIZE=100G
 export CCACHE_SLOPPINESS=locale
 
 # Set OUT_DIR to /mnt/out
-export OUT_DIR=/mnt/out
+export OUT_DIR=/mnt/out/gahs
+export OUT_DIR_COMMON_BASE=/mnt/out
 
 TMUX_ATTACH_FUNC="
     if ! tmux -f $HOME/.config/tmux/tmux.conf -u attach; then
