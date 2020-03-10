@@ -106,4 +106,4 @@ pre_cmd() {
 
 precmd_functions+=(pre_cmd)
 
-neofetch
+gofetch
