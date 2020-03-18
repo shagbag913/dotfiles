@@ -20,6 +20,6 @@ rm -rf META-INF $APK_BASENAME.zip
 cd $TMP
 zip -rD $APK_BASENAME.nzu *
 zipalign 4 $APK_BASENAME.nzu $APK_BASENAME.apk
-/opt/android-sdk/build-tools/29.0.2/apksigner sign --key $CERTKEY_BASE.pk8 --cert $CERTKEY_BASE.x509.pem $APK_BASENAME.apk
+/opt/android-sdk/build-tools/29.0.3/apksigner sign --key $CERTKEY_BASE.pk8 --cert $CERTKEY_BASE.x509.pem $APK_BASENAME.apk
 mv $APK_BASENAME.apk $APK
 cd && rm -rf $TMP

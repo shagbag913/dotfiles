@@ -79,6 +79,7 @@ alias glo='git log --oneline'
 alias glp='git log -p'
 alias gd='git diff'
 alias rg="rg -j$(($(nproc --all)*2))"
+alias rf="rm -rf"
 
 b() { cd $(for ((i=0;i<$1;i++)); do printf '%s' '../'; done) }
 rmdl() { rsync -Pvre "ssh -p$SSHPORT" $SSHNAME:"$1" "$2" }
