@@ -3,6 +3,7 @@
 !.gitconfigs/
 !.gitconfigs/**/*
 !.gitignore
+!.tmux.conf
 !.vimrc
 !.xinitrc
 !.zshrc
@@ -40,8 +41,6 @@
 !.config/picom/*
 !.config/sxhkd/
 !.config/sxhkd/*
-!.config/tmux/
-!.config/tmux/*
 
 !.icons/
 !.icons/default/
