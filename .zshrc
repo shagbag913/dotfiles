@@ -36,17 +36,17 @@ export CCACHE_SLOPPINESS=locale
 export OUT_DIR=/mnt/out/gahs
 export OUT_DIR_COMMON_BASE=/mnt/out
 
-TMUX_ATTACH_FUNC="
+tmux_attach() {
     if ! tmux -f $HOME/.config/tmux/tmux.conf -u attach; then
         tmux -f $HOME/.config/tmux/tmux.conf -u
     fi
-"
+}
 
 # ALIAS'S
 if [[ $(uname -n) = ShagBox ]]; then
-  alias tm='eval $TMUX_ATTACH_FUNC'
+  alias tm='tmux_attach'
 else
-  alias tm='ssh -t $SSHNAME -p $SSHPORT "eval $TMUX_ATTACH_FUNC"'
+  alias tm='ssh -t $SSHNAME -p $SSHPORT "tmux_attach"'
 fi
 alias .='source'
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
