@@ -15,6 +15,8 @@ ZSH_AUTOSUGGEST_USE_ASYNC=true
 ZSH_AUTOSUGGEST_STRATEGY=completion
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
+. $HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 . $HOME/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
