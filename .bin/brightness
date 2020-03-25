@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+set -x
 
 SCRIPT=$(realpath $0)
 exec 6< $SCRIPT
@@ -56,4 +57,4 @@ elif [[ $BRIGHTNESS -lt $BRIGHTNESS_ICON ]]; then
 fi
 
 notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/notification-display-brightness-$ICON.svg \
-        -R /tmp/brightness_notifyd_id "$BRIGHTNESS$PERCENT" -t 1000
+        -R /tmp/brightness_notifyd_id "$BRIGHTNESS$PERCENT" -t 1000 -a "Brightness"
