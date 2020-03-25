@@ -73,7 +73,7 @@ func printBuffer() {
 func setTimeString() {
     for {
         tNow := time.Now()
-        minute, hour := tNow.Minute(), tNow.Hour()
+        minute, hour, second := tNow.Minute(), tNow.Hour(), tNow.Second()
 
         /* 12 hour time */
         if use12HourTime == true {
@@ -95,7 +95,7 @@ func setTimeString() {
             printBuffer()
         }
 
-        time.Sleep(2 * time.Second)
+        time.Sleep(time.Duration(60 - second) * time.Second)
     }
 }
 
