@@ -226,10 +226,6 @@ func setNetStatus() {
         newNetStatus = ""
 
         for _, netDir := range netDirs {
-            if netDir.Name() == "lo" {
-                continue
-            }
-
             file, err := os.Open(baseDir + netDir.Name() + "/operstate")
             if err != nil {
                 fmt.Println(err.Error())
@@ -245,10 +241,10 @@ func setNetStatus() {
             }
 
             if count == 3 {
-                if netDir.Name()[:2] == "wl" {
-                    newNetStatus += "   "
-                } else {
+                if _, err := os.Stat(baseDir + netDir.Name() + "/wireless"); os.IsNotExist(err) {
                     newNetStatus += "   "
+                } else {
+                    newNetStatus += "   "
                 }
             }
 
