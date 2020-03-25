@@ -208,6 +208,7 @@ func setBspwmStatus() {
 }
 
 func setNetStatus() {
+    var newNetStatus string
     for {
         baseDir := "/sys/class/net/"
         netDirs, err := ioutil.ReadDir(baseDir)
@@ -216,7 +217,7 @@ func setNetStatus() {
             break
         }
 
-        netStatus = ""
+        newNetStatus = ""
 
         for _, netDir := range netDirs {
             if netDir.Name() == "lo" {
@@ -239,17 +240,19 @@ func setNetStatus() {
 
             if count == 3 {
                 if netDir.Name()[:2] == "wl" {
-                    netStatus += "   "
+                    newNetStatus += "   "
                 } else {
-                    netStatus += "   "
+                    newNetStatus += "   "
                 }
             }
 
             file.Close()
         }
 
-        netStatus = netStatus[:len(netStatus)-3]
-        printBuffer()
+        if newNetStatus != netStatus {
+            netStatus = newNetStatus[:len(newNetStatus)-3]
+            printBuffer()
+        }
         time.Sleep(time.Second * 5)
     }
 }
