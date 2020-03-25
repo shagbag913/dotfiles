@@ -99,7 +99,7 @@ func setTimeString() {
     }
 }
 
-func getBatteryPercentGlyphIndex(batteryPercentage int, overrideIndex int) int {
+func getBatteryPercentGlyphIndex(batteryPercentage, overrideIndex int) int {
     if overrideIndex >= 0 {
         return overrideIndex
     }
