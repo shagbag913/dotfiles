@@ -15,6 +15,9 @@ import (
 /* Whether to use 12 or 24 hour time */
 var use12HourTime bool = true
 
+/* Whether to show seconds in time */
+var showSeconds bool = false
+
 /* Enable charging animation */
 var animateChargeGlyphWhenCharging = true
 
@@ -90,12 +93,20 @@ func setTimeString() {
         }
         newTimeString += strconv.Itoa(minute)
 
+        if showSeconds {
+            newTimeString += ":" + strconv.Itoa(second)
+        }
+
         if newTimeString != timeString {
             timeString = newTimeString
             printBuffer()
         }
 
-        time.Sleep(time.Duration(60 - second) * time.Second)
+        if showSeconds {
+            time.Sleep(1 * time.Second)
+        } else {
+            time.Sleep(time.Duration(60 - second) * time.Second)
+        }
     }
 }
 
