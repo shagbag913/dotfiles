@@ -4,7 +4,7 @@ pkill sxhkd
 pkill picom
 
 sxhkd &
-nitrogen --set-scaled $HOME/.walls/pinkish-mountain.png &
+nitrogen --set-scaled $HOME/.wall &
 picom --experimental-backends &
 xrandr --output eDP-1 --mode 1600x900 &
 for mf in 'Middle Emulation' 'Natural Scrolling' 'Tapping'; do

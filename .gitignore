@@ -49,8 +49,7 @@
 !.termux/
 !.termux/*
 
-!.walls/
-!.walls/*
+!.wall
 
 !.zsh/
 !.zsh/*
