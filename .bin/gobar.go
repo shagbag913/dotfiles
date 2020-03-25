@@ -117,11 +117,15 @@ func getBatteryPercentGlyphIndex(batteryPercentage int, overrideIndex int) int {
     }
 }
 
-func getBatteryPercentWithGlyph(batteryPercentage int, overrideIndex int) string {
+func getBatteryPercentWithGlyph(batteryPercentage, overrideIndex int, charging bool) string {
     batteryGlyphs := []string{"", "", "", "", ""}
     glyphIndex := getBatteryPercentGlyphIndex(batteryPercentage, overrideIndex)
 
-    return batteryGlyphs[glyphIndex] + " " + strconv.Itoa(batteryPercentage) + "%"
+    chargingString := batteryGlyphs[glyphIndex] + " " + strconv.Itoa(batteryPercentage) + "%"
+    if charging {
+        chargingString += "+"
+    }
+    return chargingString
 }
 
 func isCharging() bool {
@@ -147,7 +151,9 @@ func setChargeString() {
         }
         chargeInt, _ := strconv.Atoi(string(charge[:len(charge)-1]))
 
-        animate := isCharging() && animateChargeGlyphWhenCharging
+        isCharging := isCharging()
+
+        animate := isCharging && animateChargeGlyphWhenCharging
         if animate == false {
             /* Reset index counter */
             chargingIndexCounter = -1
@@ -159,7 +165,7 @@ func setChargeString() {
             }
         }
 
-        newChargeString := getBatteryPercentWithGlyph(chargeInt, chargingIndexCounter)
+        newChargeString := getBatteryPercentWithGlyph(chargeInt, chargingIndexCounter, isCharging)
 
         if newChargeString != chargeString {
             chargeString = newChargeString
