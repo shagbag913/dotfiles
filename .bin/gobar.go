@@ -5,6 +5,7 @@ import (
     "time"
     "strconv"
     "io/ioutil"
+    "os"
     "os/exec"
     "regexp"
 )
@@ -23,6 +24,7 @@ var animateChargeGlyphWhenCharging = true
 var timeString string
 var chargeString string
 var bspwmStatus string
+var netStatus string
 
 /* Other */
 var lastBspwmStatus string
@@ -32,6 +34,7 @@ func main() {
     go setTimeString()
     go setChargeString()
     go setBspwmStatus()
+    go setNetStatus()
 
     /* Block main thread and let goroutines do everything */
     select { }
@@ -39,6 +42,7 @@ func main() {
 
 func printBuffer() {
     printBuffer := ""
+    rightBuffer := "%{r}"
 
     if bspwmStatus != "" {
         printBuffer += "%{l}" + bspwmStatus
@@ -48,12 +52,20 @@ func printBuffer() {
         printBuffer += "%{c}" + timeString
     }
 
+    if netStatus != "" {
+        rightBuffer += netStatus + "   |   "
+    }
+
     if chargeString != "" {
-        printBuffer += "%{r}" + chargeString
+        rightBuffer += chargeString + "   |   "
+    }
+
+    if rightBuffer != "%{r}" {
+        printBuffer += rightBuffer[:len(rightBuffer)-4]
     }
 
     if printBuffer != "" {
-        printBuffer = "    " + printBuffer + "    "
+        printBuffer = printBuffer
         fmt.Println(printBuffer)
     }
 }
@@ -109,7 +121,7 @@ func getBatteryPercentWithGlyph(batteryPercentage int, overrideIndex int) string
     batteryGlyphs := []string{"", "", "", "", ""}
     glyphIndex := getBatteryPercentGlyphIndex(batteryPercentage, overrideIndex)
 
-    return batteryGlyphs[glyphIndex] + "  " + strconv.Itoa(batteryPercentage) + "%"
+    return batteryGlyphs[glyphIndex] + " " + strconv.Itoa(batteryPercentage) + "%"
 }
 
 func isCharging() bool {
@@ -192,5 +204,52 @@ func setBspwmStatus() {
         bspwmStatus = newBspwmStatus
         printBuffer()
         time.Sleep(150 * time.Millisecond)
+    }
+}
+
+func setNetStatus() {
+    for {
+        baseDir := "/sys/class/net/"
+        netDirs, err := ioutil.ReadDir(baseDir)
+        if err != nil {
+            fmt.Println(err.Error())
+            break
+        }
+
+        netStatus = ""
+
+        for _, netDir := range netDirs {
+            if netDir.Name() == "lo" {
+                continue
+            }
+
+            file, err := os.Open(baseDir + netDir.Name() + "/operstate")
+            if err != nil {
+                fmt.Println(err.Error())
+                continue
+            }
+
+            state := make([]byte, 4)
+
+            count, err := file.Read(state)
+            if err != nil {
+                fmt.Println(err.Error())
+                continue
+            }
+
+            if count == 3 {
+                if netDir.Name()[:2] == "wl" {
+                    netStatus += "   "
+                } else {
+                    netStatus += "   "
+                }
+            }
+
+            file.Close()
+        }
+
+        netStatus = netStatus[:len(netStatus)-3]
+        printBuffer()
+        time.Sleep(time.Second * 5)
     }
 }
