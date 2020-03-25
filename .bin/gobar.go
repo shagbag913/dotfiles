@@ -256,7 +256,11 @@ func setNetStatus() {
         }
 
         if newNetStatus != netStatus {
-            netStatus = newNetStatus[:len(newNetStatus)-3]
+            if newNetStatus != "" {
+                netStatus = newNetStatus[:len(newNetStatus)-3]
+            } else {
+                netStatus = ""
+            }
             printBuffer()
         }
         time.Sleep(time.Second * 5)
