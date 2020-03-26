@@ -262,14 +262,15 @@ func setNetStatus() {
             file.Close()
         }
 
+        if newNetStatus != "" {
+            newNetStatus = newNetStatus[:len(newNetStatus)-3]
+        }
+
         if newNetStatus != netStatus {
-            if newNetStatus != "" {
-                netStatus = newNetStatus[:len(newNetStatus)-3]
-            } else {
-                netStatus = ""
-            }
+            netStatus = newNetStatus
             printBuffer()
         }
+
         time.Sleep(time.Second * 5)
     }
 }
