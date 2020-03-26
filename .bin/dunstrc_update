@@ -5,6 +5,8 @@
 #
 DUNSTRC=$HOME/.config/dunst/dunstrc
 
+sed -i 's/foreground = .*/foreground = \"'"$COLOR_FOREGROUND"'\"/g' $DUNSTRC
+
 # Vertical size in percentage of the bar
 BAR_HEIGHT_RATIO=04
 
