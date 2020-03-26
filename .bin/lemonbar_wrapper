@@ -1,4 +1,5 @@
 #!/usr/bin/env dash
+set -x
 
 killall lemonbar gobar
 
@@ -21,7 +22,7 @@ go run $HOME/.bin/gobar.go | lemonbar \
             -f 'Font Awesome 5 Free,Font Awesome 5 Free Solid:style=Solid' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
             -B '#A6000000' \
-            -F '#cc999b' \
+            -F "$COLOR_FOREGROUND" \
             -b \
             -u 2 \
             -p | dash &
