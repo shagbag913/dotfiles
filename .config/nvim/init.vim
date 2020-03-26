@@ -59,3 +59,6 @@ let g:NERDSpaceDelims = 1
 if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") && @% !~# "COMMIT_EDITMSG" | exe "normal! g'\"" | endif
 endif
+
+" Do not fix no EOL
+set nofixendofline
