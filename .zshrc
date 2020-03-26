@@ -21,6 +21,7 @@ ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
+fpath=($HOME/.zsh/zsh-completions/src $fpath)
 export PATH="$HOME/.bin:$HOME/Android/Sdk/build-tools/29.0.1:$PATH"
 [[ -d $HOME/.depot_tools ]] && export PATH="$PATH:$HOME/.depot_tools"
 export LC_ALL=C
