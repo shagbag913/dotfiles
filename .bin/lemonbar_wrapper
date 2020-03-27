@@ -23,6 +23,7 @@ go run $HOME/.bin/gobar.go | lemonbar \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
             -B '#A6000000' \
             -F "$COLOR_FOREGROUND" \
+            -U "$COLOR_FOREGROUND" \
             -b \
             -u 2 \
             -p | dash &
