@@ -1,5 +1,4 @@
 #!/usr/bin/env zsh
-set -x
 
 SCRIPT=$(realpath $0)
 exec 6< $SCRIPT
