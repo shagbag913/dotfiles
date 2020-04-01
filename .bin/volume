@@ -15,17 +15,9 @@ fi
 echo "$NEW_VOLUME" | grep -q off && MUTED=true
 NEW_VOLUME=$(awk -F'[][%]' 'END{print $2}' <<< $NEW_VOLUME)
 
-if [[ -n $MUTED || $NEW_VOLUME = 0 ]]; then
-    ICON=notification-audio-volume-muted.svg
-elif [[ $NEW_VOLUME -le 33 ]]; then
-    ICON=notification-audio-volume-low.svg
-elif [[ $NEW_VOLUME -le 66 ]]; then
-    ICON=notification-audio-volume-medium.svg
-else
-    ICON=notification-audio-volume-high.svg
-fi
+# Will be written to temp file for status bar
+BAR_VOLUME=$NEW_VOLUME
 
-[[ -z "$MUTED" ]] && NEW_VOLUME+=% || NEW_VOLUME+="% (muted)"
+[[ "$MUTED" = true ]] && BAR_VOLUME+="M"
 
-notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/$ICON "$NEW_VOLUME" \
-        -R /tmp/volume_notify -t 1000 -a "Volume"
+printf '%s' "$BAR_VOLUME" > $HOME/.cache/volume/percentage

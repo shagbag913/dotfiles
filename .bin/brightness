@@ -36,25 +36,4 @@ elif [[ -n $1 ]]; then
     fi
 fi
 
-if [[ $BRIGHTNESS = 100 ]]; then
-    BRIGHTNESS=Max
-elif [[ $BRIGHTNESS = $MINIMUM_BRIGHTNESS ]]; then
-    BRIGHTNESS="Min ($MINIMUM_BRIGHTNESS)"
-else
-    PERCENT=%
-fi
-
-BRIGHTNESS_ICON=$(printf "%.0f\n" $(echo "$((100 + MINIMUM_BRIGHTNESS)) * .5" | bc -l))
-
-if [[ $BRIGHTNESS = Max ]]; then
-    ICON=full
-elif [[ $BRIGHTNESS =~ Min ]]; then
-    ICON=off
-elif [[ $BRIGHTNESS -ge $BRIGHTNESS_ICON ]]; then
-    ICON=medium
-elif [[ $BRIGHTNESS -lt $BRIGHTNESS_ICON ]]; then
-    ICON=low
-fi
-
-notify-send.sh --icon=/usr/share/icons/Numix/48/notifications/notification-display-brightness-$ICON.svg \
-        -R /tmp/brightness_notifyd_id "$BRIGHTNESS$PERCENT" -t 1000 -a "Brightness"
+printf '%s' "$BRIGHTNESS" > $HOME/.cache/brightness/percentage

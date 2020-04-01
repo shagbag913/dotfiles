@@ -10,3 +10,6 @@
 [submodule ".zsh/zsh-completions"]
 	path = .zsh/zsh-completions
 	url = https://github.com/zsh-users/zsh-completions
+[submodule ".gobar"]
+	path = .gobar
+	url = https://github.com/shagbag913/gobar
