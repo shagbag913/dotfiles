@@ -29,5 +29,5 @@ go run . | lemonbar \
             -u 2 \
             -p | dash &
 
-sleep 1
-xdo above -t $(xdo id -n root) $(xdo id -n lemonbar)
+until LEMONBAR_ID=$(xdo id -n lemonbar); do :; done
+xdo above -t $(xdo id -n root) $LEMONBAR_ID
