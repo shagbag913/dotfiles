@@ -15,7 +15,6 @@
 !.bin/build-signed
 !.bin/deldog
 !.bin/gen_apache
-!.bin/gobar.go
 !.bin/lemonbar_wrapper
 !.bin/lsgfi
 !.bin/newout
