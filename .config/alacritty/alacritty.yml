@@ -16,9 +16,6 @@ scrolling:
   # scrollback is enabled (history > 0).
   multiplier: 5
 
-# Spaces per Tab
-tabspaces: 8
-
 # Font configuration (changes require restart)
 font:
   # Normal (roman) font face
