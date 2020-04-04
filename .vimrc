@@ -1,3 +1,5 @@
+filetype plugin on
+
 " Indention
 set autoindent
 set smartindent
@@ -33,6 +35,8 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'ycm-core/YouCompleteMe'
 Plug 'joshdick/onedark.vim'
 Plug 'sheerun/vim-polyglot'
+Plug 'Yggdroot/indentLine'
+Plug 'tpope/vim-sleuth'
 call plug#end()
 
 " Persistent undo
@@ -57,6 +61,18 @@ colorscheme onedark
 hi! Normal ctermbg=NONE guibg=NONE
 hi! NonText ctermbg=NONE guibg=NONE
 
-" Close preview window
+" YouCompleteMe
 let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_autoclose_preview_window_after_insertion = 1
+
+" indentLine
+let g:indentLine_showFirstIndentLevel = 1
+let g:indentLine_char = '┊'
+let g:indentLine_first_char = '┊'
+
+" NERDCommenter
+let g:NERDSpaceDelims = 1
+let g:NERDCommentEmptyLines = 1
+let g:NERDTrimTrailingWhitespace = 1
+
+let mapleader = ","

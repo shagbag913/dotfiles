@@ -22,7 +22,7 @@ go run . 2>/tmp/gobar.log | lemonbar \
             -o -1 \
             -f 'Font Awesome 5 Free,Font Awesome 5 Free Solid:style=Solid' \
             -g "$BAR_WIDTH"x"$BAR_HEIGHT"+"$BSPWM_GAP"+"$((BSPWM_GAP / 2))" \
-            -B '#A6000000' \
+            -B '#A61c1a2b' \
             -F "$COLOR_FOREGROUND" \
             -U "$COLOR_FOREGROUND" \
             -b \
