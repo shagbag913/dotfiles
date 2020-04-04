@@ -26,7 +26,7 @@ export PATH="$HOME/.bin:$HOME/Android/Sdk/build-tools/29.0.1:$PATH"
 [[ -d $HOME/.depot_tools ]] && export PATH="$PATH:$HOME/.depot_tools"
 export LC_ALL=C
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-export EDITOR=nvim
+export EDITOR=vim
 export KEYTIMEOUT=1
 
 # Ccache
@@ -41,14 +41,14 @@ export OUT_DIR_COMMON_BASE=/mnt/out
 
 # ALIAS'S
 if [[ $(uname -n) = ShagBox ]]; then
-  alias tm='if ! tmux -u attach; then tmux -u; fi'
+  alias tm='if ! TERM=xterm-256color tmux -u attach; then TERM=xterm-256color tmux -u; fi'
 else
   alias tm='ssh -t $SSHNAME -p $SSHPORT \
-            "if ! tmux -u attach; then tmux -u; fi"'
+            "if ! TERM=xterm-256color tmux -u attach; then TERM=xterm-256color tmux -u; fi"'
 fi
 alias .='source'
 alias apktool="java -Xmx512M -Dfile.encoding=utf-8 -jar $HOME/.bin/apktool.jar"
-alias e='nvim'
+alias e='vim'
 alias zrc='source ~/.zshrc'
 alias grep='grep --color=auto'
 alias l='ls --color=auto'

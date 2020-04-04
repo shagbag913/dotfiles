@@ -50,6 +50,8 @@
 !.termux/
 !.termux/*
 
+!.vimrc
+
 !.wall
 
 !.zsh/
