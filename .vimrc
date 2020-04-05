@@ -37,6 +37,7 @@ Plug 'joshdick/onedark.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'Yggdroot/indentLine'
 Plug 'tpope/vim-sleuth'
+Plug 'ludovicchabant/vim-gutentags'
 call plug#end()
 
 " Persistent undo
