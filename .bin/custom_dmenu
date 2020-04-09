@@ -20,5 +20,20 @@ else
     done
 fi
 
+# Hide lemonbar so we can overlap it with proper transparency
+LEMONBAR_WID=$(xdo id -n lemonbar)
+if [[ -n "$LEMONBAR_WID" ]]; then
+    # dmenu takes a second to open so sleep for a bit, then hide it in the background
+    (sleep .1 && xdo hide "$LEMONBAR_WID") &
+fi
+
 dmenu_run -fn 'Google Sans Medium-13' -x $BSPWM_GAP -y $DMENU_Y -w $DMENU_WIDTH -h $DMENU_HEIGHT \
-        -nb '#1c1a2b' -nf "$COLOR_FOREGROUND" -sb '#1c1a2b'
+        -nb '#1c1a2b' -nf "$COLOR_FOREGROUND" -sb '#1c1a2b' -o .7
+
+until ! ps -e | grep -q dmenu; do
+    :
+done
+
+if [[ -n "$LEMONBAR_WID" ]]; then
+    xdo show "$LEMONBAR_WID"
+fi
