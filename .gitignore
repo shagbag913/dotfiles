@@ -47,6 +47,8 @@
 !.icons/default/
 !.icons/default/index.theme
 
+!.notags
+
 !.termux/
 !.termux/*
 
