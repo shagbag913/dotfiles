@@ -20,6 +20,8 @@ bspc monitor -d I II III IV V VI &
 bspc config border_width 0 &
 bspc config window_gap 20 &
 bspc config split_ratio 0.5 &
+bspc config pointer_modifier mod4 &
+bspc config pointer_action1 move &
 
-bspc rule -a Alacritty desktop='^1' &
+bspc rule -a kitty desktop='^1' &
 bspc rule -a Google-chrome desktop='^2' &

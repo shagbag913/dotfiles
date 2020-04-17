@@ -6,8 +6,10 @@ else
     # Vertical size in percentage, must match lemonbar_wrapper value!
     BAR_HEIGHT_RATIO=04
 
-    MONITOR_WIDTH=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 1p)
-    MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)
+    XRANDR_QUERY=$(xrandr --query)
+
+    MONITOR_WIDTH=$(echo $XRANDR_QUERY | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 1p)
+    MONITOR_HEIGHT=$(echo $XRANDR_QUERY | grep ' connected' | grep -o '[0-9][0-9]\+' | sed -n 2p)
     BSPWM_GAP=$(awk '/window_gap/{print $4}' $HOME/.config/bspwm/bspwmrc)
     DMENU_WIDTH=$(echo "$MONITOR_WIDTH - $BSPWM_GAP * 2" | bc -l | sed 's/\..*//')
     DMENU_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
@@ -23,12 +25,11 @@ fi
 # Hide lemonbar so we can overlap it with proper transparency
 LEMONBAR_WID=$(xdo id -n lemonbar)
 if [[ -n "$LEMONBAR_WID" ]]; then
-    # dmenu takes a second to open so sleep for a bit, then hide it in the background
-    (sleep .1 && xdo hide "$LEMONBAR_WID") &
+    xdo hide "$LEMONBAR_WID"
 fi
 
 dmenu_run -fn 'Google Sans Medium-13' -x $BSPWM_GAP -y $DMENU_Y -w $DMENU_WIDTH -h $DMENU_HEIGHT \
-        -nb '#1c1a2b' -nf "$COLOR_FOREGROUND" -sb '#1c1a2b' -o .7
+        -nb '#1c1a2b' -nf "$COLOR_FOREGROUND" -sb '#1c1a2b' -o .95
 
 until ! ps -e | grep -q dmenu; do
     :

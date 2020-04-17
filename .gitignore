@@ -41,8 +41,6 @@
 !.config/sxhkd/
 !.config/sxhkd/*
 
-!.gobar
-
 !.icons/
 !.icons/default/
 !.icons/default/index.theme
