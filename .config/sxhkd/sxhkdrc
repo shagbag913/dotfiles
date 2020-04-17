@@ -1,10 +1,10 @@
 # Terminal emulator
 super + Return
-    alacritty
+    kitty
 
 # Reload sxhkd config
 super + Escape
-	pkill -USR1 -x sxhkd
+    pkill -USR1 -x sxhkd
 
 # Quit / restart bspwm
 super + alt + {q,r}
