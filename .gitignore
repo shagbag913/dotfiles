@@ -3,6 +3,7 @@
 !.gitconfigs/
 !.gitconfigs/**/*
 !.gitignore
+!.gitignore_global
 !.tmux.conf
 !.vimrc
 !.xinitrc
