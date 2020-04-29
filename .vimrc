@@ -83,3 +83,5 @@ let g:NERDCommentEmptyLines = 1
 let g:NERDTrimTrailingWhitespace = 1
 
 let mapleader = ","
+
+nnoremap <Leader>t :TagbarToggle<CR>
