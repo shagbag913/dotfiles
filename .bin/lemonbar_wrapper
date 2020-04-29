@@ -15,8 +15,7 @@ MONITOR_HEIGHT=$(xrandr --query | grep ' connected' | grep -o '[0-9][0-9]\+' | s
 BAR_WIDTH=$(echo "$MONITOR_WIDTH - $((BSPWM_GAP * 2))" | bc -l | sed 's/\..*//')
 BAR_HEIGHT=$(echo "$MONITOR_HEIGHT * .$BAR_HEIGHT_RATIO" | bc -l | sed 's/\..*//')
 
-cd $HOME/projects/gobar
-go run . 2>/tmp/gobar.log | lemonbar \
+shagbar 2>/tmp/gobar.log | lemonbar \
             -o 1 \
             -f 'Google Sans,Google Sans Medium:style=Medium,Regular:size=12' \
             -o -1 \
