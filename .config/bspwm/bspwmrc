@@ -5,7 +5,7 @@ pkill picom
 pkill dunst
 
 dunst &
-sxhkd &
+sxhkd -m 1 &
 nitrogen --set-scaled $HOME/.wall &
 picom --experimental-backends &
 xrandr --output eDP-1 --mode 1600x900 &
