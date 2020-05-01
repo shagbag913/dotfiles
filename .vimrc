@@ -10,13 +10,6 @@ set encoding=utf-8
 set incsearch
 set hlsearch
 
-" Install vim-plug
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
 " Jump to last place
 if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") && @% !~# "COMMIT_EDITMSG" | exe "normal! g'\"" | endif
@@ -30,17 +23,6 @@ if empty(glob('~/.vimundo'))
     silent !mkdir ~/.vimundo
 endif
 
-call plug#begin()
-Plug 'scrooloose/nerdcommenter'
-Plug 'ycm-core/YouCompleteMe'
-Plug 'joshdick/onedark.vim'
-Plug 'sheerun/vim-polyglot'
-Plug 'Yggdroot/indentLine'
-Plug 'tpope/vim-sleuth'
-Plug 'ludovicchabant/vim-gutentags'
-Plug 'majutsushi/tagbar'
-call plug#end()
-
 " Persistent undo
 set undofile
 set undodir=$HOME/.vimundo
@@ -48,15 +30,14 @@ set undodir=$HOME/.vimundo
 " Never fix EOF, for the sake of keeping diffs clean
 set nofixendofline
 
-" Enable 256 color support
+" Color scheme
+syntax on
+packadd! onedark.vim
 set t_Co=256
 set termguicolors
-
 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-
 let g:onedark_terminal_italics = 1
-
 colorscheme onedark
 
 " Clear background
@@ -85,3 +66,5 @@ let g:NERDTrimTrailingWhitespace = 1
 let mapleader = ","
 
 nnoremap <Leader>t :TagbarToggle<CR>
+
+set laststatus=2

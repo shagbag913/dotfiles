@@ -1,7 +1,7 @@
 #!/usr/bin/env dash
 set -x
 
-killall lemonbar gobar
+killall lemonbar shagbar
 
 # Vertical size in percentage of the bar
 BAR_HEIGHT_RATIO=04

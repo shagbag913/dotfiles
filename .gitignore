@@ -31,10 +31,6 @@
 !.config/fontconfig/*
 !.config/gtk-3.0/
 !.config/gtk-3.0/*
-!.config/nvim/
-!.config/nvim/init.vim
-!.config/nvim/indent/
-!.config/nvim/indent/*
 !.config/pacman/
 !.config/pacman/*
 !.config/picom/
@@ -52,6 +48,14 @@
 !.termux/*
 
 !.vimrc
+
+!.vim/
+!.vim/pack/
+!.vim/pack/plugins/
+!.vim/pack/plugins/opt/
+!.vim/pack/plugins/start/
+!.vim/pack/plugins/opt/*
+!.vim/pack/plugins/start/*
 
 !.wall
 
