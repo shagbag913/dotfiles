@@ -35,10 +35,6 @@ export CCACHE_EXEC=$(which ccache)
 export CCACHE_MAXSIZE=100G
 export CCACHE_SLOPPINESS=locale
 
-# Set OUT_DIR to /mnt/out
-export OUT_DIR=/mnt/out/gahs
-export OUT_DIR_COMMON_BASE=/mnt/out
-
 # ALIAS'S
 if [[ $(uname -n) = ShagBox ]]; then
   alias tm='if ! TERM=xterm-256color tmux -u attach; then TERM=xterm-256color tmux -u; fi'

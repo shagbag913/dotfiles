@@ -40,21 +40,21 @@ m $MAKEFLAGS otatools target-files-package
 [[ ! -d "$OUT/obj/PACKAGING/target_files_intermediates-signed" ]] && \
         mkdir $OUT/obj/PACKAGING/target_files_intermediates-signed
 
-python2 ./build/tools/releasetools/sign_target_files_apks \
+pypy ./build/tools/releasetools/sign_target_files_apks \
     -o \
     -d $KEYS \
     $OUT/obj/PACKAGING/target_files_intermediates/*-target_files-*.zip \
     $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip
 
 if [[ "$IMAGES_PACKAGE" == true ]]; then
-    python2 ./build/make/tools/releasetools/img_from_target_files \
+    pypy ./build/make/tools/releasetools/img_from_target_files \
         $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip \
         $OUT/$TARGET_PRODUCT-$DATE-imgs-signed.zip
 fi
 
 if [[ "$OTA_PACKAGE" == true ]]; then
-    python2 ./build/tools/releasetools/ota_from_target_files \
+    pypy ./build/tools/releasetools/ota_from_target_files \
         -k $KEYS/releasekey \
         $OUT/obj/PACKAGING/target_files_intermediates-signed/$TARGET_PRODUCT-$DATE-target_files-signed.zip \
-        $OUT/$TARGET_PRODUCT-$DATE-signed.zip;
+        $OUT/$TARGET_PRODUCT-$DATE-signed.zip
 fi
